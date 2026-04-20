@@ -3,34 +3,45 @@ import CategoryBadge from './CategoryBadge'
 import VoteButtons from './VoteButtons'
 import ShareButtons from './ShareButtons'
 
+const ESCALATION_THRESHOLD = 250
+
 export default function IssueCard({ issue, onVoteUpdate }) {
   const navigate = useNavigate()
+  const pct = Math.min(((issue.vote_count || 0) / ESCALATION_THRESHOLD) * 100, 100)
+  const isEscalated = issue.escalated || issue.vote_count >= ESCALATION_THRESHOLD
 
   return (
-    <div style={{
-      background: 'white',
-      borderRadius: '12px',
-      padding: '16px',
-      boxShadow: 'var(--card-shadow)',
-      border: '1px solid var(--border)',
-      display: 'flex',
-      flexDirection: 'column',
-      gap: '10px',
-    }}>
-      {/* Header */}
+    <div
+      className="issue-card"
+      style={{
+        background: 'white',
+        borderRadius: '16px',
+        padding: '18px',
+        boxShadow: 'var(--card-shadow)',
+        border: '1px solid var(--border)',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '12px',
+      }}
+    >
+      {/* Badges row */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
         <CategoryBadge category={issue.category} />
-        <span style={{ fontSize: '12px', color: 'var(--neutral)' }}>
+        <span style={{
+          fontSize: '12px', color: 'var(--text-secondary)',
+          display: 'flex', alignItems: 'center', gap: '3px',
+        }}>
           📍 {issue.suburb}
         </span>
-        {issue.escalated && (
+        {isEscalated && (
           <span style={{
-            fontSize: '12px',
-            fontWeight: 600,
+            marginLeft: 'auto',
+            fontSize: '12px', fontWeight: 700,
             color: 'var(--success)',
-            background: '#dcfce7',
-            padding: '2px 8px',
-            borderRadius: '12px',
+            background: 'var(--success-bg)',
+            padding: '3px 10px',
+            borderRadius: '30px',
+            border: '1px solid rgba(5,150,105,0.2)',
           }}>
             ✅ Escalated
           </span>
@@ -45,15 +56,16 @@ export default function IssueCard({ issue, onVoteUpdate }) {
         <h3 style={{
           fontSize: '16px',
           fontWeight: 700,
-          color: 'var(--text)',
-          marginBottom: '4px',
-          lineHeight: 1.3,
+          color: 'var(--navy)',
+          marginBottom: '5px',
+          lineHeight: 1.35,
         }}>
           {issue.title}
         </h3>
         <p style={{
           fontSize: '14px',
           color: 'var(--text-secondary)',
+          lineHeight: 1.5,
           overflow: 'hidden',
           display: '-webkit-box',
           WebkitLineClamp: 2,
@@ -63,25 +75,27 @@ export default function IssueCard({ issue, onVoteUpdate }) {
         </p>
       </div>
 
-      {/* Vote progress bar */}
-      {!issue.escalated && (
+      {/* Vote progress */}
+      {!isEscalated && (
         <div>
           <div style={{
-            height: '4px',
+            height: '5px',
             background: 'var(--border)',
-            borderRadius: '4px',
+            borderRadius: '6px',
             overflow: 'hidden',
           }}>
             <div style={{
               height: '100%',
-              width: `${Math.min((issue.vote_count / 250) * 100, 100)}%`,
-              background: 'var(--primary)',
-              borderRadius: '4px',
-              transition: 'width 0.3s ease',
+              width: `${pct}%`,
+              background: pct >= 80
+                ? 'linear-gradient(90deg, var(--success), #34d399)'
+                : 'linear-gradient(90deg, var(--primary), #00c9b8)',
+              borderRadius: '6px',
+              transition: 'width 0.4s ease',
             }} />
           </div>
-          <span style={{ fontSize: '11px', color: 'var(--neutral)', marginTop: '2px', display: 'block' }}>
-            {issue.vote_count} / 250 to escalate
+          <span style={{ fontSize: '11px', color: 'var(--text-secondary)', marginTop: '4px', display: 'block', fontWeight: 500 }}>
+            {issue.vote_count || 0} / {ESCALATION_THRESHOLD} votes to escalate to council
           </span>
         </div>
       )}
@@ -94,15 +108,18 @@ export default function IssueCard({ issue, onVoteUpdate }) {
           onClick={() => navigate(`/issue/${issue.id}`)}
           style={{
             marginLeft: 'auto',
-            padding: '5px 12px',
-            borderRadius: '8px',
+            padding: '7px 14px',
+            borderRadius: '10px',
             fontSize: '13px',
-            fontWeight: 500,
+            fontWeight: 600,
             color: 'var(--primary)',
             border: '1.5px solid var(--primary)',
             background: 'white',
             minHeight: '36px',
+            transition: 'all 0.15s',
           }}
+          onMouseEnter={e => { e.currentTarget.style.background = 'var(--primary)'; e.currentTarget.style.color = 'white' }}
+          onMouseLeave={e => { e.currentTarget.style.background = 'white'; e.currentTarget.style.color = 'var(--primary)' }}
         >
           View →
         </button>

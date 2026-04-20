@@ -8,6 +8,40 @@ const SUBURBS = [
   'Lilyfield', 'Ashfield', 'Rozelle', 'Balmain', 'Inner West (Other)',
 ]
 
+function Toggle({ on, onToggle, label }) {
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+      <button
+        type="button"
+        onClick={onToggle}
+        style={{
+          width: '48px',
+          height: '26px',
+          borderRadius: '13px',
+          background: on ? 'var(--primary)' : '#CBD5E1',
+          position: 'relative',
+          transition: 'background 0.22s',
+          flexShrink: 0,
+          boxShadow: on ? '0 0 0 3px rgba(0,168,150,0.18)' : 'none',
+        }}
+      >
+        <span style={{
+          position: 'absolute',
+          top: '3px',
+          left: on ? '25px' : '3px',
+          width: '20px',
+          height: '20px',
+          borderRadius: '50%',
+          background: 'white',
+          transition: 'left 0.22s',
+          boxShadow: '0 1px 4px rgba(0,0,0,0.2)',
+        }} />
+      </button>
+      <span style={{ fontSize: '14px', fontWeight: 500, color: 'var(--text)' }}>{label}</span>
+    </div>
+  )
+}
+
 export default function PostIssueModal({ onClose, onCreated }) {
   const showToast = useToast()
   const [form, setForm] = useState({
@@ -24,8 +58,8 @@ export default function PostIssueModal({ onClose, onCreated }) {
     const e = {}
     if (!form.title.trim()) e.title = 'Title is required'
     if (!form.description.trim()) e.description = 'Description is required'
-    if (!form.category) e.category = 'Category is required'
-    if (!form.suburb) e.suburb = 'Suburb is required'
+    if (!form.category) e.category = 'Select a category'
+    if (!form.suburb) e.suburb = 'Select a suburb'
     return e
   }
 
@@ -44,7 +78,7 @@ export default function PostIssueModal({ onClose, onCreated }) {
         escalated: false,
       }).select().single()
       if (error) throw error
-      showToast('Issue posted! 🎉')
+      showToast('Issue posted! 🎉 Share it to get votes.')
       if (onCreated) onCreated(data)
       onClose()
     } catch {
@@ -54,56 +88,88 @@ export default function PostIssueModal({ onClose, onCreated }) {
     }
   }
 
-  const inputStyle = (field) => ({
-    width: '100%',
-    padding: '10px 12px',
-    borderRadius: '8px',
-    border: `1.5px solid ${errors[field] ? 'var(--warning)' : 'var(--border)'}`,
-    fontSize: '15px',
-    outline: 'none',
-    transition: 'border-color 0.15s',
-  })
+  function fieldStyle(field) {
+    return {
+      width: '100%',
+      padding: '11px 14px',
+      borderRadius: '10px',
+      border: `1.5px solid ${errors[field] ? 'var(--warning)' : 'var(--border)'}`,
+      fontSize: '15px',
+      outline: 'none',
+      background: 'white',
+      color: 'var(--text)',
+      transition: 'border-color 0.15s, box-shadow 0.15s',
+    }
+  }
 
   return (
-    <div style={{
-      position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)',
-      display: 'flex', alignItems: 'flex-end', justifyContent: 'center',
-      zIndex: 1000, padding: '0',
-    }}
+    <div
+      style={{
+        position: 'fixed', inset: 0,
+        background: 'rgba(15,30,50,0.55)',
+        display: 'flex', alignItems: 'flex-end', justifyContent: 'center',
+        zIndex: 1000,
+        backdropFilter: 'blur(4px)',
+      }}
       onClick={e => e.target === e.currentTarget && onClose()}
     >
       <div style={{
-        background: 'white',
-        borderRadius: '20px 20px 0 0',
+        background: 'var(--bg)',
+        borderRadius: '24px 24px 0 0',
         width: '100%',
-        maxWidth: '600px',
-        maxHeight: '92vh',
+        maxWidth: '680px',
+        maxHeight: '94vh',
         overflowY: 'auto',
-        padding: '24px 20px',
-        paddingBottom: '32px',
+        boxShadow: '0 -8px 40px rgba(0,0,0,0.15)',
       }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-          <h2 style={{ fontSize: '20px', fontWeight: 700 }}>Post an Issue</h2>
-          <button onClick={onClose} style={{ fontSize: '22px', color: 'var(--neutral)', lineHeight: 1 }}>✕</button>
+        {/* Header */}
+        <div style={{
+          position: 'sticky', top: 0, zIndex: 10,
+          background: 'var(--bg)',
+          borderBottom: '1px solid var(--border)',
+          padding: '18px 20px',
+          display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+          borderRadius: '24px 24px 0 0',
+        }}>
+          <div>
+            <h2 style={{ fontSize: '19px', fontWeight: 800, color: 'var(--navy)' }}>Post an Issue</h2>
+            <p style={{ fontSize: '12px', color: 'var(--text-secondary)', marginTop: '2px' }}>
+              Raise a local concern for the community to vote on
+            </p>
+          </div>
+          <button
+            onClick={onClose}
+            style={{
+              width: '32px', height: '32px', borderRadius: '50%',
+              background: 'var(--border)', display: 'flex',
+              alignItems: 'center', justifyContent: 'center',
+              fontSize: '16px', color: 'var(--text-secondary)',
+            }}
+          >
+            ✕
+          </button>
         </div>
 
-        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+        <form onSubmit={handleSubmit} style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '16px', paddingBottom: '32px' }}>
+
           {/* Title */}
           <div>
-            <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, marginBottom: '5px' }}>
-              Title
+            <label style={{ display: 'block', fontSize: '13px', fontWeight: 700, color: 'var(--navy)', marginBottom: '6px' }}>
+              Title <span style={{ color: 'var(--warning)' }}>*</span>
             </label>
             <input
               type="text"
               value={form.title}
               maxLength={100}
+              placeholder="e.g. Pothole on Norton St causing accidents"
               onChange={e => { setForm(f => ({ ...f, title: e.target.value })); setErrors(r => ({ ...r, title: '' })) }}
-              style={inputStyle('title')}
-              placeholder="What's the issue?"
+              style={fieldStyle('title')}
+              onFocus={e => { e.target.style.borderColor = 'var(--primary)'; e.target.style.boxShadow = '0 0 0 3px rgba(0,168,150,0.12)' }}
+              onBlur={e => { e.target.style.borderColor = errors.title ? 'var(--warning)' : 'var(--border)'; e.target.style.boxShadow = 'none' }}
             />
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '3px' }}>
-              {errors.title && <span style={{ fontSize: '12px', color: 'var(--warning)' }}>{errors.title}</span>}
-              <span style={{ fontSize: '12px', color: 'var(--neutral)', marginLeft: 'auto' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '4px' }}>
+              {errors.title && <span style={{ fontSize: '12px', color: 'var(--warning)', fontWeight: 500 }}>{errors.title}</span>}
+              <span style={{ fontSize: '12px', color: form.title.length > 80 ? 'var(--warning)' : 'var(--text-secondary)', marginLeft: 'auto' }}>
                 {form.title.length} / 100
               </span>
             </div>
@@ -111,85 +177,77 @@ export default function PostIssueModal({ onClose, onCreated }) {
 
           {/* Description */}
           <div>
-            <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, marginBottom: '5px' }}>
-              Description
+            <label style={{ display: 'block', fontSize: '13px', fontWeight: 700, color: 'var(--navy)', marginBottom: '6px' }}>
+              Description <span style={{ color: 'var(--warning)' }}>*</span>
             </label>
             <textarea
               value={form.description}
               maxLength={500}
               rows={4}
+              placeholder="Describe the issue in detail — location, impact, how long it's been a problem..."
               onChange={e => { setForm(f => ({ ...f, description: e.target.value })); setErrors(r => ({ ...r, description: '' })) }}
-              style={{ ...inputStyle('description'), resize: 'vertical' }}
-              placeholder="Describe the issue in detail..."
+              style={{ ...fieldStyle('description'), resize: 'vertical', lineHeight: 1.5 }}
+              onFocus={e => { e.target.style.borderColor = 'var(--primary)'; e.target.style.boxShadow = '0 0 0 3px rgba(0,168,150,0.12)' }}
+              onBlur={e => { e.target.style.borderColor = errors.description ? 'var(--warning)' : 'var(--border)'; e.target.style.boxShadow = 'none' }}
             />
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '3px' }}>
-              {errors.description && <span style={{ fontSize: '12px', color: 'var(--warning)' }}>{errors.description}</span>}
-              <span style={{ fontSize: '12px', color: 'var(--neutral)', marginLeft: 'auto' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '4px' }}>
+              {errors.description && <span style={{ fontSize: '12px', color: 'var(--warning)', fontWeight: 500 }}>{errors.description}</span>}
+              <span style={{ fontSize: '12px', color: form.description.length > 450 ? 'var(--warning)' : 'var(--text-secondary)', marginLeft: 'auto' }}>
                 {form.description.length} / 500
               </span>
             </div>
           </div>
 
-          {/* Category */}
-          <div>
-            <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, marginBottom: '5px' }}>
-              Category
-            </label>
-            <select
-              value={form.category}
-              onChange={e => { setForm(f => ({ ...f, category: e.target.value })); setErrors(r => ({ ...r, category: '' })) }}
-              style={inputStyle('category')}
-            >
-              <option value="">Select a category...</option>
-              {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
-            </select>
-            {errors.category && <span style={{ fontSize: '12px', color: 'var(--warning)', display: 'block', marginTop: '3px' }}>{errors.category}</span>}
-          </div>
+          {/* Category + Suburb row */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+            <div>
+              <label style={{ display: 'block', fontSize: '13px', fontWeight: 700, color: 'var(--navy)', marginBottom: '6px' }}>
+                Category <span style={{ color: 'var(--warning)' }}>*</span>
+              </label>
+              <select
+                value={form.category}
+                onChange={e => { setForm(f => ({ ...f, category: e.target.value })); setErrors(r => ({ ...r, category: '' })) }}
+                style={{ ...fieldStyle('category'), cursor: 'pointer' }}
+              >
+                <option value="">Select...</option>
+                {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
+              </select>
+              {errors.category && <span style={{ fontSize: '12px', color: 'var(--warning)', fontWeight: 500, display: 'block', marginTop: '4px' }}>{errors.category}</span>}
+            </div>
 
-          {/* Suburb */}
-          <div>
-            <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, marginBottom: '5px' }}>
-              Suburb
-            </label>
-            <select
-              value={form.suburb}
-              onChange={e => { setForm(f => ({ ...f, suburb: e.target.value })); setErrors(r => ({ ...r, suburb: '' })) }}
-              style={inputStyle('suburb')}
-            >
-              <option value="">Select a suburb...</option>
-              {SUBURBS.map(s => <option key={s} value={s}>{s}</option>)}
-            </select>
-            {errors.suburb && <span style={{ fontSize: '12px', color: 'var(--warning)', display: 'block', marginTop: '3px' }}>{errors.suburb}</span>}
+            <div>
+              <label style={{ display: 'block', fontSize: '13px', fontWeight: 700, color: 'var(--navy)', marginBottom: '6px' }}>
+                Suburb <span style={{ color: 'var(--warning)' }}>*</span>
+              </label>
+              <select
+                value={form.suburb}
+                onChange={e => { setForm(f => ({ ...f, suburb: e.target.value })); setErrors(r => ({ ...r, suburb: '' })) }}
+                style={{ ...fieldStyle('suburb'), cursor: 'pointer' }}
+              >
+                <option value="">Select...</option>
+                {SUBURBS.map(s => <option key={s} value={s}>{s}</option>)}
+              </select>
+              {errors.suburb && <span style={{ fontSize: '12px', color: 'var(--warning)', fontWeight: 500, display: 'block', marginTop: '4px' }}>{errors.suburb}</span>}
+            </div>
           </div>
 
           {/* Anonymous toggle */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <button
-              type="button"
-              onClick={() => setForm(f => ({ ...f, anonymous: !f.anonymous }))}
-              style={{
-                width: '44px',
-                height: '24px',
-                borderRadius: '12px',
-                background: form.anonymous ? 'var(--primary)' : 'var(--border)',
-                position: 'relative',
-                transition: 'background 0.2s',
-                flexShrink: 0,
-              }}
-            >
-              <span style={{
-                position: 'absolute',
-                top: '2px',
-                left: form.anonymous ? '22px' : '2px',
-                width: '20px',
-                height: '20px',
-                borderRadius: '50%',
-                background: 'white',
-                transition: 'left 0.2s',
-                boxShadow: '0 1px 3px rgba(0,0,0,0.2)',
-              }} />
-            </button>
-            <span style={{ fontSize: '14px' }}>Post anonymously</span>
+          <div style={{
+            background: 'white',
+            borderRadius: '12px',
+            padding: '14px 16px',
+            border: '1px solid var(--border)',
+          }}>
+            <Toggle
+              on={form.anonymous}
+              onToggle={() => setForm(f => ({ ...f, anonymous: !f.anonymous }))}
+              label="Post anonymously"
+            />
+            <p style={{ fontSize: '12px', color: 'var(--text-secondary)', marginTop: '6px', marginLeft: '58px' }}>
+              {form.anonymous
+                ? 'Your identity will be hidden from other users.'
+                : 'Your name will be shown as the issue author.'}
+            </p>
           </div>
 
           {/* Buttons */}
@@ -199,12 +257,12 @@ export default function PostIssueModal({ onClose, onCreated }) {
               onClick={onClose}
               style={{
                 flex: 1,
-                padding: '12px',
-                borderRadius: '10px',
+                padding: '13px',
+                borderRadius: '12px',
                 border: '1.5px solid var(--border)',
                 fontSize: '15px',
                 fontWeight: 600,
-                color: 'var(--neutral)',
+                color: 'var(--text-secondary)',
                 background: 'white',
               }}
             >
@@ -215,9 +273,9 @@ export default function PostIssueModal({ onClose, onCreated }) {
               disabled={submitting}
               style={{
                 flex: 2,
-                padding: '12px',
-                borderRadius: '10px',
-                background: 'var(--accent)',
+                padding: '13px',
+                borderRadius: '12px',
+                background: submitting ? 'var(--border)' : 'linear-gradient(135deg, var(--accent) 0%, #FF8C42 100%)',
                 color: 'white',
                 fontSize: '15px',
                 fontWeight: 700,
@@ -225,10 +283,11 @@ export default function PostIssueModal({ onClose, onCreated }) {
                 alignItems: 'center',
                 justifyContent: 'center',
                 gap: '8px',
-                opacity: submitting ? 0.7 : 1,
+                boxShadow: submitting ? 'none' : '0 4px 14px rgba(255,92,56,0.35)',
+                transition: 'all 0.2s',
               }}
             >
-              {submitting ? <><span className="spinner" /> Posting...</> : 'Post Issue'}
+              {submitting ? <><span className="spinner" /> Posting...</> : '🚀 Post Issue'}
             </button>
           </div>
         </form>
