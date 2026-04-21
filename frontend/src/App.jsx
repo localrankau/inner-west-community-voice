@@ -1319,7 +1319,7 @@ function PostIssueModal({ onClose, onSubmit, registeredUser }) {
     if (!title.trim()) e.title = "Title required";
     if (title.length > 100) e.title = "Max 100 characters";
     if (!description.trim()) e.description = "Description required";
-    if (description.length > 2500) e.description = "Max 2500 characters";
+    if (description.length > 5000) e.description = "Max 5000 characters";
     if (!category) e.category = "Choose a category";
     if (!suburb) e.suburb = "Choose a suburb";
     setErrors(e);
@@ -1381,10 +1381,10 @@ function PostIssueModal({ onClose, onSubmit, registeredUser }) {
           </div>
           <div>
             <label style={labelStyle}>Description</label>
-            <textarea rows={5} value={description} onChange={(e) => { setDescription(e.target.value.slice(0, 2500)); setErrors((r) => ({ ...r, description: "" })); }} placeholder="What's happening? Why does it matter? What should Council do?" style={errors.description ? { ...errorInputStyle, resize: "vertical" } : { resize: "vertical" }} />
+            <textarea rows={5} value={description} onChange={(e) => { setDescription(e.target.value.slice(0, 5000)); setErrors((r) => ({ ...r, description: "" })); }} placeholder="What's happening? Why does it matter? What should Council do?" style={errors.description ? { ...errorInputStyle, resize: "vertical" } : { resize: "vertical" }} />
             <div style={{ display: "flex", justifyContent: "space-between", marginTop: 4 }}>
               {errors.description ? <div style={errorTextStyle}>{errors.description}</div> : <span />}
-              <div style={{ fontSize: 11, color: COLORS.slate }}>{description.length} / 2500</div>
+              <div style={{ fontSize: 11, color: COLORS.slate }}>{description.length} / 5000</div>
             </div>
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
