@@ -148,6 +148,23 @@ export default function App() {
 
   useEffect(() => { fetchIssues(); }, []);
 
+  // Sync auth state — fires when user clicks the magic link email
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (session?.user) {
+        const meta = session.user.user_metadata || {};
+        const synced = {
+          name: meta.name || session.user.email,
+          email: session.user.email,
+          postcode: meta.postcode || "",
+        };
+        localStorage.setItem("iwcv_user", JSON.stringify(synced));
+        setRegisteredUser(synced);
+      }
+    });
+    return () => subscription.unsubscribe();
+  }, []);
+
   // Update page title on view change
   useEffect(() => {
     const titles = {
@@ -197,8 +214,21 @@ export default function App() {
         { onConflict: "session_id" }
       );
     } catch (err) { console.error(err); }
+
+    // Send magic-link / welcome email via Supabase Auth
+    try {
+      await supabase.auth.signInWithOtp({
+        email,
+        options: {
+          shouldCreateUser: true,
+          data: { name, postcode },
+          emailRedirectTo: window.location.origin,
+        },
+      });
+    } catch (err) { console.error("Auth OTP error:", err); }
+
     setShowRegisterModal(false);
-    showToast(`Welcome, ${name}! Your details will auto-fill when you post or vote.`, "success");
+    showToast(`Welcome, ${name}! Check your inbox to verify your email.`, "success");
   }
 
   async function handleVote(issueId, voteType) {
