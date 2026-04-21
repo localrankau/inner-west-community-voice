@@ -97,6 +97,27 @@ function saveVote(issueId, voteType) {
   votes[issueId] = voteType;
   localStorage.setItem("iwcv_votes", JSON.stringify(votes));
 }
+// const EMAIL_SEQUENCE = [
+//   {
+//     trigger: "signup",
+//     delay: 0,
+//     subject: "Welcome to Inner West Community Voice",
+//     preview: "Here's your neighborhood's top issues right now",
+//   },
+//   {
+//     trigger: "signup",
+//     delay: "3 days",
+//     subject: "Your vote could change [suburb]",
+//     preview: "See which issues are approaching the 250-vote threshold",
+//   },
+//   {
+//     trigger: "signup",
+//     delay: "7 days",
+//     subject: "See how Inner West residents drove real change",
+//     preview: "3 issues escalated to council this month — here's what happened",
+//   },
+// ];
+
 function loadRegisteredUser() {
   try { return JSON.parse(localStorage.getItem("iwcv_user") || "null"); }
   catch { return null; }
@@ -493,7 +514,7 @@ function TopNav({ onHome, onPost, onHowItWorks, onAbout, registeredUser, onRegis
           )}
 
           <button onClick={onPost} style={{ display: "flex", alignItems: "center", gap: 8, background: COLORS.community, color: "white", fontWeight: 600, padding: "10px 16px", borderRadius: 6, fontSize: 14, boxShadow: "0 1px 2px rgba(0,0,0,0.08)", transition: "background 150ms ease", marginLeft: 4 }} onMouseEnter={(e) => (e.currentTarget.style.background = COLORS.communityDeep)} onMouseLeave={(e) => (e.currentTarget.style.background = COLORS.community)}>
-            <Plus size={16} strokeWidth={2.5} /> Post issue
+            <Plus size={16} strokeWidth={2.5} /> Post issue — 250 votes = council action
           </button>
         </nav>
       </div>
@@ -624,7 +645,7 @@ function Hero({ query, setQuery, stats, onPost }) {
         <h1 className="serif" style={{ fontSize: "clamp(36px, 6vw, 64px)", fontWeight: 500, lineHeight: 1.05, margin: 0, letterSpacing: "-0.025em", maxWidth: 900 }}>
           Local issues that matter,
           <br />
-          <em style={{ color: COLORS.gold, fontStyle: "italic", fontWeight: 500 }}>heard by Council.</em>
+          <em style={{ color: COLORS.gold, fontStyle: "italic", fontWeight: 500 }}>solved by community.</em>
         </h1>
 
         <p style={{ marginTop: 20, fontSize: 18, lineHeight: 1.55, maxWidth: 620, color: "rgba(255,255,255,0.88)" }}>
@@ -733,7 +754,7 @@ function EmptyState({ onPost, hasIssues }) {
     <div style={{ marginTop: 32, padding: "56px 24px", textAlign: "center", background: COLORS.paper, border: `1px dashed ${COLORS.hairline}`, borderRadius: 12 }}>
       <div className="serif" style={{ fontSize: 22, fontWeight: 500, marginBottom: 8 }}>{hasIssues ? "No issues match your filters" : "No issues yet"}</div>
       <p style={{ color: COLORS.slate, marginBottom: 20 }}>{hasIssues ? "Try a different suburb or category." : "Be the first to raise one for your suburb."}</p>
-      <button onClick={onPost} style={{ background: COLORS.community, color: "white", fontWeight: 600, padding: "12px 20px", borderRadius: 6, fontSize: 14 }}>Post the first issue</button>
+      <button onClick={onPost} style={{ background: COLORS.community, color: "white", fontWeight: 600, padding: "12px 20px", borderRadius: 6, fontSize: 14 }}>Post issue — 250 votes = council action</button>
     </div>
   );
 }
@@ -750,7 +771,7 @@ function PostCTA({ onPost }) {
           <p style={{ marginTop: 14, fontSize: 16, lineHeight: 1.55, color: "rgba(255,255,255,0.85)" }}>No petitions. No gatekeepers. Just your community, organised.</p>
         </div>
         <button onClick={onPost} style={{ background: COLORS.gold, color: COLORS.ink, fontWeight: 700, padding: "16px 28px", borderRadius: 8, fontSize: 15, display: "inline-flex", alignItems: "center", gap: 10, boxShadow: "0 8px 24px rgba(0,0,0,0.25)", transition: "transform 150ms ease" }} onMouseEnter={(e) => (e.currentTarget.style.transform = "translateY(-2px)")} onMouseLeave={(e) => (e.currentTarget.style.transform = "translateY(0)")}>
-          Post an issue <Plus size={18} strokeWidth={2.5} />
+          Post issue — 250 votes = council action <Plus size={18} strokeWidth={2.5} />
         </button>
       </div>
     </section>
@@ -1286,6 +1307,19 @@ function PostIssueModal({ onClose, onSubmit, registeredUser }) {
 
   return (
     <div style={{ position: "fixed", inset: 0, background: "rgba(6,37,71,0.55)", backdropFilter: "blur(6px)", WebkitBackdropFilter: "blur(6px)", zIndex: 100, display: "flex", alignItems: "flex-start", justifyContent: "center", padding: "40px 16px", overflowY: "auto", animation: "fadeIn 200ms ease" }} onClick={onClose}>
+      {/* How it works — 4-step onboarding banner */}
+      <div onClick={(e) => e.stopPropagation()} style={{ background: COLORS.mist, borderRadius: 10, padding: "12px 20px", maxWidth: 580, width: "100%", marginBottom: 12, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8, flexWrap: "wrap" }}>
+        {["Post your issue", "Share with neighbors", "Reach 250 votes", "Council escalation + response"].map((label, i, arr) => (
+          <React.Fragment key={i}>
+            <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+              <span style={{ background: COLORS.authority, color: "white", borderRadius: "50%", width: 20, height: 20, fontSize: 11, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>{i + 1}</span>
+              <span style={{ fontSize: 13, color: COLORS.authority, fontWeight: 500 }}>{label}</span>
+            </div>
+            {i < arr.length - 1 && <span style={{ color: COLORS.authority, opacity: 0.4, fontSize: 13 }}>›</span>}
+          </React.Fragment>
+        ))}
+      </div>
+
       <form onClick={(e) => e.stopPropagation()} onSubmit={handleSubmit} style={{ background: COLORS.paper, borderRadius: 14, padding: 28, maxWidth: 580, width: "100%", boxShadow: "0 24px 60px rgba(0,0,0,0.35)", animation: "cardEnter 300ms ease" }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 6 }}>
           <div>
@@ -1471,7 +1505,7 @@ function HowItWorksPage({ onBack, onPost }) {
             It takes 2 minutes. Your issue could be the one that changes your street.
           </p>
           <button onClick={onPost} style={{ background: COLORS.gold, color: COLORS.ink, fontWeight: 700, padding: "16px 28px", borderRadius: 8, fontSize: 15, display: "inline-flex", alignItems: "center", gap: 10 }}>
-            Post an issue <ChevronRight size={18} />
+            Post issue — 250 votes = council action <ChevronRight size={18} />
           </button>
         </div>
       </section>
