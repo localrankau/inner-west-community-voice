@@ -957,7 +957,7 @@ function IssueDetailPage({ issue, comments, onBack, onVote, userVote, onComment,
 
         <section style={{ marginBottom: 36 }}>
           <h2 className="serif" style={{ fontSize: 22, fontWeight: 600, margin: "0 0 12px", letterSpacing: "-0.015em" }}>What's happening</h2>
-          <p style={{ fontSize: 16, lineHeight: 1.7, color: COLORS.ink, margin: 0, maxWidth: "68ch", whiteSpace: "pre-wrap" }}>{issue.description}</p>
+          <p style={{ fontSize: 16, lineHeight: 1.7, color: COLORS.ink, margin: 0, whiteSpace: "pre-wrap" }}>{issue.description}</p>
         </section>
 
         {!issue.escalated && !hasSignedUp && (
