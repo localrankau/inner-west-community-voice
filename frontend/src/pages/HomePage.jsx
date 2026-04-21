@@ -84,7 +84,7 @@ export default function HomePage() {
       if (error) throw error
       setIssues(data || [])
     } catch {
-      showToast('Something went wrong loading issues.')
+      showToast('Something went wrong loading issues. Please try again.')
     } finally {
       setLoading(false)
     }
