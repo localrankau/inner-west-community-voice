@@ -1354,7 +1354,7 @@ function PostIssueModal({ onClose, onSubmit, registeredUser }) {
             <textarea rows={5} value={description} onChange={(e) => { setDescription(e.target.value.slice(0, 2500)); setErrors((r) => ({ ...r, description: "" })); }} placeholder="What's happening? Why does it matter? What should Council do?" style={errors.description ? { ...errorInputStyle, resize: "vertical" } : { resize: "vertical" }} />
             <div style={{ display: "flex", justifyContent: "space-between", marginTop: 4 }}>
               {errors.description ? <div style={errorTextStyle}>{errors.description}</div> : <span />}
-              <div style={{ fontSize: 11, color: COLORS.slate }}>{description.length} / 500</div>
+              <div style={{ fontSize: 11, color: COLORS.slate }}>{description.length} / 2500</div>
             </div>
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
