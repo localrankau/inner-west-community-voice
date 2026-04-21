@@ -42,12 +42,12 @@ function Toggle({ on, onToggle, label }) {
   )
 }
 
-export default function PostIssueModal({ onClose, onCreated }) {
+export default function PostIssueModal({ onClose, onCreated, prefill }) {
   const showToast = useToast()
   const [form, setForm] = useState({
-    title: '',
-    description: '',
-    category: '',
+    title: prefill?.title || '',
+    description: prefill?.description || '',
+    category: prefill?.category || '',
     suburb: '',
     anonymous: true,
   })

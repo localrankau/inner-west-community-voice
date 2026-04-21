@@ -20,6 +20,49 @@ const CATEGORY_ICONS = {
   Other: '💬',
 }
 
+const RALLY_IDEAS = [
+  {
+    icon: '🚗',
+    title: 'Rally your street for new parking limits',
+    blurb: 'Organise neighbours & petition Council together',
+    category: 'Transport',
+    gradient: 'linear-gradient(145deg, #0D6E68 0%, #00A896 100%)',
+    glow: 'rgba(13,110,104,0.35)',
+  },
+  {
+    icon: '🚦',
+    title: 'Push Council to review a speeding hotspot',
+    blurb: 'Get calming measures where it matters',
+    category: 'Transport',
+    gradient: 'linear-gradient(145deg, #FF5C38 0%, #FF8C42 100%)',
+    glow: 'rgba(255,92,56,0.35)',
+  },
+  {
+    icon: '🏗',
+    title: 'Challenge a rezoning proposal',
+    blurb: 'Unite locals before the DA closes',
+    category: 'Rezoning',
+    gradient: 'linear-gradient(145deg, #6B4FBB 0%, #9B7FE3 100%)',
+    glow: 'rgba(107,79,187,0.35)',
+  },
+  {
+    icon: '🌳',
+    title: 'Request a revamp of your local park',
+    blurb: 'Playgrounds, seating, lighting — your call',
+    category: 'Services',
+    gradient: 'linear-gradient(145deg, #1E7A4D 0%, #3FAE6C 100%)',
+    glow: 'rgba(30,122,77,0.35)',
+  },
+  {
+    icon: '🛤',
+    title: 'Fix a pothole or broken footpath',
+    blurb: 'Log the hazard, get it on the repair list',
+    category: 'Infrastructure',
+    gradient: 'linear-gradient(145deg, #1A2E44 0%, #3A567D 100%)',
+    glow: 'rgba(26,46,68,0.35)',
+  },
+]
+
 export default function HomePage() {
   const showToast = useToast()
   const [issues, setIssues] = useState([])
@@ -28,6 +71,7 @@ export default function HomePage() {
   const [category, setCategory] = useState('All')
   const [suburb, setSuburb] = useState('All')
   const [showModal, setShowModal] = useState(false)
+  const [prefill, setPrefill] = useState(null)
 
   const fetchIssues = useCallback(async () => {
     setLoading(true)
@@ -90,8 +134,21 @@ export default function HomePage() {
           }}>
             Inner West Community Voice
           </h1>
-          <p style={{ fontSize: '14px', color: 'rgba(255,255,255,0.75)', marginBottom: '28px' }}>
+          <p style={{ fontSize: '14px', color: 'rgba(255,255,255,0.75)', marginBottom: '14px' }}>
             Vote on local issues · 250 votes = Council submission
+          </p>
+          <p style={{
+            fontSize: '13.5px',
+            fontStyle: 'italic',
+            color: 'rgba(255,255,255,0.88)',
+            marginBottom: '28px',
+            letterSpacing: '0.1px',
+            lineHeight: 1.45,
+            maxWidth: '360px',
+            marginLeft: 'auto',
+            marginRight: 'auto',
+          }}>
+            Because Council meetings shouldn't be the only way to be heard.
           </p>
 
           {/* Stats */}
@@ -219,6 +276,152 @@ export default function HomePage() {
           )}
         </div>
 
+        {/* Rally ideas — inspiration row */}
+        {!search && (
+          <div style={{ marginBottom: '24px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '10px' }}>
+              <h2 style={{ fontSize: '16px', fontWeight: 800, color: 'var(--navy)', letterSpacing: '-0.2px' }}>
+                What can you rally locals for?
+              </h2>
+              <span style={{ fontSize: '11.5px', color: 'var(--text-secondary)', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.6px' }}>
+                Tap to start
+              </span>
+            </div>
+            <p style={{ fontSize: '12.5px', color: 'var(--text-secondary)', marginBottom: '14px', lineHeight: 1.4 }}>
+              Crowdsource support. Rally neighbours. Get Council to act.
+            </p>
+            <div
+              className="no-scrollbar"
+              style={{
+                display: 'flex',
+                gap: '12px',
+                overflowX: 'auto',
+                paddingBottom: '6px',
+                marginLeft: '-16px',
+                marginRight: '-16px',
+                paddingLeft: '16px',
+                paddingRight: '16px',
+                scrollSnapType: 'x mandatory',
+              }}
+            >
+              {RALLY_IDEAS.map((idea, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => {
+                    setPrefill({ category: idea.category, title: idea.title })
+                    setShowModal(true)
+                  }}
+                  style={{
+                    flex: '0 0 200px',
+                    height: '200px',
+                    borderRadius: '18px',
+                    background: idea.gradient,
+                    boxShadow: `0 6px 20px ${idea.glow}, 0 1px 3px rgba(0,0,0,0.08)`,
+                    padding: '18px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'space-between',
+                    alignItems: 'flex-start',
+                    textAlign: 'left',
+                    position: 'relative',
+                    overflow: 'hidden',
+                    scrollSnapAlign: 'start',
+                    border: 'none',
+                    cursor: 'pointer',
+                    transition: 'transform 0.18s ease, box-shadow 0.18s ease',
+                  }}
+                  onMouseEnter={e => {
+                    e.currentTarget.style.transform = 'translateY(-3px)'
+                    e.currentTarget.style.boxShadow = `0 10px 28px ${idea.glow}, 0 2px 6px rgba(0,0,0,0.1)`
+                  }}
+                  onMouseLeave={e => {
+                    e.currentTarget.style.transform = 'translateY(0)'
+                    e.currentTarget.style.boxShadow = `0 6px 20px ${idea.glow}, 0 1px 3px rgba(0,0,0,0.08)`
+                  }}
+                >
+                  {/* Decorative shine */}
+                  <div style={{
+                    position: 'absolute',
+                    top: '-40px',
+                    right: '-40px',
+                    width: '140px',
+                    height: '140px',
+                    borderRadius: '50%',
+                    background: 'radial-gradient(circle, rgba(255,255,255,0.22) 0%, transparent 70%)',
+                    pointerEvents: 'none',
+                  }} />
+                  <div style={{
+                    position: 'absolute',
+                    bottom: '-30px',
+                    left: '-30px',
+                    width: '110px',
+                    height: '110px',
+                    borderRadius: '50%',
+                    background: 'radial-gradient(circle, rgba(0,0,0,0.12) 0%, transparent 70%)',
+                    pointerEvents: 'none',
+                  }} />
+
+                  {/* Icon */}
+                  <div style={{
+                    width: '44px',
+                    height: '44px',
+                    borderRadius: '14px',
+                    background: 'rgba(255,255,255,0.22)',
+                    backdropFilter: 'blur(8px)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '24px',
+                    boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.25)',
+                    position: 'relative',
+                    zIndex: 1,
+                  }}>
+                    {idea.icon}
+                  </div>
+
+                  {/* Text */}
+                  <div style={{ position: 'relative', zIndex: 1, width: '100%' }}>
+                    <div style={{
+                      fontSize: '14.5px',
+                      fontWeight: 800,
+                      color: 'white',
+                      lineHeight: 1.25,
+                      marginBottom: '6px',
+                      letterSpacing: '-0.1px',
+                      textShadow: '0 1px 2px rgba(0,0,0,0.12)',
+                    }}>
+                      {idea.title}
+                    </div>
+                    <div style={{
+                      fontSize: '11.5px',
+                      color: 'rgba(255,255,255,0.82)',
+                      lineHeight: 1.35,
+                      marginBottom: '10px',
+                    }}>
+                      {idea.blurb}
+                    </div>
+                    <div style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '5px',
+                      fontSize: '11.5px',
+                      fontWeight: 700,
+                      color: 'white',
+                      background: 'rgba(255,255,255,0.18)',
+                      padding: '5px 10px',
+                      borderRadius: '20px',
+                      backdropFilter: 'blur(4px)',
+                      border: '1px solid rgba(255,255,255,0.2)',
+                    }}>
+                      Start this →
+                    </div>
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* Leaderboard */}
         {!search && category === 'All' && suburb === 'All' && (
           <div style={{ marginBottom: '24px' }}>
@@ -248,7 +451,7 @@ export default function HomePage() {
 
       {/* Post Issue FAB */}
       <button
-        onClick={() => setShowModal(true)}
+        onClick={() => { setPrefill(null); setShowModal(true) }}
         style={{
           position: 'fixed',
           bottom: '24px',
@@ -275,8 +478,9 @@ export default function HomePage() {
 
       {showModal && (
         <PostIssueModal
-          onClose={() => setShowModal(false)}
+          onClose={() => { setShowModal(false); setPrefill(null) }}
           onCreated={handleCreated}
+          prefill={prefill}
         />
       )}
     </div>
