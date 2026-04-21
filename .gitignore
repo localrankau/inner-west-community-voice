@@ -1,5 +1,5 @@
 node_modules/
-# frontend/dist/ (pre-built)
+frontend/dist/
 frontend/.env
 frontend/.env.local
 .DS_Store
