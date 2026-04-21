@@ -1289,7 +1289,7 @@ function PostIssueModal({ onClose, onSubmit, registeredUser }) {
     if (!title.trim()) e.title = "Title required";
     if (title.length > 100) e.title = "Max 100 characters";
     if (!description.trim()) e.description = "Description required";
-    if (description.length > 500) e.description = "Max 500 characters";
+    if (description.length > 2500) e.description = "Max 2500 characters";
     if (!category) e.category = "Choose a category";
     if (!suburb) e.suburb = "Choose a suburb";
     setErrors(e);
