@@ -63,6 +63,49 @@ const HERO_IMAGE =
 const TEXTURE_IMAGE =
   "https://images.unsplash.com/photo-1534447677768-be436bb09401?auto=format&fit=crop&w=2400&q=80";
 
+const RALLY_IDEAS = [
+  {
+    icon: "🚗",
+    title: "Rally your street for new parking limits",
+    blurb: "Organise neighbours & petition Council together",
+    category: "Transport",
+    gradient: "linear-gradient(145deg, #0D6E68 0%, #00A896 100%)",
+    glow: "rgba(13,110,104,0.35)",
+  },
+  {
+    icon: "🚦",
+    title: "Push Council to review a speeding hotspot",
+    blurb: "Get calming measures where it matters",
+    category: "Transport",
+    gradient: "linear-gradient(145deg, #FF5C38 0%, #FF8C42 100%)",
+    glow: "rgba(255,92,56,0.35)",
+  },
+  {
+    icon: "🏗",
+    title: "Challenge a rezoning proposal",
+    blurb: "Unite locals before the DA closes",
+    category: "Rezoning",
+    gradient: "linear-gradient(145deg, #6B4FBB 0%, #9B7FE3 100%)",
+    glow: "rgba(107,79,187,0.35)",
+  },
+  {
+    icon: "🌳",
+    title: "Request a revamp of your local park",
+    blurb: "Playgrounds, seating, lighting — your call",
+    category: "Services",
+    gradient: "linear-gradient(145deg, #1E7A4D 0%, #3FAE6C 100%)",
+    glow: "rgba(30,122,77,0.35)",
+  },
+  {
+    icon: "🛤",
+    title: "Fix a pothole or broken footpath",
+    blurb: "Log the hazard, get it on the repair list",
+    category: "Infrastructure",
+    gradient: "linear-gradient(145deg, #1A2E44 0%, #3A567D 100%)",
+    glow: "rgba(26,46,68,0.35)",
+  },
+];
+
 const COUNCIL_STATUSES = {
   no_response: { label: "No Council Response Yet", color: COLORS.slate, bg: COLORS.mist },
   acknowledged: { label: "Acknowledged by Council", color: COLORS.authority, bg: "#E8EEF5" },
@@ -612,6 +655,60 @@ function HomePage({ issues, loading, error, onRetry, onOpenIssue, onVote, userVo
         </Section>
       )}
 
+      {!query && (
+        <Section background={COLORS.cream}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 8 }}>
+            <SectionHeader eyebrow="Get started" title="What can you rally locals for?" subtitle="Crowdsource support. Rally neighbours. Get Council to act." />
+          </div>
+          <div style={{ display: "flex", gap: 16, overflowX: "auto", paddingBottom: 8, scrollSnapType: "x mandatory", WebkitOverflowScrolling: "touch" }}>
+            {RALLY_IDEAS.map((idea, idx) => (
+              <button
+                key={idx}
+                onClick={onPost}
+                style={{
+                  flex: "0 0 220px",
+                  height: 210,
+                  borderRadius: 18,
+                  background: idea.gradient,
+                  boxShadow: `0 6px 20px ${idea.glow}, 0 1px 3px rgba(0,0,0,0.08)`,
+                  padding: 20,
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "space-between",
+                  alignItems: "flex-start",
+                  textAlign: "left",
+                  position: "relative",
+                  overflow: "hidden",
+                  scrollSnapAlign: "start",
+                  border: "none",
+                  cursor: "pointer",
+                  transition: "transform 0.18s ease, box-shadow 0.18s ease",
+                }}
+                onMouseEnter={(e) => { e.currentTarget.style.transform = "translateY(-3px)"; e.currentTarget.style.boxShadow = `0 10px 28px ${idea.glow}`; }}
+                onMouseLeave={(e) => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = `0 6px 20px ${idea.glow}, 0 1px 3px rgba(0,0,0,0.08)`; }}
+              >
+                <div style={{ position: "absolute", top: -40, right: -40, width: 140, height: 140, borderRadius: "50%", background: "radial-gradient(circle, rgba(255,255,255,0.22) 0%, transparent 70%)", pointerEvents: "none" }} />
+                <div style={{ position: "absolute", bottom: -30, left: -30, width: 110, height: 110, borderRadius: "50%", background: "radial-gradient(circle, rgba(0,0,0,0.12) 0%, transparent 70%)", pointerEvents: "none" }} />
+                <div style={{ width: 44, height: 44, borderRadius: 14, background: "rgba(255,255,255,0.22)", backdropFilter: "blur(8px)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 24, position: "relative", zIndex: 1 }}>
+                  {idea.icon}
+                </div>
+                <div style={{ position: "relative", zIndex: 1, width: "100%" }}>
+                  <div style={{ fontSize: 15, fontWeight: 800, color: "white", lineHeight: 1.25, marginBottom: 6, letterSpacing: "-0.1px", textShadow: "0 1px 2px rgba(0,0,0,0.12)" }}>
+                    {idea.title}
+                  </div>
+                  <div style={{ fontSize: 12, color: "rgba(255,255,255,0.82)", lineHeight: 1.35, marginBottom: 10 }}>
+                    {idea.blurb}
+                  </div>
+                  <div style={{ display: "inline-flex", alignItems: "center", gap: 5, fontSize: 12, fontWeight: 700, color: "white", background: "rgba(255,255,255,0.18)", padding: "5px 10px", borderRadius: 20, border: "1px solid rgba(255,255,255,0.2)" }}>
+                    Start this →
+                  </div>
+                </div>
+              </button>
+            ))}
+          </div>
+        </Section>
+      )}
+
       <Section background={COLORS.paper}>
         <SectionHeader eyebrow="All issues" title="What your neighbours are raising" subtitle="Filter by suburb or category. Every vote is tracked. Every signature is verified." />
         {loading ? (
@@ -680,6 +777,10 @@ function Hero({ query, setQuery, stats, onPost }) {
 
         <p style={{ marginTop: 20, fontSize: 18, lineHeight: 1.55, maxWidth: 620, color: "rgba(255,255,255,0.88)" }}>
           Post an issue. Collect 250 verified supporters. Your concern lands on the Council desk as a formal submission — automatically.
+        </p>
+
+        <p style={{ marginTop: 14, fontSize: 15, fontStyle: "italic", color: "rgba(255,255,255,0.82)", lineHeight: 1.45, maxWidth: 520, letterSpacing: "0.1px" }}>
+          Because Council meetings shouldn't be the only way to be heard.
         </p>
 
         <div style={{ marginTop: 32, display: "flex", alignItems: "center", gap: 10, background: "white", borderRadius: 10, padding: "6px 6px 6px 16px", maxWidth: 560, boxShadow: "0 12px 30px rgba(0,0,0,0.25)" }}>
