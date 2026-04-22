@@ -731,23 +731,25 @@ function TopNav({ onHome, onPost, onHowItWorks, onAbout, onAllIssues, registered
         </button>
 
         <nav style={{ display: "flex", alignItems: "center", gap: 4 }}>
-          <button onClick={onAllIssues} style={{ padding: "8px 12px", color: COLORS.slate, fontSize: 13, fontWeight: 500, borderRadius: 6, transition: "background 150ms ease" }} onMouseEnter={(e) => (e.currentTarget.style.background = COLORS.mist)} onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}>
+          <button onClick={onAllIssues} style={{ padding: "8px 12px", color: COLORS.ink, fontSize: 13, fontWeight: 600, borderRadius: 6, transition: "background 150ms ease" }} onMouseEnter={(e) => (e.currentTarget.style.background = COLORS.mist)} onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}>
             All issues
           </button>
-          <button onClick={onHowItWorks} style={{ padding: "8px 12px", color: COLORS.slate, fontSize: 13, fontWeight: 500, borderRadius: 6, transition: "background 150ms ease" }} onMouseEnter={(e) => (e.currentTarget.style.background = COLORS.mist)} onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}>
+          <button onClick={onHowItWorks} style={{ padding: "8px 12px", color: COLORS.ink, fontSize: 13, fontWeight: 600, borderRadius: 6, transition: "background 150ms ease" }} onMouseEnter={(e) => (e.currentTarget.style.background = COLORS.mist)} onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}>
             How it works
           </button>
-          <button onClick={onAbout} style={{ padding: "8px 12px", color: COLORS.slate, fontSize: 13, fontWeight: 500, borderRadius: 6, transition: "background 150ms ease" }} onMouseEnter={(e) => (e.currentTarget.style.background = COLORS.mist)} onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}>
+          <button onClick={onAbout} style={{ padding: "8px 12px", color: COLORS.ink, fontSize: 13, fontWeight: 600, borderRadius: 6, transition: "background 150ms ease" }} onMouseEnter={(e) => (e.currentTarget.style.background = COLORS.mist)} onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}>
             About
           </button>
 
+          <div style={{ width: 1, height: 20, background: COLORS.hairline, margin: "0 8px" }} />
+
           {registeredUser ? (
-            <button onClick={onRegister} style={{ display: "flex", alignItems: "center", gap: 7, padding: "8px 12px", border: `1px solid ${COLORS.hairline}`, borderRadius: 6, fontSize: 13, fontWeight: 500, color: COLORS.authority, background: COLORS.paper, transition: "background 150ms ease" }} onMouseEnter={(e) => (e.currentTarget.style.background = COLORS.mist)} onMouseLeave={(e) => (e.currentTarget.style.background = COLORS.paper)}>
+            <button onClick={onRegister} style={{ display: "flex", alignItems: "center", gap: 7, padding: "8px 12px", border: `1px solid ${COLORS.hairline}`, borderRadius: 6, fontSize: 13, fontWeight: 600, color: COLORS.authority, background: COLORS.paper, transition: "background 150ms ease" }} onMouseEnter={(e) => (e.currentTarget.style.background = COLORS.mist)} onMouseLeave={(e) => (e.currentTarget.style.background = COLORS.paper)}>
               <UserCircle size={16} /> {registeredUser.name.split(" ")[0]}
             </button>
           ) : (
             <>
-              <button onClick={onLogin} style={{ padding: "8px 14px", borderRadius: 6, color: COLORS.slate, fontSize: 13, fontWeight: 500, background: "transparent", transition: "background 150ms ease" }} onMouseEnter={(e) => (e.currentTarget.style.background = COLORS.mist)} onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}>
+              <button onClick={onLogin} style={{ padding: "8px 14px", border: `1px solid #C5D5E8`, borderRadius: 6, color: COLORS.authority, fontSize: 13, fontWeight: 600, background: "#EEF3F9", transition: "all 150ms ease" }} onMouseEnter={(e) => { e.currentTarget.style.background = "#E0EBF5"; e.currentTarget.style.borderColor = COLORS.authority; }} onMouseLeave={(e) => { e.currentTarget.style.background = "#EEF3F9"; e.currentTarget.style.borderColor = "#C5D5E8"; }}>
                 Log in
               </button>
               <button onClick={onRegister} style={{ padding: "8px 14px", border: `1px solid ${COLORS.authority}`, borderRadius: 6, color: COLORS.authority, fontSize: 13, fontWeight: 600, background: "transparent", transition: "all 150ms ease" }} onMouseEnter={(e) => { e.currentTarget.style.background = COLORS.authority; e.currentTarget.style.color = "white"; }} onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = COLORS.authority; }}>
