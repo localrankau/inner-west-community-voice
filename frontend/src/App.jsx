@@ -136,7 +136,7 @@ function saveVote(issueId, voteType) {
 //   {
 //     trigger: "signup",
 //     delay: 0,
-//     subject: "Welcome to Inner West Community Voice",
+//     subject: "Welcome to Inner West Pulse",
 //     preview: "Here's your neighborhood's top issues right now",
 //   },
 //   {
@@ -203,9 +203,9 @@ export default function App() {
   // Update page title on view change
   useEffect(() => {
     const titles = {
-      home: "Inner West Community Voice — Raise Local Issues with Council",
-      "how-it-works": "How It Works — Inner West Community Voice",
-      about: "About Us — Inner West Community Voice",
+      home: "Inner West Pulse — Raise Local Issues with Council",
+      "how-it-works": "How It Works — Inner West Pulse",
+      about: "About Us — Inner West Pulse",
     };
     document.title = titles[view.name] || titles.home;
   }, [view.name]);
@@ -555,8 +555,8 @@ function TopNav({ onHome, onPost, onHowItWorks, onAbout, registeredUser, onRegis
         <button onClick={onHome} style={{ display: "flex", alignItems: "center", gap: 10, padding: 0 }}>
           <Logo />
           <div style={{ textAlign: "left", lineHeight: 1.15 }}>
-            <div className="serif" style={{ fontSize: 17, fontWeight: 600, color: COLORS.authority, letterSpacing: "-0.015em" }}>Community Voice</div>
-            <div style={{ fontSize: 11, color: COLORS.slate, letterSpacing: "0.06em", textTransform: "uppercase", fontWeight: 500 }}>Inner West · Sydney</div>
+            <div style={{ fontSize: 10, color: COLORS.slate, letterSpacing: "0.1em", textTransform: "uppercase", fontWeight: 600, marginBottom: 2 }}>Inner West</div>
+            <div className="serif" style={{ fontSize: 20, fontWeight: 600, color: COLORS.authority, letterSpacing: "-0.02em", lineHeight: 1 }}>Pulse</div>
           </div>
         </button>
 
@@ -589,10 +589,10 @@ function TopNav({ onHome, onPost, onHowItWorks, onAbout, registeredUser, onRegis
 
 function Logo() {
   return (
-    <div style={{ width: 36, height: 36, borderRadius: 8, background: COLORS.authority, display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "inset 0 -2px 0 rgba(0,0,0,0.2)", flexShrink: 0 }}>
-      <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-        <path d="M2 14 Q10 4 18 14" stroke="white" strokeWidth="2" strokeLinecap="round" fill="none" />
-        <circle cx="10" cy="7.5" r="2.2" fill={COLORS.gold} />
+    <div style={{ width: 38, height: 38, borderRadius: 9, background: `linear-gradient(145deg, ${COLORS.authority} 0%, ${COLORS.authorityDeep} 100%)`, display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 2px 8px rgba(11,58,102,0.35)", flexShrink: 0 }}>
+      <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+        <path d="M2 11 L5.5 11 L7.5 5.5 L10 16 L12.5 8 L14.5 11 L20 11" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+        <circle cx="19.5" cy="11" r="2" fill={COLORS.gold} />
       </svg>
     </div>
   );
@@ -775,12 +775,12 @@ function Hero({ query, setQuery, stats, onPost }) {
           <em style={{ color: COLORS.gold, fontStyle: "italic", fontWeight: 500 }}>solved by community.</em>
         </h1>
 
-        <p style={{ marginTop: 20, fontSize: 18, lineHeight: 1.55, maxWidth: 620, color: "rgba(255,255,255,0.88)" }}>
-          Post an issue. Collect 250 verified supporters. Your concern lands on the Council desk as a formal submission — automatically.
+        <p style={{ marginTop: 18, fontSize: 17, fontStyle: "italic", color: "rgba(255,255,255,0.88)", lineHeight: 1.5, maxWidth: 580, letterSpacing: "0.05px" }}>
+          Think you're the only one frustrated? Discover how many neighbours feel the same — then rally them into a force Council can't ignore.
         </p>
 
-        <p style={{ marginTop: 14, fontSize: 15, fontStyle: "italic", color: "rgba(255,255,255,0.82)", lineHeight: 1.45, maxWidth: 520, letterSpacing: "0.1px" }}>
-          Because Council meetings shouldn't be the only way to be heard.
+        <p style={{ marginTop: 14, fontSize: 16, lineHeight: 1.55, maxWidth: 620, color: "rgba(255,255,255,0.75)" }}>
+          Post an issue. Collect 250 verified supporters. Your concern lands on the Council desk as a formal submission — automatically.
         </p>
 
         <div style={{ marginTop: 32, display: "flex", alignItems: "center", gap: 10, background: "white", borderRadius: 10, padding: "6px 6px 6px 16px", maxWidth: 560, boxShadow: "0 12px 30px rgba(0,0,0,0.25)" }}>
@@ -1009,7 +1009,7 @@ function SharePopover({ issue, onClose, onShare }) {
     return () => document.removeEventListener("mousedown", onDoc);
   }, [onClose]);
   const url = `${window.location.href.split("?")[0]}?issue=${issue.id}`;
-  const text = encodeURIComponent(`${issue.title} — Inner West Community Voice`);
+  const text = encodeURIComponent(`${issue.title} — Inner West Pulse`);
   const shareUrl = encodeURIComponent(url);
   const items = [
     { icon: <TwitterIcon size={14} />, label: "Twitter / X", href: `https://twitter.com/intent/tweet?text=${text}&url=${shareUrl}` },
@@ -1351,7 +1351,7 @@ function RegisterModal({ onClose, onSubmit, existing }) {
               <UserCircle size={12} style={{ display: "inline", verticalAlign: "-2px", marginRight: 6 }} />{existing ? "Update your details" : "Register"}
             </div>
             <h2 className="serif" style={{ fontSize: 24, fontWeight: 600, margin: 0, letterSpacing: "-0.02em" }}>
-              {existing ? "Update registration" : "Join Inner West Community Voice"}
+              {existing ? "Update registration" : "Join Inner West Pulse"}
             </h2>
           </div>
           <button type="button" onClick={onClose} style={{ padding: 6, color: COLORS.slate, borderRadius: 6 }} onMouseEnter={(e) => (e.currentTarget.style.background = COLORS.mist)} onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}>
@@ -1558,7 +1558,7 @@ function HowItWorksPage({ onBack, onPost }) {
   ];
 
   const faqs = [
-    { q: "Is it free?", a: "Yes, and it always will be. Inner West Community Voice is an independent, non-commercial platform built to serve residents, not shareholders." },
+    { q: "Is it free?", a: "Yes, and it always will be. Inner West Pulse is an independent, non-commercial platform built to serve residents, not shareholders." },
     { q: "Who can post an issue?", a: "Any Inner West Sydney resident. You don't need to register to post, but registering lets your details auto-fill when you vote or sign up as a supporter." },
     { q: "Is my personal information public?", a: "No. Your email is never displayed. Your name and postcode appear on the formal Council submission only — as required for submissions to carry legal standing. The public sees issues and vote counts, not personal details." },
     { q: "What if Council doesn't respond?", a: "We track and publish non-responses. An issue with no Council response after 30 days is flagged as 'No Response' — publicly visible, creating accountability." },
@@ -1576,7 +1576,7 @@ function HowItWorksPage({ onBack, onPost }) {
           </button>
           <div style={{ fontSize: 12, letterSpacing: "0.12em", textTransform: "uppercase", fontWeight: 600, color: COLORS.gold, marginBottom: 14 }}>Platform guide</div>
           <h1 className="serif" style={{ fontSize: "clamp(36px, 5vw, 56px)", fontWeight: 500, lineHeight: 1.06, margin: "0 0 20px", letterSpacing: "-0.025em", maxWidth: 720 }}>
-            How Inner West Community Voice works
+            How Inner West Pulse works
           </h1>
           <p style={{ fontSize: 18, lineHeight: 1.6, color: "rgba(255,255,255,0.85)", maxWidth: 640, margin: 0 }}>
             A step-by-step guide to raising a local issue, building community support, and getting it formally heard by Inner West Council — for free, with no red tape.
@@ -1658,7 +1658,7 @@ function AboutPage({ onBack }) {
           </button>
           <div style={{ fontSize: 12, letterSpacing: "0.12em", textTransform: "uppercase", fontWeight: 600, color: COLORS.gold, marginBottom: 14 }}>Our mission</div>
           <h1 className="serif" style={{ fontSize: "clamp(36px, 5vw, 56px)", fontWeight: 500, lineHeight: 1.06, margin: "0 0 20px", letterSpacing: "-0.025em", maxWidth: 720 }}>
-            About Inner West Community Voice
+            About Inner West Pulse
           </h1>
           <p style={{ fontSize: 18, lineHeight: 1.6, color: "rgba(255,255,255,0.85)", maxWidth: 640, margin: 0 }}>
             An independent, non-partisan platform built to give Inner West residents a direct, organised, and effective way to raise issues with their local Council.
@@ -1679,7 +1679,7 @@ function AboutPage({ onBack }) {
               Inner West is one of Sydney's most diverse, dense, and engaged communities. But residents who want to raise a concern face a maze: long-form submissions, confusing portals, evening meetings that working families can't attend, and emails that disappear into inboxes never to be answered.
             </p>
             <p style={{ fontSize: 16, lineHeight: 1.75, color: COLORS.slate, margin: "0 0 16px" }}>
-              Inner West Community Voice changes that. Post an issue in two minutes. Build community support. Reach 250 verified residents and the platform automatically submits a formal proposal to Council — with your community's names attached, in the format Council is required to respond to.
+              Inner West Pulse changes that. Post an issue in two minutes. Build community support. Reach 250 verified residents and the platform automatically submits a formal proposal to Council — with your community's names attached, in the format Council is required to respond to.
             </p>
             <p style={{ fontSize: 16, lineHeight: 1.75, color: COLORS.slate, margin: 0 }}>
               It's democratic, transparent, and free. Always.
@@ -1788,7 +1788,7 @@ function Footer({ onHowItWorks, onAbout, onHome }) {
         </div>
       </div>
       <div style={{ maxWidth: 1180, margin: "32px auto 0", paddingTop: 20, borderTop: `1px solid ${COLORS.hairline}`, fontSize: 12, color: COLORS.slate, display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: 12 }}>
-        <span>© {new Date().getFullYear()} Inner West Community Voice</span>
+        <span>© {new Date().getFullYear()} Inner West Pulse</span>
         <span>Independent · Non-partisan · Free forever</span>
       </div>
     </footer>
