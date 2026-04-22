@@ -59,7 +59,20 @@ const SUBURBS = [
   "Stanmore", "Summer Hill", "Sydenham", "Tempe", "Ultimo",
   "Westgate", "Inner West (Other)",
 ];
-const CATEGORIES = ["Rezoning", "Infrastructure", "Transport", "Services", "Other"];
+const CATEGORIES = [
+  "Rezoning & Development",
+  "Traffic & Parking",
+  "Roads & Infrastructure",
+  "Parks & Green Spaces",
+  "Trees & Environment",
+  "Cycling & Active Transport",
+  "Heritage & Preservation",
+  "Noise & Amenity",
+  "Community Services",
+  "Waste & Cleanliness",
+  "Safety",
+  "Other",
+];
 const ESCALATION_THRESHOLD = 250;
 
 const HERO_IMAGE =
@@ -1513,21 +1526,28 @@ function PostIssueModal({ onClose, onSubmit, registeredUser }) {
   }
 
   return (
-    <div style={{ position: "fixed", inset: 0, background: "rgba(6,37,71,0.55)", backdropFilter: "blur(6px)", WebkitBackdropFilter: "blur(6px)", zIndex: 100, display: "flex", alignItems: "flex-start", justifyContent: "center", padding: "40px 16px", overflowY: "auto", animation: "fadeIn 200ms ease" }} onClick={onClose}>
-      {/* How it works — 4-step onboarding banner */}
-      <div onClick={(e) => e.stopPropagation()} style={{ background: COLORS.mist, borderRadius: 10, padding: "12px 20px", maxWidth: 580, width: "100%", marginBottom: 12, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8, flexWrap: "wrap" }}>
-        {["Post your issue", "Share with neighbors", "Reach 250 votes", "Council escalation + response"].map((label, i, arr) => (
-          <React.Fragment key={i}>
-            <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-              <span style={{ background: COLORS.authority, color: "white", borderRadius: "50%", width: 20, height: 20, fontSize: 11, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>{i + 1}</span>
-              <span style={{ fontSize: 13, color: COLORS.authority, fontWeight: 500 }}>{label}</span>
-            </div>
-            {i < arr.length - 1 && <span style={{ color: COLORS.authority, opacity: 0.4, fontSize: 13 }}>›</span>}
-          </React.Fragment>
-        ))}
-      </div>
+    <div style={{ position: "fixed", inset: 0, background: "rgba(6,37,71,0.6)", backdropFilter: "blur(6px)", WebkitBackdropFilter: "blur(6px)", zIndex: 100, display: "flex", alignItems: "flex-start", justifyContent: "center", padding: "32px 16px", overflowY: "auto", animation: "fadeIn 200ms ease" }} onClick={onClose}>
+      <div onClick={(e) => e.stopPropagation()} style={{ maxWidth: 780, width: "100%", display: "flex", flexDirection: "column", gap: 10 }}>
 
-      <form onClick={(e) => e.stopPropagation()} onSubmit={handleSubmit} style={{ background: COLORS.paper, borderRadius: 14, padding: 28, maxWidth: 580, width: "100%", boxShadow: "0 24px 60px rgba(0,0,0,0.35)", animation: "cardEnter 300ms ease" }}>
+        {/* 4-step banner */}
+        <div style={{ background: "rgba(255,255,255,0.97)", borderRadius: 12, padding: "14px 24px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8, boxShadow: "0 4px 20px rgba(0,0,0,0.15)" }}>
+          {[
+            { label: "Post your issue", icon: "✍️" },
+            { label: "Share with neighbours", icon: "📣" },
+            { label: "Reach 250 votes", icon: "🗳" },
+            { label: "Council escalation + response", icon: "🏛" },
+          ].map(({ label, icon }, i, arr) => (
+            <React.Fragment key={i}>
+              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <span style={{ background: i === 0 ? COLORS.community : COLORS.authority, color: "white", borderRadius: "50%", width: 24, height: 24, fontSize: 12, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>{i + 1}</span>
+                <span style={{ fontSize: 13.5, color: COLORS.ink, fontWeight: i === 0 ? 700 : 500 }}>{label}</span>
+              </div>
+              {i < arr.length - 1 && <span style={{ color: COLORS.slate, opacity: 0.5, fontSize: 18, fontWeight: 300 }}>›</span>}
+            </React.Fragment>
+          ))}
+        </div>
+
+      <form onSubmit={handleSubmit} style={{ background: COLORS.paper, borderRadius: 14, padding: "32px 36px", width: "100%", boxShadow: "0 24px 60px rgba(0,0,0,0.35)", animation: "cardEnter 300ms ease" }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 6 }}>
           <div>
             <div style={{ fontSize: 12, letterSpacing: "0.1em", textTransform: "uppercase", fontWeight: 700, color: COLORS.community, marginBottom: 4 }}>New issue</div>
@@ -1558,7 +1578,7 @@ function PostIssueModal({ onClose, onSubmit, registeredUser }) {
           </div>
           <div>
             <label style={labelStyle}>Description</label>
-            <textarea rows={5} value={description} onChange={(e) => { setDescription(e.target.value.slice(0, 5000)); setErrors((r) => ({ ...r, description: "" })); }} placeholder="What's happening? Why does it matter? What should Council do?" style={errors.description ? { ...errorInputStyle, resize: "vertical" } : { resize: "vertical" }} />
+            <textarea rows={9} value={description} onChange={(e) => { setDescription(e.target.value.slice(0, 5000)); setErrors((r) => ({ ...r, description: "" })); }} placeholder="What's happening? Why does it matter? What should Council do?" style={errors.description ? { ...errorInputStyle, resize: "vertical" } : { resize: "vertical" }} />
             <div style={{ display: "flex", justifyContent: "space-between", marginTop: 4 }}>
               {errors.description ? <div style={errorTextStyle}>{errors.description}</div> : <span />}
               <div style={{ fontSize: 11, color: COLORS.slate }}>{description.length} / 5000</div>
@@ -1598,6 +1618,7 @@ function PostIssueModal({ onClose, onSubmit, registeredUser }) {
           </button>
         </div>
       </form>
+      </div>
     </div>
   );
 }
