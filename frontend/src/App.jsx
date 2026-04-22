@@ -66,43 +66,35 @@ const TEXTURE_IMAGE =
 const RALLY_IDEAS = [
   {
     icon: "🚗",
-    title: "Rally your street for new parking limits",
-    blurb: "Organise neighbours & petition Council together",
+    title: "Get parking limits on your street",
+    blurb: "Tired of commuters blocking your driveway? Rally residents and make Council act.",
     category: "Transport",
-    gradient: "linear-gradient(145deg, #0D6E68 0%, #00A896 100%)",
-    glow: "rgba(13,110,104,0.35)",
+    gradient: `linear-gradient(145deg, #0B3A66 0%, #1a5280 100%)`,
+    glow: "rgba(11,58,102,0.3)",
   },
   {
     icon: "🚦",
-    title: "Push Council to review a speeding hotspot",
-    blurb: "Get calming measures where it matters",
+    title: "Make a dangerous road safer",
+    blurb: "Speed cameras. Humps. Crossings. Build the community case that forces Council's hand.",
     category: "Transport",
-    gradient: "linear-gradient(145deg, #FF5C38 0%, #FF8C42 100%)",
-    glow: "rgba(255,92,56,0.35)",
+    gradient: `linear-gradient(145deg, #C2610A 0%, #D97706 100%)`,
+    glow: "rgba(217,119,6,0.3)",
   },
   {
     icon: "🏗",
-    title: "Challenge a rezoning proposal",
-    blurb: "Unite locals before the DA closes",
+    title: "Fight a rezoning before it's approved",
+    blurb: "Once the DA window closes, it's too late. Unite residents now and put your objection on record.",
     category: "Rezoning",
-    gradient: "linear-gradient(145deg, #6B4FBB 0%, #9B7FE3 100%)",
-    glow: "rgba(107,79,187,0.35)",
+    gradient: `linear-gradient(145deg, #062547 0%, #0B3A66 100%)`,
+    glow: "rgba(6,37,71,0.35)",
   },
   {
     icon: "🌳",
-    title: "Request a revamp of your local park",
-    blurb: "Playgrounds, seating, lighting — your call",
+    title: "Transform a neglected park",
+    blurb: "Broken equipment. No lighting. Overgrown paths. Rally locals and make Council fund the fix.",
     category: "Services",
-    gradient: "linear-gradient(145deg, #1E7A4D 0%, #3FAE6C 100%)",
-    glow: "rgba(30,122,77,0.35)",
-  },
-  {
-    icon: "🛤",
-    title: "Fix a pothole or broken footpath",
-    blurb: "Log the hazard, get it on the repair list",
-    category: "Infrastructure",
-    gradient: "linear-gradient(145deg, #1A2E44 0%, #3A567D 100%)",
-    glow: "rgba(26,46,68,0.35)",
+    gradient: `linear-gradient(145deg, #1F5733 0%, #2D7A4A 100%)`,
+    glow: "rgba(31,87,51,0.3)",
   },
 ];
 
@@ -657,21 +649,25 @@ function HomePage({ issues, loading, error, onRetry, onOpenIssue, onVote, userVo
 
       {!query && (
         <Section background={COLORS.cream}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 8 }}>
-            <SectionHeader eyebrow="Get started" title="What can you rally locals for?" subtitle="Crowdsource support. Rally neighbours. Get Council to act." />
-          </div>
-          <div style={{ display: "flex", gap: 16, overflowX: "auto", paddingBottom: 8, scrollSnapType: "x mandatory", WebkitOverflowScrolling: "touch" }}>
+          <SectionHeader
+            eyebrow="Make something happen"
+            title="Your street has more power than you think."
+            subtitle="250 verified neighbours = a formal Council submission. Pick an issue. Build your coalition. Force a response."
+          />
+          <div style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(4, 1fr)",
+            gap: 20,
+          }}>
             {RALLY_IDEAS.map((idea, idx) => (
               <button
                 key={idx}
                 onClick={onPost}
                 style={{
-                  flex: "0 0 220px",
-                  height: 210,
-                  borderRadius: 18,
+                  borderRadius: 16,
                   background: idea.gradient,
-                  boxShadow: `0 6px 20px ${idea.glow}, 0 1px 3px rgba(0,0,0,0.08)`,
-                  padding: 20,
+                  boxShadow: `0 4px 18px ${idea.glow}, 0 1px 3px rgba(0,0,0,0.06)`,
+                  padding: "24px 22px",
                   display: "flex",
                   flexDirection: "column",
                   justifyContent: "space-between",
@@ -679,28 +675,32 @@ function HomePage({ issues, loading, error, onRetry, onOpenIssue, onVote, userVo
                   textAlign: "left",
                   position: "relative",
                   overflow: "hidden",
-                  scrollSnapAlign: "start",
                   border: "none",
                   cursor: "pointer",
+                  minHeight: 220,
                   transition: "transform 0.18s ease, box-shadow 0.18s ease",
                 }}
-                onMouseEnter={(e) => { e.currentTarget.style.transform = "translateY(-3px)"; e.currentTarget.style.boxShadow = `0 10px 28px ${idea.glow}`; }}
-                onMouseLeave={(e) => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = `0 6px 20px ${idea.glow}, 0 1px 3px rgba(0,0,0,0.08)`; }}
+                onMouseEnter={(e) => { e.currentTarget.style.transform = "translateY(-4px)"; e.currentTarget.style.boxShadow = `0 12px 30px ${idea.glow}`; }}
+                onMouseLeave={(e) => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = `0 4px 18px ${idea.glow}, 0 1px 3px rgba(0,0,0,0.06)`; }}
               >
-                <div style={{ position: "absolute", top: -40, right: -40, width: 140, height: 140, borderRadius: "50%", background: "radial-gradient(circle, rgba(255,255,255,0.22) 0%, transparent 70%)", pointerEvents: "none" }} />
-                <div style={{ position: "absolute", bottom: -30, left: -30, width: 110, height: 110, borderRadius: "50%", background: "radial-gradient(circle, rgba(0,0,0,0.12) 0%, transparent 70%)", pointerEvents: "none" }} />
-                <div style={{ width: 44, height: 44, borderRadius: 14, background: "rgba(255,255,255,0.22)", backdropFilter: "blur(8px)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 24, position: "relative", zIndex: 1 }}>
+                {/* shine overlay */}
+                <div style={{ position: "absolute", top: -50, right: -50, width: 160, height: 160, borderRadius: "50%", background: "radial-gradient(circle, rgba(255,255,255,0.18) 0%, transparent 70%)", pointerEvents: "none" }} />
+
+                {/* icon */}
+                <div style={{ width: 48, height: 48, borderRadius: 14, background: "rgba(255,255,255,0.18)", backdropFilter: "blur(6px)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 26, position: "relative", zIndex: 1, marginBottom: 16, border: "1px solid rgba(255,255,255,0.2)" }}>
                   {idea.icon}
                 </div>
+
+                {/* text */}
                 <div style={{ position: "relative", zIndex: 1, width: "100%" }}>
-                  <div style={{ fontSize: 15, fontWeight: 800, color: "white", lineHeight: 1.25, marginBottom: 6, letterSpacing: "-0.1px", textShadow: "0 1px 2px rgba(0,0,0,0.12)" }}>
+                  <div className="serif" style={{ fontSize: 17, fontWeight: 500, color: "white", lineHeight: 1.25, marginBottom: 8, letterSpacing: "-0.02em" }}>
                     {idea.title}
                   </div>
-                  <div style={{ fontSize: 12, color: "rgba(255,255,255,0.82)", lineHeight: 1.35, marginBottom: 10 }}>
+                  <div style={{ fontSize: 13, color: "rgba(255,255,255,0.78)", lineHeight: 1.5, marginBottom: 16 }}>
                     {idea.blurb}
                   </div>
-                  <div style={{ display: "inline-flex", alignItems: "center", gap: 5, fontSize: 12, fontWeight: 700, color: "white", background: "rgba(255,255,255,0.18)", padding: "5px 10px", borderRadius: 20, border: "1px solid rgba(255,255,255,0.2)" }}>
-                    Start this →
+                  <div style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: 12, fontWeight: 700, color: "white", background: "rgba(255,255,255,0.15)", padding: "6px 12px", borderRadius: 20, border: "1px solid rgba(255,255,255,0.25)", letterSpacing: "0.02em" }}>
+                    Post this issue →
                   </div>
                 </div>
               </button>
