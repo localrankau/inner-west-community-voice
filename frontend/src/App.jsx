@@ -922,7 +922,7 @@ function Hero({ query, setQuery, stats, onPost }) {
         <h1 className="serif" style={{ fontSize: "clamp(36px, 6vw, 64px)", fontWeight: 500, lineHeight: 1.05, margin: 0, letterSpacing: "-0.025em", maxWidth: 900 }}>
           Local issues that matter,
           <br />
-          <em style={{ color: COLORS.gold, fontStyle: "italic", fontWeight: 500 }}>solved by community.</em>
+          <em style={{ color: COLORS.gold, fontStyle: "italic", fontWeight: 500 }}>amplified by the community.</em>
         </h1>
 
         <p style={{ marginTop: 18, fontSize: 20, fontWeight: 600, color: COLORS.gold, lineHeight: 1.45, maxWidth: 600, letterSpacing: "-0.01em" }}>
