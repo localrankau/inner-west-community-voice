@@ -52,8 +52,12 @@ const CATEGORY_STYLES = {
 };
 
 const SUBURBS = [
-  "Leichhardt", "Marrickville", "Newtown", "Ultimo", "Petersham",
-  "Lilyfield", "Ashfield", "Rozelle", "Balmain", "Inner West (Other)",
+  "Annandale", "Ashfield", "Balmain", "Balmain East", "Birchgrove",
+  "Camperdown", "Dulwich Hill", "Enmore", "Erskineville", "Forest Lodge",
+  "Glebe", "Haberfield", "Leichhardt", "Lewisham", "Lilyfield",
+  "Marrickville", "Newtown", "Petersham", "Rozelle", "St Peters",
+  "Stanmore", "Summer Hill", "Sydenham", "Tempe", "Ultimo",
+  "Westgate", "Inner West (Other)",
 ];
 const CATEGORIES = ["Rezoning", "Infrastructure", "Transport", "Services", "Other"];
 const ESCALATION_THRESHOLD = 250;
@@ -95,6 +99,54 @@ const RALLY_IDEAS = [
     category: "Services",
     gradient: `linear-gradient(145deg, #1F5733 0%, #2D7A4A 100%)`,
     glow: "rgba(31,87,51,0.3)",
+  },
+  {
+    icon: "🌲",
+    title: "Stop a street tree from being removed",
+    blurb: "Council approves removals fast. Organised objections from residents can reverse the decision.",
+    category: "Services",
+    gradient: `linear-gradient(145deg, #14532D 0%, #166534 100%)`,
+    glow: "rgba(20,83,45,0.3)",
+  },
+  {
+    icon: "🚲",
+    title: "Get a safe cycling route in your suburb",
+    blurb: "Protected lanes. Safe crossings. Make your suburb accessible without risking your life.",
+    category: "Transport",
+    gradient: `linear-gradient(145deg, #0B3A66 0%, #0e7490 100%)`,
+    glow: "rgba(11,58,102,0.28)",
+  },
+  {
+    icon: "🦮",
+    title: "Create or expand a dog off-leash area",
+    blurb: "Not enough space for dogs to run? Rally local dog owners and demand better from Council.",
+    category: "Services",
+    gradient: `linear-gradient(145deg, #92400E 0%, #D97706 100%)`,
+    glow: "rgba(146,64,14,0.3)",
+  },
+  {
+    icon: "🛤",
+    title: "Fix dangerous footpaths in your street",
+    blurb: "Cracked, uneven, unlit paths are a hazard. Get your street documented and on the repair list.",
+    category: "Infrastructure",
+    gradient: `linear-gradient(145deg, #1e3a5f 0%, #374151 100%)`,
+    glow: "rgba(30,58,95,0.3)",
+  },
+  {
+    icon: "🏛",
+    title: "Protect a heritage building from demolition",
+    blurb: "Character homes and historic streetscapes disappear fast. Build community opposition now.",
+    category: "Rezoning",
+    gradient: `linear-gradient(145deg, #3b1f6e 0%, #6B4FBB 100%)`,
+    glow: "rgba(59,31,110,0.3)",
+  },
+  {
+    icon: "🔊",
+    title: "Stop excessive construction noise",
+    blurb: "Early starts. Weekend drilling. Make Council enforce the rules — with numbers behind you.",
+    category: "Services",
+    gradient: `linear-gradient(145deg, #7f1d1d 0%, #B91C1C 100%)`,
+    glow: "rgba(127,29,29,0.3)",
   },
 ];
 
@@ -166,7 +218,11 @@ export default function App() {
   const [comments, setComments] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [view, setView] = useState({ name: "home" });
+  const [view, setView] = useState(() => {
+    const params = new URLSearchParams(window.location.search);
+    const issueId = params.get("issue");
+    return issueId ? { name: "detail", id: Number(issueId) } : { name: "home" };
+  });
   const [showPostModal, setShowPostModal] = useState(false);
   const [showRegisterModal, setShowRegisterModal] = useState(false);
   const [toast, setToast] = useState(null);
@@ -182,6 +238,26 @@ export default function App() {
   }
 
   useEffect(() => { fetchIssues(); }, []);
+
+  // Sync URL with view state
+  useEffect(() => {
+    if (view.name === "detail") {
+      window.history.pushState({ issue: view.id }, "", `?issue=${view.id}`);
+    } else if (view.name === "home") {
+      window.history.replaceState({}, "", window.location.pathname);
+    }
+  }, [view]);
+
+  // Handle browser back/forward
+  useEffect(() => {
+    const onPop = () => {
+      const params = new URLSearchParams(window.location.search);
+      const issueId = params.get("issue");
+      setView(issueId ? { name: "detail", id: Number(issueId) } : { name: "home" });
+    };
+    window.addEventListener("popstate", onPop);
+    return () => window.removeEventListener("popstate", onPop);
+  }, []);
 
   // Sync auth state — fires when user clicks the magic link email
   useEffect(() => {
@@ -656,8 +732,8 @@ function HomePage({ issues, loading, error, onRetry, onOpenIssue, onVote, userVo
           />
           <div style={{
             display: "grid",
-            gridTemplateColumns: "repeat(4, 1fr)",
-            gap: 20,
+            gridTemplateColumns: "repeat(5, 1fr)",
+            gap: 16,
           }}>
             {RALLY_IDEAS.map((idea, idx) => (
               <button
