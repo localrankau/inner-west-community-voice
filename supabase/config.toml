@@ -1,0 +1,6 @@
+[project]
+# Get your project ref from: https://supabase.com/dashboard → Project Settings → General
+id = "your-project-ref"
+
+[functions.send-council-email]
+verify_jwt = false

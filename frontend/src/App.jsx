@@ -73,7 +73,7 @@ const CATEGORIES = [
   "Safety",
   "Other",
 ];
-const ESCALATION_THRESHOLD = 250;
+const ESCALATION_THRESHOLD = 25;
 
 const HERO_IMAGE =
   "https://upload.wikimedia.org/wikipedia/commons/thumb/0/06/2019-04-10_ANZAC_Bridge.jpg/1920px-2019-04-10_ANZAC_Bridge.jpg";
@@ -238,6 +238,7 @@ export default function App() {
   });
   const [showPostModal, setShowPostModal] = useState(false);
   const [showRegisterModal, setShowRegisterModal] = useState(false);
+  const [emailModalIssue, setEmailModalIssue] = useState(null);
   const [toast, setToast] = useState(null);
   const [userVotes, setUserVotes] = useState(loadStoredVotes);
   const [userSignups, setUserSignups] = useState({});
@@ -293,6 +294,7 @@ export default function App() {
   useEffect(() => {
     const titles = {
       home: "Inner West Pulse — Raise Local Issues with Council",
+      "all-issues": "All Issues — Inner West Pulse",
       "how-it-works": "How It Works — Inner West Pulse",
       about: "About Us — Inner West Pulse",
     };
@@ -476,6 +478,39 @@ export default function App() {
     }
   }
 
+  async function handleEmailCouncil(issue) {
+    const issueUrl = `${window.location.origin}?issue=${issue.id}`;
+    try {
+      const { error: fnError } = await supabase.functions.invoke("send-council-email", {
+        body: {
+          issue_id: issue.id,
+          title: issue.title,
+          description: issue.description,
+          vote_count: issue.vote_count,
+          poster_email: issue.poster_email,
+          issue_url: issueUrl,
+        },
+      });
+      if (fnError) throw fnError;
+      const { error: dbError } = await supabase
+        .from("issues")
+        .update({ escalated: true, escalated_at: new Date().toISOString() })
+        .eq("id", issue.id)
+        .eq("poster_session_id", sessionId);
+      if (dbError) throw dbError;
+      setIssues((prev) =>
+        prev.map((i) =>
+          i.id === issue.id ? { ...i, escalated: true, escalated_at: new Date().toISOString() } : i
+        )
+      );
+      setEmailModalIssue(null);
+      showToast("Email sent to Council — check your inbox for a copy", "success");
+    } catch (err) {
+      showToast("Failed to send — please try again", "error");
+      console.error(err);
+    }
+  }
+
   async function handleAddComment(issueId, { name, text, anonymous }) {
     try {
       const { data, error } = await supabase
@@ -527,6 +562,7 @@ export default function App() {
       <TopNav
         onHome={() => setView({ name: "home" })}
         onPost={() => setShowPostModal(true)}
+        onAllIssues={() => setView({ name: "all-issues" })}
         onHowItWorks={() => setView({ name: "how-it-works" })}
         onAbout={() => setView({ name: "about" })}
         registeredUser={registeredUser}
@@ -560,6 +596,20 @@ export default function App() {
           sessionId={sessionId}
           onDelete={handleDeleteIssue}
           registeredUser={registeredUser}
+          onEmailCouncil={(issue) => setEmailModalIssue(issue)}
+        />
+      )}
+
+      {view.name === "all-issues" && (
+        <AllIssuesPage
+          onBack={() => setView({ name: "home" })}
+          onOpenIssue={(id) => setView({ name: "detail", id })}
+          onVote={handleVote}
+          userVotes={userVotes}
+          onShare={(issue) => shareIssue(issue, showToast)}
+          sessionId={sessionId}
+          onDelete={handleDeleteIssue}
+          onPost={() => setShowPostModal(true)}
         />
       )}
 
@@ -592,6 +642,14 @@ export default function App() {
           onClose={() => setShowRegisterModal(false)}
           onSubmit={handleRegister}
           existing={registeredUser}
+        />
+      )}
+
+      {emailModalIssue && (
+        <EmailCouncilModal
+          issue={emailModalIssue}
+          onClose={() => setEmailModalIssue(null)}
+          onSend={handleEmailCouncil}
         />
       )}
 
@@ -637,7 +695,7 @@ function GlobalStyles() {
 // ────────────────────────────────────────────────────────────────────────────
 // TOP NAV
 // ────────────────────────────────────────────────────────────────────────────
-function TopNav({ onHome, onPost, onHowItWorks, onAbout, registeredUser, onRegister }) {
+function TopNav({ onHome, onPost, onHowItWorks, onAbout, onAllIssues, registeredUser, onRegister }) {
   return (
     <header style={{ position: "sticky", top: 0, zIndex: 50, background: "rgba(250, 248, 244, 0.92)", backdropFilter: "saturate(180%) blur(10px)", WebkitBackdropFilter: "saturate(180%) blur(10px)", borderBottom: `1px solid ${COLORS.hairline}` }}>
       <div style={{ maxWidth: 1180, margin: "0 auto", padding: "14px 24px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16 }}>
@@ -650,6 +708,9 @@ function TopNav({ onHome, onPost, onHowItWorks, onAbout, registeredUser, onRegis
         </button>
 
         <nav style={{ display: "flex", alignItems: "center", gap: 4 }}>
+          <button onClick={onAllIssues} style={{ padding: "8px 12px", color: COLORS.slate, fontSize: 13, fontWeight: 500, borderRadius: 6, transition: "background 150ms ease" }} onMouseEnter={(e) => (e.currentTarget.style.background = COLORS.mist)} onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}>
+            All issues
+          </button>
           <button onClick={onHowItWorks} style={{ padding: "8px 12px", color: COLORS.slate, fontSize: 13, fontWeight: 500, borderRadius: 6, transition: "background 150ms ease" }} onMouseEnter={(e) => (e.currentTarget.style.background = COLORS.mist)} onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}>
             How it works
           </button>
@@ -668,7 +729,7 @@ function TopNav({ onHome, onPost, onHowItWorks, onAbout, registeredUser, onRegis
           )}
 
           <button onClick={onPost} style={{ display: "flex", alignItems: "center", gap: 8, background: COLORS.community, color: "white", fontWeight: 600, padding: "10px 16px", borderRadius: 6, fontSize: 14, boxShadow: "0 1px 2px rgba(0,0,0,0.08)", transition: "background 150ms ease", marginLeft: 4 }} onMouseEnter={(e) => (e.currentTarget.style.background = COLORS.communityDeep)} onMouseLeave={(e) => (e.currentTarget.style.background = COLORS.community)}>
-            <Plus size={16} strokeWidth={2.5} /> Post issue — 250 votes = council action
+            <Plus size={16} strokeWidth={2.5} /> Post issue
           </button>
         </nav>
       </div>
@@ -731,7 +792,7 @@ function HomePage({ issues, loading, error, onRetry, onOpenIssue, onVote, userVo
 
       {!loading && !error && trending.length > 0 && (
         <Section>
-          <SectionHeader eyebrow="Trending now" title="The issues gaining momentum" subtitle="Sorted by verified community support. Hit 250 and your issue goes to Council." />
+          <SectionHeader eyebrow="Trending now" title="The issues gaining momentum" subtitle="Sorted by verified community support. Hit 25 verified supporters and you can choose to email Council — or keep building momentum first." />
           <TrendingLeaderboard issues={trending} onOpenIssue={onOpenIssue} />
         </Section>
       )}
@@ -741,7 +802,7 @@ function HomePage({ issues, loading, error, onRetry, onOpenIssue, onVote, userVo
           <SectionHeader
             eyebrow="Make something happen"
             title="Your street has more power than you think."
-            subtitle="250 verified neighbours = a formal Council submission. Pick an issue. Build your coalition. Force a response."
+            subtitle="Get minimum 25 verified supporters and you can email Council directly — or keep collecting more votes to strengthen your case before you send."
           />
           <div style={{
             display: "grid",
@@ -869,7 +930,7 @@ function Hero({ query, setQuery, stats, onPost }) {
         </p>
 
         <p style={{ marginTop: 14, fontSize: 16, lineHeight: 1.55, maxWidth: 620, color: "rgba(255,255,255,0.75)" }}>
-          Post an issue. Collect 250 verified supporters. Your concern lands on the Council desk as a formal submission — automatically.
+          Post an issue. Collect minimum 25 verified supporters. Your concern lands on the Council desk as a formal submission — automatically.
         </p>
 
         <div style={{ marginTop: 32, display: "flex", alignItems: "center", gap: 10, background: "white", borderRadius: 10, padding: "6px 6px 6px 16px", maxWidth: 560, boxShadow: "0 12px 30px rgba(0,0,0,0.25)" }}>
@@ -974,7 +1035,7 @@ function EmptyState({ onPost, hasIssues }) {
     <div style={{ marginTop: 32, padding: "56px 24px", textAlign: "center", background: COLORS.paper, border: `1px dashed ${COLORS.hairline}`, borderRadius: 12 }}>
       <div className="serif" style={{ fontSize: 22, fontWeight: 500, marginBottom: 8 }}>{hasIssues ? "No issues match your filters" : "No issues yet"}</div>
       <p style={{ color: COLORS.slate, marginBottom: 20 }}>{hasIssues ? "Try a different suburb or category." : "Be the first to raise one for your suburb."}</p>
-      <button onClick={onPost} style={{ background: COLORS.community, color: "white", fontWeight: 600, padding: "12px 20px", borderRadius: 6, fontSize: 14 }}>Post issue — 250 votes = council action</button>
+      <button onClick={onPost} style={{ background: COLORS.community, color: "white", fontWeight: 600, padding: "12px 20px", borderRadius: 6, fontSize: 14 }}>Post issue</button>
     </div>
   );
 }
@@ -987,11 +1048,11 @@ function PostCTA({ onPost }) {
       <div style={{ position: "relative", padding: "56px 40px", color: "white", display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between", gap: 24 }}>
         <div style={{ maxWidth: 560 }}>
           <div style={{ fontSize: 12, letterSpacing: "0.14em", textTransform: "uppercase", fontWeight: 600, color: COLORS.gold, marginBottom: 10 }}>See something? Say something.</div>
-          <h3 className="serif" style={{ fontSize: "clamp(26px, 3.4vw, 36px)", fontWeight: 500, margin: 0, lineHeight: 1.1, letterSpacing: "-0.02em" }}>250 verified supporters = a formal Council submission.</h3>
-          <p style={{ marginTop: 14, fontSize: 16, lineHeight: 1.55, color: "rgba(255,255,255,0.85)" }}>No petitions. No gatekeepers. Just your community, organised.</p>
+          <h3 className="serif" style={{ fontSize: "clamp(26px, 3.4vw, 36px)", fontWeight: 500, margin: 0, lineHeight: 1.1, letterSpacing: "-0.02em" }}>Minimum 25 supporters unlocks your direct line to Council.</h3>
+          <p style={{ marginTop: 14, fontSize: 16, lineHeight: 1.55, color: "rgba(255,255,255,0.85)" }}>Send when you're ready — or keep building support to make a stronger case. No petitions. No gatekeepers.</p>
         </div>
         <button onClick={onPost} style={{ background: COLORS.gold, color: COLORS.ink, fontWeight: 700, padding: "16px 28px", borderRadius: 8, fontSize: 15, display: "inline-flex", alignItems: "center", gap: 10, boxShadow: "0 8px 24px rgba(0,0,0,0.25)", transition: "transform 150ms ease" }} onMouseEnter={(e) => (e.currentTarget.style.transform = "translateY(-2px)")} onMouseLeave={(e) => (e.currentTarget.style.transform = "translateY(0)")}>
-          Post issue — 250 votes = council action <Plus size={18} strokeWidth={2.5} />
+          Post issue <Plus size={18} strokeWidth={2.5} />
         </button>
       </div>
     </section>
@@ -1128,9 +1189,10 @@ function shareIssue(issue, showToast) {
 // ────────────────────────────────────────────────────────────────────────────
 // ISSUE DETAIL PAGE
 // ────────────────────────────────────────────────────────────────────────────
-function IssueDetailPage({ issue, comments, onBack, onVote, userVote, onComment, onSignup, hasSignedUp, onShare, onFetchComments, sessionId, onDelete, registeredUser }) {
+function IssueDetailPage({ issue, comments, onBack, onVote, userVote, onComment, onSignup, hasSignedUp, onShare, onFetchComments, sessionId, onDelete, registeredUser, onEmailCouncil }) {
   const pct = Math.min(100, ((issue.vote_count || 0) / ESCALATION_THRESHOLD) * 100);
   const isOwner = issue.poster_session_id && issue.poster_session_id === sessionId;
+  const emailUnlocked = isOwner && !issue.escalated && (issue.vote_count || 0) >= ESCALATION_THRESHOLD;
 
   useEffect(() => {
     if (onFetchComments) onFetchComments(issue.id);
@@ -1176,18 +1238,33 @@ function IssueDetailPage({ issue, comments, onBack, onVote, userVote, onComment,
               <div style={{ fontSize: 13, color: COLORS.slate, marginTop: 4 }}>verified community supporters</div>
             </div>
             <div style={{ fontSize: 13, fontWeight: 600, color: issue.escalated ? COLORS.success : COLORS.community }}>
-              {issue.escalated ? "✓ Sent to Council" : `${Math.round(pct)}% to escalate`}
+              {issue.escalated ? "✓ Sent to Council" : emailUnlocked ? "✓ Ready to email Council" : `${(issue.vote_count || 0)} / ${ESCALATION_THRESHOLD} supporters`}
             </div>
           </div>
           <div style={{ height: 10, background: COLORS.mist, borderRadius: 10, overflow: "hidden", marginBottom: 20 }}>
-            <div style={{ width: `${pct}%`, height: "100%", background: issue.escalated ? COLORS.success : `linear-gradient(90deg, ${COLORS.authority} 0%, ${COLORS.community} 100%)`, borderRadius: 10, transition: "width 600ms cubic-bezier(0.22, 1, 0.36, 1)" }} />
+            <div style={{ width: `${pct}%`, height: "100%", background: issue.escalated ? COLORS.success : emailUnlocked ? COLORS.community : `linear-gradient(90deg, ${COLORS.authority} 0%, ${COLORS.community} 100%)`, borderRadius: 10, transition: "width 600ms cubic-bezier(0.22, 1, 0.36, 1)" }} />
           </div>
-          <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+          <div style={{ display: "flex", gap: 10, flexWrap: "wrap", alignItems: "center" }}>
             <VoteButton kind="up" count={issue.vote_count || 0} active={userVote === "up"} disabled={!!userVote} onClick={() => onVote(issue.id, "up")} />
             <VoteButton kind="down" count={issue.down_count || 0} active={userVote === "down"} disabled={!!userVote} onClick={() => onVote(issue.id, "down")} />
             <button onClick={() => onShare(issue)} style={{ padding: "9px 14px", border: `1px solid ${COLORS.hairline}`, borderRadius: 6, background: COLORS.paper, fontSize: 13, fontWeight: 500, display: "inline-flex", alignItems: "center", gap: 6, color: COLORS.ink }}>
               <Share2 size={14} /> Share
             </button>
+            {emailUnlocked && (
+              <button
+                onClick={() => onEmailCouncil && onEmailCouncil(issue)}
+                style={{ marginLeft: "auto", padding: "10px 18px", background: COLORS.authority, color: "white", fontWeight: 700, borderRadius: 6, fontSize: 14, display: "inline-flex", alignItems: "center", gap: 8, boxShadow: "0 2px 8px rgba(11,58,102,0.25)", transition: "background 150ms ease" }}
+                onMouseEnter={(e) => (e.currentTarget.style.background = COLORS.authorityDeep)}
+                onMouseLeave={(e) => (e.currentTarget.style.background = COLORS.authority)}
+              >
+                <Send size={14} /> Email Council
+              </button>
+            )}
+            {isOwner && !issue.escalated && (issue.vote_count || 0) < ESCALATION_THRESHOLD && (
+              <div style={{ marginLeft: "auto", fontSize: 13, color: COLORS.slate, fontStyle: "italic" }}>
+                {ESCALATION_THRESHOLD - (issue.vote_count || 0)} more supporters to unlock Email Council
+              </div>
+            )}
           </div>
         </section>
 
@@ -1210,7 +1287,7 @@ function IssueDetailPage({ issue, comments, onBack, onVote, userVote, onComment,
             <CheckCircle2 size={20} color={COLORS.success} />
             <div>
               <div style={{ fontWeight: 600, color: COLORS.success }}>You're a verified supporter</div>
-              <div style={{ fontSize: 13, color: COLORS.slate, marginTop: 2 }}>Your name and postcode will appear on the formal Council submission once this issue hits {ESCALATION_THRESHOLD}.</div>
+              <div style={{ fontSize: 13, color: COLORS.slate, marginTop: 2 }}>Once this issue hits {ESCALATION_THRESHOLD} supporters, the issue creator can email Council — you'll be counted.</div>
             </div>
           </div>
         )}
@@ -1255,7 +1332,7 @@ function CouncilStatusSection({ issue }) {
         </div>
       ) : (
         <p style={{ margin: 0, fontSize: 13, color: COLORS.slate, lineHeight: 1.55 }}>
-          No formal response from Inner West Council yet. Once this issue reaches 250 supporters, a submission is automatically sent and Council is required to respond.
+          No formal response from Inner West Council yet. Once this issue reaches {ESCALATION_THRESHOLD} supporters, the issue creator can choose to email Council directly — or keep collecting more support first.
         </p>
       )}
     </section>
@@ -1398,6 +1475,82 @@ function CommentCard({ comment }) {
 }
 
 // ────────────────────────────────────────────────────────────────────────────
+// EMAIL COUNCIL MODAL
+// ────────────────────────────────────────────────────────────────────────────
+function EmailCouncilModal({ issue, onClose, onSend }) {
+  const [sending, setSending] = useState(false);
+  const issueUrl = `${window.location.origin}?issue=${issue.id}`;
+
+  useEffect(() => {
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => { document.body.style.overflow = prev; };
+  }, []);
+
+  async function handleSend() {
+    setSending(true);
+    try { await onSend(issue); }
+    finally { setSending(false); }
+  }
+
+  return (
+    <div style={{ position: "fixed", inset: 0, background: "rgba(6,37,71,0.55)", backdropFilter: "blur(6px)", WebkitBackdropFilter: "blur(6px)", zIndex: 100, display: "flex", alignItems: "center", justifyContent: "center", padding: "24px 16px", animation: "fadeIn 200ms ease" }} onClick={onClose}>
+      <div onClick={(e) => e.stopPropagation()} style={{ background: COLORS.paper, borderRadius: 14, padding: 32, maxWidth: 520, width: "100%", boxShadow: "0 24px 60px rgba(0,0,0,0.35)", animation: "cardEnter 300ms ease" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 20 }}>
+          <div>
+            <div style={{ fontSize: 12, letterSpacing: "0.1em", textTransform: "uppercase", fontWeight: 700, color: COLORS.authority, marginBottom: 4 }}>
+              <Send size={12} style={{ display: "inline", verticalAlign: "-2px", marginRight: 6 }} />Ready to send
+            </div>
+            <h2 className="serif" style={{ fontSize: 24, fontWeight: 600, margin: 0, letterSpacing: "-0.02em" }}>Email Council</h2>
+          </div>
+          <button type="button" onClick={onClose} style={{ padding: 6, color: COLORS.slate, borderRadius: 6 }} onMouseEnter={(e) => (e.currentTarget.style.background = COLORS.mist)} onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}>
+            <X size={20} />
+          </button>
+        </div>
+
+        <div style={{ padding: "16px 18px", background: COLORS.mist, borderRadius: 10, marginBottom: 20, display: "flex", flexDirection: "column", gap: 8 }}>
+          <div style={{ fontSize: 13, fontWeight: 600, color: COLORS.ink, marginBottom: 4 }}>This email will include:</div>
+          {[
+            `Issue: "${issue.title}"`,
+            "Full issue description",
+            `Link to issue page`,
+            `${(issue.vote_count || 0)} confirmed community supporters`,
+          ].map((line, i) => (
+            <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 8, fontSize: 13, color: COLORS.slate }}>
+              <CheckCircle2 size={14} color={COLORS.success} style={{ flexShrink: 0, marginTop: 1 }} />
+              {line}
+            </div>
+          ))}
+        </div>
+
+        <div style={{ padding: "12px 16px", background: "#E8EEF5", borderRadius: 8, marginBottom: 20, display: "flex", gap: 8, alignItems: "flex-start" }}>
+          <Shield size={14} color={COLORS.authority} style={{ flexShrink: 0, marginTop: 1 }} />
+          <div style={{ fontSize: 13, color: COLORS.authority, lineHeight: 1.5 }}>
+            <strong>Supporter names are kept private.</strong> Council sees the count ({issue.vote_count || 0} verified residents), not individual names.
+          </div>
+        </div>
+
+        {issue.poster_email && (
+          <div style={{ fontSize: 13, color: COLORS.slate, marginBottom: 24 }}>
+            A copy will be sent to: <strong style={{ color: COLORS.ink }}>{issue.poster_email}</strong>
+          </div>
+        )}
+
+        <div style={{ display: "flex", justifyContent: "flex-end", gap: 10 }}>
+          <button type="button" onClick={onClose} style={{ padding: "12px 18px", background: COLORS.paper, border: `1px solid ${COLORS.hairline}`, borderRadius: 6, color: COLORS.ink, fontWeight: 500, fontSize: 14 }}>Cancel</button>
+          <button type="button" onClick={handleSend} disabled={sending} style={{ padding: "12px 20px", background: sending ? COLORS.slate : COLORS.authority, color: "white", fontWeight: 700, borderRadius: 6, fontSize: 14, display: "inline-flex", alignItems: "center", gap: 8, cursor: sending ? "not-allowed" : "pointer" }}
+            onMouseEnter={(e) => { if (!sending) e.currentTarget.style.background = COLORS.authorityDeep; }}
+            onMouseLeave={(e) => { if (!sending) e.currentTarget.style.background = COLORS.authority; }}
+          >
+            <Send size={14} /> {sending ? "Sending…" : "Send Email"}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ────────────────────────────────────────────────────────────────────────────
 // REGISTER MODAL
 // ────────────────────────────────────────────────────────────────────────────
 function RegisterModal({ onClose, onSubmit, existing }) {
@@ -1534,8 +1687,8 @@ function PostIssueModal({ onClose, onSubmit, registeredUser }) {
           {[
             { label: "Post your issue", icon: "✍️" },
             { label: "Share with neighbours", icon: "📣" },
-            { label: "Reach 250 votes", icon: "🗳" },
-            { label: "Council escalation + response", icon: "🏛" },
+            { label: "Reach 25 supporters", icon: "🗳" },
+            { label: "Email Council directly", icon: "🏛" },
           ].map(({ label, icon }, i, arr) => (
             <React.Fragment key={i}>
               <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
@@ -1624,6 +1777,169 @@ function PostIssueModal({ onClose, onSubmit, registeredUser }) {
 }
 
 // ────────────────────────────────────────────────────────────────────────────
+// ALL ISSUES PAGE
+// ────────────────────────────────────────────────────────────────────────────
+function AllIssuesPage({ onBack, onOpenIssue, onVote, userVotes, onShare, sessionId, onDelete, onPost }) {
+  const [issues, setIssues] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [query, setQuery] = useState("");
+  const [suburbFilter, setSuburbFilter] = useState("All");
+  const [categoryFilter, setCategoryFilter] = useState("All");
+  const [statusFilter, setStatusFilter] = useState("All");
+  const [sortBy, setSortBy] = useState("votes_desc");
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+    fetchAll();
+  }, []);
+
+  async function fetchAll() {
+    setLoading(true);
+    setError(null);
+    try {
+      const { data, error } = await supabase
+        .from("issues")
+        .select("*")
+        .order("vote_count", { ascending: false });
+      if (error) throw error;
+      setIssues(data || []);
+    } catch (err) {
+      setError("Could not load issues. Please try again.");
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  const filtered = useMemo(() => {
+    let result = issues.filter((i) => {
+      if (suburbFilter !== "All" && i.suburb !== suburbFilter) return false;
+      if (categoryFilter !== "All" && i.category !== categoryFilter) return false;
+      if (statusFilter === "Active" && i.escalated) return false;
+      if (statusFilter === "Sent to Council" && !i.escalated) return false;
+      if (query.trim()) {
+        const q = query.toLowerCase();
+        return i.title.toLowerCase().includes(q) || i.description.toLowerCase().includes(q);
+      }
+      return true;
+    });
+
+    switch (sortBy) {
+      case "votes_desc": result = [...result].sort((a, b) => (b.vote_count || 0) - (a.vote_count || 0)); break;
+      case "votes_asc":  result = [...result].sort((a, b) => (a.vote_count || 0) - (b.vote_count || 0)); break;
+      case "newest":     result = [...result].sort((a, b) => new Date(b.created_at) - new Date(a.created_at)); break;
+      case "oldest":     result = [...result].sort((a, b) => new Date(a.created_at) - new Date(b.created_at)); break;
+      default: break;
+    }
+    return result;
+  }, [issues, suburbFilter, categoryFilter, statusFilter, sortBy, query]);
+
+  const selectStyle = { width: "auto", padding: "8px 12px", fontSize: 13, fontWeight: 500 };
+
+  return (
+    <main style={{ paddingBottom: 100 }}>
+      <section style={{ background: `linear-gradient(135deg, ${COLORS.authorityDeep} 0%, ${COLORS.authority} 100%)`, color: "white", padding: "56px 24px 48px" }}>
+        <div style={{ maxWidth: 1180, margin: "0 auto" }}>
+          <button onClick={onBack} style={{ display: "inline-flex", alignItems: "center", gap: 6, color: "rgba(255,255,255,0.7)", fontSize: 13, fontWeight: 500, marginBottom: 20 }}>
+            <ArrowLeft size={14} /> Back to home
+          </button>
+          <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", flexWrap: "wrap", gap: 16 }}>
+            <div>
+              <div style={{ fontSize: 12, letterSpacing: "0.12em", textTransform: "uppercase", fontWeight: 600, color: COLORS.gold, marginBottom: 10 }}>Community issues</div>
+              <h1 className="serif" style={{ fontSize: "clamp(32px, 4vw, 48px)", fontWeight: 500, lineHeight: 1.06, margin: 0, letterSpacing: "-0.025em" }}>
+                All Issues
+              </h1>
+              <p style={{ marginTop: 10, fontSize: 16, color: "rgba(255,255,255,0.75)", margin: "10px 0 0" }}>
+                {loading ? "Loading…" : `${filtered.length} issue${filtered.length === 1 ? "" : "s"} found`}
+              </p>
+            </div>
+            <button onClick={onPost} style={{ display: "inline-flex", alignItems: "center", gap: 8, background: COLORS.community, color: "white", fontWeight: 600, padding: "12px 18px", borderRadius: 6, fontSize: 14, flexShrink: 0 }}
+              onMouseEnter={(e) => (e.currentTarget.style.background = COLORS.communityDeep)}
+              onMouseLeave={(e) => (e.currentTarget.style.background = COLORS.community)}
+            >
+              <Plus size={16} strokeWidth={2.5} /> Post issue
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <section style={{ background: COLORS.paper, borderBottom: `1px solid ${COLORS.hairline}`, padding: "16px 24px", position: "sticky", top: 65, zIndex: 20 }}>
+        <div style={{ maxWidth: 1180, margin: "0 auto", display: "flex", flexWrap: "wrap", alignItems: "center", gap: 12 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 8, flex: "1 1 220px", background: COLORS.mist, borderRadius: 8, padding: "8px 12px", border: `1px solid ${COLORS.hairline}` }}>
+            <Search size={15} color={COLORS.slate} />
+            <input type="text" placeholder="Search issues…" value={query} onChange={(e) => setQuery(e.target.value)} style={{ border: "none", background: "transparent", padding: 0, fontSize: 14, boxShadow: "none", color: COLORS.ink }} />
+            {query && <button onClick={() => setQuery("")} style={{ color: COLORS.slate, padding: 0 }}><X size={14} /></button>}
+          </div>
+
+          <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13, color: COLORS.slate, fontWeight: 500 }}><Tag size={14} /></div>
+          <select value={categoryFilter} onChange={(e) => setCategoryFilter(e.target.value)} style={selectStyle}>
+            <option value="All">All categories</option>
+            {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
+          </select>
+
+          <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13, color: COLORS.slate, fontWeight: 500 }}><MapPin size={14} /></div>
+          <select value={suburbFilter} onChange={(e) => setSuburbFilter(e.target.value)} style={selectStyle}>
+            <option value="All">All suburbs</option>
+            {SUBURBS.map((s) => <option key={s} value={s}>{s}</option>)}
+          </select>
+
+          <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} style={selectStyle}>
+            <option value="All">All statuses</option>
+            <option value="Active">Active</option>
+            <option value="Sent to Council">Sent to Council</option>
+          </select>
+
+          <select value={sortBy} onChange={(e) => setSortBy(e.target.value)} style={{ ...selectStyle, marginLeft: "auto" }}>
+            <option value="votes_desc">Most votes</option>
+            <option value="votes_asc">Least votes</option>
+            <option value="newest">Newest first</option>
+            <option value="oldest">Oldest first</option>
+          </select>
+        </div>
+      </section>
+
+      <section style={{ padding: "32px 24px" }}>
+        <div style={{ maxWidth: 1180, margin: "0 auto" }}>
+          {error && (
+            <div style={{ textAlign: "center", padding: "32px 24px", color: COLORS.error, fontSize: 15 }}>
+              {error} <button onClick={fetchAll} style={{ marginLeft: 8, color: COLORS.authority, fontWeight: 600, textDecoration: "underline" }}>Retry</button>
+            </div>
+          )}
+          {loading ? (
+            <LoadingState />
+          ) : filtered.length === 0 ? (
+            <div style={{ textAlign: "center", padding: "64px 24px", color: COLORS.slate }}>
+              <div className="serif" style={{ fontSize: 22, fontWeight: 500, color: COLORS.ink, marginBottom: 8 }}>No issues match your filters</div>
+              <p style={{ marginBottom: 20 }}>Try clearing a filter or broadening your search.</p>
+              <button onClick={() => { setQuery(""); setSuburbFilter("All"); setCategoryFilter("All"); setStatusFilter("All"); }} style={{ padding: "10px 18px", background: COLORS.authority, color: "white", fontWeight: 600, borderRadius: 6, fontSize: 14 }}>
+                Clear all filters
+              </button>
+            </div>
+          ) : (
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(340px, 1fr))", gap: 16 }}>
+              {filtered.map((issue, idx) => (
+                <IssueCard
+                  key={issue.id}
+                  issue={issue}
+                  onOpen={() => onOpenIssue(issue.id)}
+                  onVote={onVote}
+                  userVote={userVotes[issue.id]}
+                  onShare={() => onShare(issue)}
+                  index={idx}
+                  sessionId={sessionId}
+                  onDelete={onDelete}
+                />
+              ))}
+            </div>
+          )}
+        </div>
+      </section>
+    </main>
+  );
+}
+
+// ────────────────────────────────────────────────────────────────────────────
 // HOW IT WORKS PAGE
 // ────────────────────────────────────────────────────────────────────────────
 function HowItWorksPage({ onBack, onPost }) {
@@ -1643,8 +1959,8 @@ function HowItWorksPage({ onBack, onPost }) {
     {
       number: "03",
       icon: <Send size={22} color={COLORS.gold} />,
-      title: "Automatic Council submission",
-      desc: "Reach 250 verified supporters and the platform automatically generates a formal submission to Inner West Council. It includes the issue description, full supporter list, and is sent directly to Council planning staff.",
+      title: "Email Council directly",
+      desc: "Once your issue reaches 25 verified supporters, you unlock the 'Email Council' button. You choose when to send — email immediately, or keep collecting votes to build a stronger case first. One click sends a formal email to Inner West Council with your full issue description, a public link, and verified supporter count — with you CC'd.",
     },
     {
       number: "04",
@@ -1693,8 +2009,8 @@ function HowItWorksPage({ onBack, onPost }) {
                   <div style={{ width: 44, height: 44, borderRadius: 12, background: COLORS.cream, border: `1px solid ${COLORS.hairline}`, display: "flex", alignItems: "center", justifyContent: "center" }}>{step.icon}</div>
                 </div>
                 <div style={{ paddingTop: 6 }}>
-                  <h2 className="serif" style={{ fontSize: 26, fontWeight: 600, margin: "0 0 12px", letterSpacing: "-0.015em", color: COLORS.ink }}>{step.title}</h2>
-                  <p style={{ margin: 0, fontSize: 16, lineHeight: 1.7, color: COLORS.slate, maxWidth: "58ch" }}>{step.desc}</p>
+                  <h2 className="serif" style={{ fontSize: 32, fontWeight: 700, margin: "0 0 12px", letterSpacing: "-0.02em", color: COLORS.ink }}>{step.title}</h2>
+                  <p style={{ margin: 0, fontSize: 18, lineHeight: 1.7, color: COLORS.slate, maxWidth: "58ch" }}>{step.desc}</p>
                 </div>
               </div>
             ))}
@@ -1713,8 +2029,8 @@ function HowItWorksPage({ onBack, onPost }) {
                 <div style={{ display: "flex", gap: 14, alignItems: "flex-start" }}>
                   <HelpCircle size={18} color={COLORS.community} style={{ marginTop: 2, flexShrink: 0 }} />
                   <div>
-                    <h3 style={{ fontSize: 16, fontWeight: 700, margin: "0 0 8px", color: COLORS.ink }}>{item.q}</h3>
-                    <p style={{ margin: 0, fontSize: 15, lineHeight: 1.65, color: COLORS.slate }}>{item.a}</p>
+                    <h3 style={{ fontSize: 19, fontWeight: 700, margin: "0 0 8px", color: COLORS.ink }}>{item.q}</h3>
+                    <p style={{ margin: 0, fontSize: 17, lineHeight: 1.65, color: COLORS.slate }}>{item.a}</p>
                   </div>
                 </div>
               </div>
@@ -1733,7 +2049,7 @@ function HowItWorksPage({ onBack, onPost }) {
             It takes 2 minutes. Your issue could be the one that changes your street.
           </p>
           <button onClick={onPost} style={{ background: COLORS.gold, color: COLORS.ink, fontWeight: 700, padding: "16px 28px", borderRadius: 8, fontSize: 15, display: "inline-flex", alignItems: "center", gap: 10 }}>
-            Post issue — 250 votes = council action <ChevronRight size={18} />
+            Post issue <ChevronRight size={18} />
           </button>
         </div>
       </section>
@@ -1769,16 +2085,16 @@ function AboutPage({ onBack }) {
           {/* Why */}
           <div style={{ marginBottom: 56 }}>
             <div style={{ fontSize: 12, letterSpacing: "0.12em", textTransform: "uppercase", fontWeight: 600, color: COLORS.community, marginBottom: 12 }}>Why we built this</div>
-            <h2 className="serif" style={{ fontSize: "clamp(26px, 3.5vw, 36px)", fontWeight: 500, margin: "0 0 20px", letterSpacing: "-0.02em", color: COLORS.ink }}>
+            <h2 className="serif" style={{ fontSize: "clamp(28px, 3.5vw, 38px)", fontWeight: 700, margin: "0 0 20px", letterSpacing: "-0.02em", color: COLORS.ink }}>
               Because Council meetings shouldn't be the only way to be heard
             </h2>
-            <p style={{ fontSize: 16, lineHeight: 1.75, color: COLORS.slate, margin: "0 0 16px" }}>
+            <p style={{ fontSize: 18, lineHeight: 1.75, color: COLORS.slate, margin: "0 0 16px" }}>
               Inner West is one of Sydney's most diverse, dense, and engaged communities. But residents who want to raise a concern face a maze: long-form submissions, confusing portals, evening meetings that working families can't attend, and emails that disappear into inboxes never to be answered.
             </p>
-            <p style={{ fontSize: 16, lineHeight: 1.75, color: COLORS.slate, margin: "0 0 16px" }}>
-              Inner West Pulse changes that. Post an issue in two minutes. Build community support. Reach 250 verified residents and the platform automatically submits a formal proposal to Council — with your community's names attached, in the format Council is required to respond to.
+            <p style={{ fontSize: 18, lineHeight: 1.75, color: COLORS.slate, margin: "0 0 16px" }}>
+              Inner West Pulse changes that. Post an issue in two minutes. Build community support. Reach a minimum of 25 verified supporters and you unlock the ability to email Council directly — with your issue, a public link, and the verified supporter count attached. Send when you're ready, or keep collecting votes to strengthen your case first.
             </p>
-            <p style={{ fontSize: 16, lineHeight: 1.75, color: COLORS.slate, margin: 0 }}>
+            <p style={{ fontSize: 18, lineHeight: 1.75, color: COLORS.slate, margin: 0 }}>
               It's democratic, transparent, and free. Always.
             </p>
           </div>
@@ -1786,7 +2102,7 @@ function AboutPage({ onBack }) {
           {/* Values */}
           <div style={{ marginBottom: 56 }}>
             <div style={{ fontSize: 12, letterSpacing: "0.12em", textTransform: "uppercase", fontWeight: 600, color: COLORS.community, marginBottom: 12 }}>Our principles</div>
-            <h2 className="serif" style={{ fontSize: "clamp(24px, 3vw, 32px)", fontWeight: 500, margin: "0 0 28px", letterSpacing: "-0.02em", color: COLORS.ink }}>What we stand for</h2>
+            <h2 className="serif" style={{ fontSize: "clamp(26px, 3vw, 34px)", fontWeight: 700, margin: "0 0 28px", letterSpacing: "-0.02em", color: COLORS.ink }}>What we stand for</h2>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 20 }}>
               {[
                 { icon: <Shield size={20} color={COLORS.authority} />, title: "Independent", body: "Not affiliated with Inner West Council, any political party, or commercial interests. Funded by residents, for residents." },
@@ -1796,8 +2112,8 @@ function AboutPage({ onBack }) {
               ].map((v, i) => (
                 <div key={i} style={{ padding: "20px 22px", background: COLORS.cream, borderRadius: 10, border: `1px solid ${COLORS.hairline}` }}>
                   <div style={{ marginBottom: 12 }}>{v.icon}</div>
-                  <h3 style={{ fontSize: 16, fontWeight: 700, margin: "0 0 8px", color: COLORS.ink }}>{v.title}</h3>
-                  <p style={{ margin: 0, fontSize: 14, lineHeight: 1.6, color: COLORS.slate }}>{v.body}</p>
+                  <h3 style={{ fontSize: 18, fontWeight: 700, margin: "0 0 8px", color: COLORS.ink }}>{v.title}</h3>
+                  <p style={{ margin: 0, fontSize: 16, lineHeight: 1.6, color: COLORS.slate }}>{v.body}</p>
                 </div>
               ))}
             </div>
@@ -1822,13 +2138,13 @@ function AboutPage({ onBack }) {
           {/* Council responses */}
           <div style={{ marginBottom: 0 }}>
             <div style={{ fontSize: 12, letterSpacing: "0.12em", textTransform: "uppercase", fontWeight: 600, color: COLORS.community, marginBottom: 12 }}>Accountability</div>
-            <h2 className="serif" style={{ fontSize: "clamp(24px, 3vw, 32px)", fontWeight: 500, margin: "0 0 16px", letterSpacing: "-0.02em", color: COLORS.ink }}>
+            <h2 className="serif" style={{ fontSize: "clamp(26px, 3vw, 34px)", fontWeight: 700, margin: "0 0 16px", letterSpacing: "-0.02em", color: COLORS.ink }}>
               How we track Council responses
             </h2>
-            <p style={{ fontSize: 16, lineHeight: 1.75, color: COLORS.slate, margin: "0 0 16px" }}>
+            <p style={{ fontSize: 18, lineHeight: 1.75, color: COLORS.slate, margin: "0 0 16px" }}>
               Every escalated issue is tracked. Once a formal submission is sent, Inner West Council has a responsibility to respond. We monitor and publish each issue's status — <em>Acknowledged</em>, <em>Under Review</em>, or <em>Resolved</em> — on the issue page in real time.
             </p>
-            <p style={{ fontSize: 16, lineHeight: 1.75, color: COLORS.slate, margin: 0 }}>
+            <p style={{ fontSize: 18, lineHeight: 1.75, color: COLORS.slate, margin: 0 }}>
               Issues with no Council response after 30 days are flagged publicly. Transparency creates accountability.
             </p>
           </div>
