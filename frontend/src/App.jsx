@@ -238,6 +238,7 @@ export default function App() {
   });
   const [showPostModal, setShowPostModal] = useState(false);
   const [showRegisterModal, setShowRegisterModal] = useState(false);
+  const [showLoginModal, setShowLoginModal] = useState(false);
   const [emailModalIssue, setEmailModalIssue] = useState(null);
   const [toast, setToast] = useState(null);
   const [userVotes, setUserVotes] = useState(loadStoredVotes);
@@ -355,6 +356,20 @@ export default function App() {
 
     setShowRegisterModal(false);
     showToast(`Welcome, ${name}! Check your inbox to verify your email.`, "success");
+  }
+
+  async function handleLogin(email) {
+    try {
+      await supabase.auth.signInWithOtp({
+        email,
+        options: { shouldCreateUser: false, emailRedirectTo: window.location.origin },
+      });
+      setShowLoginModal(false);
+      showToast("Magic link sent! Check your email to log in.", "success");
+    } catch (err) {
+      console.error("Login error:", err);
+      showToast("Couldn't send login link. Try again.", "error");
+    }
   }
 
   async function handleVote(issueId, voteType) {
@@ -567,6 +582,7 @@ export default function App() {
         onAbout={() => setView({ name: "about" })}
         registeredUser={registeredUser}
         onRegister={() => setShowRegisterModal(true)}
+        onLogin={() => setShowLoginModal(true)}
       />
 
       {view.name === "home" && (
@@ -645,6 +661,13 @@ export default function App() {
         />
       )}
 
+      {showLoginModal && (
+        <LoginModal
+          onClose={() => setShowLoginModal(false)}
+          onSubmit={handleLogin}
+        />
+      )}
+
       {emailModalIssue && (
         <EmailCouncilModal
           issue={emailModalIssue}
@@ -695,7 +718,7 @@ function GlobalStyles() {
 // ────────────────────────────────────────────────────────────────────────────
 // TOP NAV
 // ────────────────────────────────────────────────────────────────────────────
-function TopNav({ onHome, onPost, onHowItWorks, onAbout, onAllIssues, registeredUser, onRegister }) {
+function TopNav({ onHome, onPost, onHowItWorks, onAbout, onAllIssues, registeredUser, onRegister, onLogin }) {
   return (
     <header style={{ position: "sticky", top: 0, zIndex: 50, background: "rgba(250, 248, 244, 0.92)", backdropFilter: "saturate(180%) blur(10px)", WebkitBackdropFilter: "saturate(180%) blur(10px)", borderBottom: `1px solid ${COLORS.hairline}` }}>
       <div style={{ maxWidth: 1180, margin: "0 auto", padding: "14px 24px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16 }}>
@@ -723,9 +746,14 @@ function TopNav({ onHome, onPost, onHowItWorks, onAbout, onAllIssues, registered
               <UserCircle size={16} /> {registeredUser.name.split(" ")[0]}
             </button>
           ) : (
-            <button onClick={onRegister} style={{ padding: "8px 14px", border: `1px solid ${COLORS.authority}`, borderRadius: 6, color: COLORS.authority, fontSize: 13, fontWeight: 600, background: "transparent", transition: "all 150ms ease" }} onMouseEnter={(e) => { e.currentTarget.style.background = COLORS.authority; e.currentTarget.style.color = "white"; }} onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = COLORS.authority; }}>
-              Register
-            </button>
+            <>
+              <button onClick={onLogin} style={{ padding: "8px 14px", borderRadius: 6, color: COLORS.slate, fontSize: 13, fontWeight: 500, background: "transparent", transition: "background 150ms ease" }} onMouseEnter={(e) => (e.currentTarget.style.background = COLORS.mist)} onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}>
+                Log in
+              </button>
+              <button onClick={onRegister} style={{ padding: "8px 14px", border: `1px solid ${COLORS.authority}`, borderRadius: 6, color: COLORS.authority, fontSize: 13, fontWeight: 600, background: "transparent", transition: "all 150ms ease" }} onMouseEnter={(e) => { e.currentTarget.style.background = COLORS.authority; e.currentTarget.style.color = "white"; }} onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = COLORS.authority; }}>
+                Register
+              </button>
+            </>
           )}
 
           <button onClick={onPost} style={{ display: "flex", alignItems: "center", gap: 8, background: COLORS.community, color: "white", fontWeight: 600, padding: "10px 16px", borderRadius: 6, fontSize: 14, boxShadow: "0 1px 2px rgba(0,0,0,0.08)", transition: "background 150ms ease", marginLeft: 4 }} onMouseEnter={(e) => (e.currentTarget.style.background = COLORS.communityDeep)} onMouseLeave={(e) => (e.currentTarget.style.background = COLORS.community)}>
@@ -1553,6 +1581,61 @@ function EmailCouncilModal({ issue, onClose, onSend }) {
 // ────────────────────────────────────────────────────────────────────────────
 // REGISTER MODAL
 // ────────────────────────────────────────────────────────────────────────────
+function LoginModal({ onClose, onSubmit }) {
+  const [email, setEmail] = useState("");
+  const [error, setError] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+
+  useEffect(() => {
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => { document.body.style.overflow = prev; };
+  }, []);
+
+  async function handleSubmit(ev) {
+    ev.preventDefault();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { setError("Enter a valid email"); return; }
+    setSubmitting(true);
+    try { await onSubmit(email.trim()); }
+    finally { setSubmitting(false); }
+  }
+
+  return (
+    <div style={{ position: "fixed", inset: 0, background: "rgba(6,37,71,0.55)", backdropFilter: "blur(6px)", WebkitBackdropFilter: "blur(6px)", zIndex: 100, display: "flex", alignItems: "flex-start", justifyContent: "center", padding: "40px 16px", overflowY: "auto", animation: "fadeIn 200ms ease" }} onClick={onClose}>
+      <form onClick={(e) => e.stopPropagation()} onSubmit={handleSubmit} style={{ background: COLORS.paper, borderRadius: 14, padding: 28, maxWidth: 420, width: "100%", boxShadow: "0 24px 60px rgba(0,0,0,0.35)", animation: "cardEnter 300ms ease" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 20 }}>
+          <div>
+            <div style={{ fontSize: 12, letterSpacing: "0.1em", textTransform: "uppercase", fontWeight: 700, color: COLORS.authority, marginBottom: 4 }}>
+              <UserCircle size={12} style={{ display: "inline", verticalAlign: "-2px", marginRight: 6 }} />Log in
+            </div>
+            <h2 className="serif" style={{ fontSize: 24, fontWeight: 600, margin: 0, letterSpacing: "-0.02em" }}>Welcome back</h2>
+          </div>
+          <button type="button" onClick={onClose} style={{ padding: 6, color: COLORS.slate, borderRadius: 6 }} onMouseEnter={(e) => (e.currentTarget.style.background = COLORS.mist)} onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}>
+            <X size={20} />
+          </button>
+        </div>
+
+        <p style={{ fontSize: 14, color: COLORS.slate, margin: "0 0 20px", lineHeight: 1.55 }}>
+          Enter your email and we'll send you a magic link to log in instantly — no password needed.
+        </p>
+
+        <div>
+          <label style={labelStyle}>Email address</label>
+          <input type="email" value={email} onChange={(e) => { setEmail(e.target.value); setError(""); }} placeholder="you@example.com" style={error ? errorInputStyle : undefined} autoFocus />
+          {error && <div style={errorTextStyle}>{error}</div>}
+        </div>
+
+        <div style={{ display: "flex", justifyContent: "flex-end", gap: 10, marginTop: 24 }}>
+          <button type="button" onClick={onClose} style={{ padding: "12px 18px", background: COLORS.paper, border: `1px solid ${COLORS.hairline}`, borderRadius: 6, color: COLORS.ink, fontWeight: 500, fontSize: 14 }}>Cancel</button>
+          <button type="submit" disabled={submitting} style={{ padding: "12px 20px", background: submitting ? COLORS.slate : COLORS.authority, color: "white", fontWeight: 600, borderRadius: 6, fontSize: 14, cursor: submitting ? "not-allowed" : "pointer" }}>
+            {submitting ? "Sending…" : "Send magic link"}
+          </button>
+        </div>
+      </form>
+    </div>
+  );
+}
+
 function RegisterModal({ onClose, onSubmit, existing }) {
   const [name, setName] = useState(existing?.name || "");
   const [email, setEmail] = useState(existing?.email || "");
