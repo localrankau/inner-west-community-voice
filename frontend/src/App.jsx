@@ -554,9 +554,9 @@ function TopNav({ onHome, onPost, onHowItWorks, onAbout, registeredUser, onRegis
       <div style={{ maxWidth: 1180, margin: "0 auto", padding: "14px 24px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16 }}>
         <button onClick={onHome} style={{ display: "flex", alignItems: "center", gap: 10, padding: 0 }}>
           <Logo />
-          <div style={{ textAlign: "left", lineHeight: 1.15 }}>
-            <div style={{ fontSize: 10, color: COLORS.slate, letterSpacing: "0.1em", textTransform: "uppercase", fontWeight: 600, marginBottom: 2 }}>Inner West</div>
-            <div className="serif" style={{ fontSize: 20, fontWeight: 600, color: COLORS.authority, letterSpacing: "-0.02em", lineHeight: 1 }}>Pulse</div>
+          <div style={{ display: "flex", alignItems: "baseline", gap: 6 }}>
+            <span className="serif" style={{ fontSize: 26, fontWeight: 400, color: COLORS.slate, letterSpacing: "-0.02em", lineHeight: 1 }}>Inner West</span>
+            <span className="serif" style={{ fontSize: 26, fontWeight: 700, color: COLORS.authority, letterSpacing: "-0.03em", lineHeight: 1 }}>Pulse</span>
           </div>
         </button>
 
