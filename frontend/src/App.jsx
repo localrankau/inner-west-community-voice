@@ -775,8 +775,8 @@ function Hero({ query, setQuery, stats, onPost }) {
           <em style={{ color: COLORS.gold, fontStyle: "italic", fontWeight: 500 }}>solved by community.</em>
         </h1>
 
-        <p style={{ marginTop: 18, fontSize: 17, fontStyle: "italic", color: "rgba(255,255,255,0.88)", lineHeight: 1.5, maxWidth: 580, letterSpacing: "0.05px" }}>
-          Think you're the only one frustrated? Discover how many neighbours feel the same — then rally them into a force Council can't ignore.
+        <p style={{ marginTop: 18, fontSize: 20, fontWeight: 600, color: COLORS.gold, lineHeight: 1.45, maxWidth: 600, letterSpacing: "-0.01em" }}>
+          One voice gets noted. Many voices get results. Let's make change.
         </p>
 
         <p style={{ marginTop: 14, fontSize: 16, lineHeight: 1.55, maxWidth: 620, color: "rgba(255,255,255,0.75)" }}>
