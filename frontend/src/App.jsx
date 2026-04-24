@@ -436,6 +436,13 @@ export default function App() {
     showToast("Welcome back!", "success");
   }
 
+  async function handleLogout() {
+    await supabase.auth.signOut();
+    localStorage.removeItem("iwcv_user");
+    setRegisteredUser(null);
+    showToast("You've been logged out.", "success");
+  }
+
   async function handleForgotPassword(email) {
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo: window.location.origin,
@@ -664,6 +671,7 @@ export default function App() {
         registeredUser={registeredUser}
         onRegister={() => setShowRegisterModal(true)}
         onLogin={() => setShowLoginModal(true)}
+        onLogout={handleLogout}
       />
 
       {view.name === "home" && (
@@ -850,7 +858,7 @@ function GlobalStyles() {
 // ────────────────────────────────────────────────────────────────────────────
 // TOP NAV
 // ────────────────────────────────────────────────────────────────────────────
-function TopNav({ onHome, onPost, onHowItWorks, onAbout, onAllIssues, registeredUser, onRegister, onLogin }) {
+function TopNav({ onHome, onPost, onHowItWorks, onAbout, onAllIssues, registeredUser, onRegister, onLogin, onLogout }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const close = () => setMenuOpen(false);
 
@@ -873,9 +881,14 @@ function TopNav({ onHome, onPost, onHowItWorks, onAbout, onAllIssues, registered
           <button onClick={onAbout} style={{ padding: "8px 12px", color: COLORS.ink, fontSize: 13, fontWeight: 600, borderRadius: 6, transition: "background 150ms ease" }} onMouseEnter={(e) => (e.currentTarget.style.background = COLORS.mist)} onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}>About</button>
           <div style={{ width: 1, height: 20, background: COLORS.hairline, margin: "0 8px" }} />
           {registeredUser ? (
-            <button onClick={onRegister} style={{ display: "flex", alignItems: "center", gap: 7, padding: "8px 12px", border: `1px solid ${COLORS.hairline}`, borderRadius: 6, fontSize: 13, fontWeight: 600, color: COLORS.authority, background: COLORS.paper, transition: "background 150ms ease" }} onMouseEnter={(e) => (e.currentTarget.style.background = COLORS.mist)} onMouseLeave={(e) => (e.currentTarget.style.background = COLORS.paper)}>
-              <UserCircle size={16} /> {registeredUser.name.split(" ")[0]}
-            </button>
+            <>
+              <button onClick={onRegister} style={{ display: "flex", alignItems: "center", gap: 7, padding: "8px 12px", border: `1px solid ${COLORS.hairline}`, borderRadius: 6, fontSize: 13, fontWeight: 600, color: COLORS.authority, background: COLORS.paper, transition: "background 150ms ease" }} onMouseEnter={(e) => (e.currentTarget.style.background = COLORS.mist)} onMouseLeave={(e) => (e.currentTarget.style.background = COLORS.paper)}>
+                <UserCircle size={16} /> {registeredUser.name.split(" ")[0]}
+              </button>
+              <button onClick={onLogout} style={{ padding: "8px 12px", border: `1px solid ${COLORS.hairline}`, borderRadius: 6, fontSize: 13, fontWeight: 600, color: COLORS.slate, background: COLORS.paper, transition: "background 150ms ease" }} onMouseEnter={(e) => (e.currentTarget.style.background = COLORS.mist)} onMouseLeave={(e) => (e.currentTarget.style.background = COLORS.paper)}>
+                Log out
+              </button>
+            </>
           ) : (
             <>
               <button onClick={onLogin} style={{ padding: "8px 14px", border: `1px solid #C5D5E8`, borderRadius: 6, color: COLORS.authority, fontSize: 13, fontWeight: 600, background: "#EEF3F9", transition: "all 150ms ease" }} onMouseEnter={(e) => { e.currentTarget.style.background = "#E0EBF5"; e.currentTarget.style.borderColor = COLORS.authority; }} onMouseLeave={(e) => { e.currentTarget.style.background = "#EEF3F9"; e.currentTarget.style.borderColor = "#C5D5E8"; }}>Log in</button>
@@ -916,9 +929,14 @@ function TopNav({ onHome, onPost, onHowItWorks, onAbout, onAllIssues, registered
           ))}
           <div style={{ marginTop: 14, display: "flex", gap: 10 }}>
             {registeredUser ? (
-              <button onClick={() => { onRegister(); close(); }} style={{ flex: 1, padding: "12px", border: `1px solid ${COLORS.hairline}`, borderRadius: 6, fontSize: 14, fontWeight: 600, color: COLORS.authority, background: COLORS.paper, display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}>
-                <UserCircle size={16} /> {registeredUser.name.split(" ")[0]}
-              </button>
+              <>
+                <button onClick={() => { onRegister(); close(); }} style={{ flex: 1, padding: "12px", border: `1px solid ${COLORS.hairline}`, borderRadius: 6, fontSize: 14, fontWeight: 600, color: COLORS.authority, background: COLORS.paper, display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}>
+                  <UserCircle size={16} /> {registeredUser.name.split(" ")[0]}
+                </button>
+                <button onClick={() => { onLogout(); close(); }} style={{ flex: 1, padding: "12px", border: `1px solid ${COLORS.hairline}`, borderRadius: 6, fontSize: 14, fontWeight: 600, color: COLORS.slate, background: COLORS.paper }}>
+                  Log out
+                </button>
+              </>
             ) : (
               <>
                 <button onClick={() => { onLogin(); close(); }} style={{ flex: 1, padding: "12px", background: "#EEF3F9", border: `1px solid #C5D5E8`, borderRadius: 6, fontSize: 14, fontWeight: 600, color: COLORS.authority }}>Log in</button>
