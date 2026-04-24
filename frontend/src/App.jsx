@@ -392,7 +392,21 @@ export default function App() {
     if (data) setComments((c) => ({ ...c, [issueId]: data }));
   }
 
-  async function handleRegister({ name, email, postcode }) {
+  async function handleRegister({ name, email, postcode, password }) {
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: { name, postcode },
+        emailRedirectTo: window.location.origin,
+      },
+    });
+    if (error) {
+      console.error("Sign up error:", error);
+      showToast(error.message || "Couldn't create your account.", "error");
+      throw error;
+    }
+
     const user = { name, email, postcode };
     localStorage.setItem("iwcv_user", JSON.stringify(user));
     setRegisteredUser(user);
@@ -403,34 +417,34 @@ export default function App() {
       );
     } catch (err) { console.error(err); }
 
-    // Send magic-link / welcome email via Supabase Auth
-    try {
-      await supabase.auth.signInWithOtp({
-        email,
-        options: {
-          shouldCreateUser: true,
-          data: { name, postcode },
-          emailRedirectTo: window.location.origin,
-        },
-      });
-    } catch (err) { console.error("Auth OTP error:", err); }
-
     setShowRegisterModal(false);
-    showToast(`Welcome, ${name}! Check your inbox to verify your email.`, "success");
+    if (data?.session) {
+      showToast(`Welcome, ${name}! You're logged in.`, "success");
+    } else {
+      showToast(`Welcome, ${name}! Check your inbox to confirm your email.`, "success");
+    }
   }
 
-  async function handleLogin(email) {
-    try {
-      await supabase.auth.signInWithOtp({
-        email,
-        options: { shouldCreateUser: false, emailRedirectTo: window.location.origin },
-      });
-      setShowLoginModal(false);
-      showToast("Magic link sent! Check your email to log in.", "success");
-    } catch (err) {
-      console.error("Login error:", err);
-      showToast("Couldn't send login link. Try again.", "error");
+  async function handleLogin({ email, password }) {
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) {
+      console.error("Login error:", error);
+      showToast(error.message || "Invalid email or password.", "error");
+      throw error;
     }
+    setShowLoginModal(false);
+    showToast("Welcome back!", "success");
+  }
+
+  async function handleForgotPassword(email) {
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: window.location.origin,
+    });
+    if (error) {
+      showToast(error.message || "Couldn't send reset email.", "error");
+      throw error;
+    }
+    showToast("Password reset link sent — check your inbox.", "success");
   }
 
   async function handleVote(issueId, voteType) {
@@ -732,6 +746,7 @@ export default function App() {
         <LoginModal
           onClose={() => setShowLoginModal(false)}
           onSubmit={handleLogin}
+          onForgot={handleForgotPassword}
         />
       )}
 
@@ -1749,10 +1764,12 @@ function EmailCouncilModal({ issue, onClose, onSend }) {
 // ────────────────────────────────────────────────────────────────────────────
 // REGISTER MODAL
 // ────────────────────────────────────────────────────────────────────────────
-function LoginModal({ onClose, onSubmit }) {
+function LoginModal({ onClose, onSubmit, onForgot }) {
   const [email, setEmail] = useState("");
-  const [error, setError] = useState("");
+  const [password, setPassword] = useState("");
+  const [errors, setErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
+  const [resetting, setResetting] = useState(false);
 
   useEffect(() => {
     const prev = document.body.style.overflow;
@@ -1762,10 +1779,26 @@ function LoginModal({ onClose, onSubmit }) {
 
   async function handleSubmit(ev) {
     ev.preventDefault();
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { setError("Enter a valid email"); return; }
+    const e = {};
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) e.email = "Enter a valid email";
+    if (!password) e.password = "Enter your password";
+    setErrors(e);
+    if (Object.keys(e).length) return;
     setSubmitting(true);
-    try { await onSubmit(email.trim()); }
+    try { await onSubmit({ email: email.trim(), password }); }
+    catch { /* toast shown by handler */ }
     finally { setSubmitting(false); }
+  }
+
+  async function handleForgot() {
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setErrors({ email: "Enter your email to reset password" });
+      return;
+    }
+    setResetting(true);
+    try { await onForgot(email.trim()); }
+    catch { /* toast shown by handler */ }
+    finally { setResetting(false); }
   }
 
   return (
@@ -1784,19 +1817,31 @@ function LoginModal({ onClose, onSubmit }) {
         </div>
 
         <p style={{ fontSize: 14, color: COLORS.slate, margin: "0 0 20px", lineHeight: 1.55 }}>
-          Enter your email and we'll send you a magic link to log in instantly — no password needed.
+          Sign in with your email and password.
         </p>
 
-        <div>
-          <label style={labelStyle}>Email address</label>
-          <input type="email" value={email} onChange={(e) => { setEmail(e.target.value); setError(""); }} placeholder="you@example.com" style={error ? errorInputStyle : undefined} autoFocus />
-          {error && <div style={errorTextStyle}>{error}</div>}
+        <div style={{ display: "grid", gap: 14 }}>
+          <div>
+            <label style={labelStyle}>Email address</label>
+            <input type="email" value={email} onChange={(e) => { setEmail(e.target.value); setErrors((x) => ({ ...x, email: undefined })); }} placeholder="you@example.com" style={errors.email ? errorInputStyle : undefined} autoFocus />
+            {errors.email && <div style={errorTextStyle}>{errors.email}</div>}
+          </div>
+          <div>
+            <label style={labelStyle}>Password</label>
+            <input type="password" value={password} onChange={(e) => { setPassword(e.target.value); setErrors((x) => ({ ...x, password: undefined })); }} placeholder="Your password" style={errors.password ? errorInputStyle : undefined} />
+            {errors.password && <div style={errorTextStyle}>{errors.password}</div>}
+          </div>
+          <div style={{ textAlign: "right" }}>
+            <button type="button" onClick={handleForgot} disabled={resetting} style={{ background: "transparent", border: "none", color: COLORS.authority, fontSize: 13, fontWeight: 500, cursor: "pointer", padding: 0 }}>
+              {resetting ? "Sending…" : "Forgot password?"}
+            </button>
+          </div>
         </div>
 
         <div style={{ display: "flex", justifyContent: "flex-end", gap: 10, marginTop: 24 }}>
           <button type="button" onClick={onClose} style={{ padding: "12px 18px", background: COLORS.paper, border: `1px solid ${COLORS.hairline}`, borderRadius: 6, color: COLORS.ink, fontWeight: 500, fontSize: 14 }}>Cancel</button>
           <button type="submit" disabled={submitting} style={{ padding: "12px 20px", background: submitting ? COLORS.slate : COLORS.authority, color: "white", fontWeight: 600, borderRadius: 6, fontSize: 14, cursor: submitting ? "not-allowed" : "pointer" }}>
-            {submitting ? "Sending…" : "Send magic link"}
+            {submitting ? "Signing in…" : "Log in"}
           </button>
         </div>
       </form>
@@ -1808,6 +1853,7 @@ function RegisterModal({ onClose, onSubmit, existing }) {
   const [name, setName] = useState(existing?.name || "");
   const [email, setEmail] = useState(existing?.email || "");
   const [postcode, setPostcode] = useState(existing?.postcode || "");
+  const [password, setPassword] = useState("");
   const [errors, setErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
 
@@ -1823,6 +1869,7 @@ function RegisterModal({ onClose, onSubmit, existing }) {
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) e.email = "Enter a valid email";
     if (!/^\d{4}$/.test(postcode)) e.postcode = "4-digit postcode";
     else { const pc = parseInt(postcode, 10); if (pc < 2000 || pc > 2770) e.postcode = "Must be a Sydney postcode (2000–2770)"; }
+    if (!existing && password.length < 8) e.password = "Password must be at least 8 characters";
     setErrors(e);
     return Object.keys(e).length === 0;
   }
@@ -1831,7 +1878,8 @@ function RegisterModal({ onClose, onSubmit, existing }) {
     ev.preventDefault();
     if (!validate()) return;
     setSubmitting(true);
-    try { await onSubmit({ name: name.trim(), email: email.trim(), postcode }); }
+    try { await onSubmit({ name: name.trim(), email: email.trim(), postcode, password }); }
+    catch { /* toast shown by handler */ }
     finally { setSubmitting(false); }
   }
 
@@ -1877,6 +1925,13 @@ function RegisterModal({ onClose, onSubmit, existing }) {
             <input type="text" inputMode="numeric" maxLength={4} value={postcode} onChange={(e) => setPostcode(e.target.value.replace(/\D/g, ""))} placeholder="e.g. 2040" style={errors.postcode ? errorInputStyle : undefined} />
             {errors.postcode && <div style={errorTextStyle}>{errors.postcode}</div>}
           </div>
+          {!existing && (
+            <div>
+              <label style={labelStyle}>Password</label>
+              <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="At least 8 characters" style={errors.password ? errorInputStyle : undefined} />
+              {errors.password && <div style={errorTextStyle}>{errors.password}</div>}
+            </div>
+          )}
         </div>
 
         <div style={{ display: "flex", justifyContent: "flex-end", gap: 10, marginTop: 24 }}>
