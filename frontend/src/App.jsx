@@ -98,26 +98,26 @@ const RALLY_IDEAS = [
     glow: "rgba(217,119,6,0.3)",
   },
   {
-    icon: "🏗",
-    title: "Fight a rezoning before it's approved",
-    blurb: "Once the DA window closes, it's too late. Unite residents now and put your objection on record.",
+    icon: "🏘",
+    title: "Have a say on development in your area",
+    blurb: "New builds affecting your street? Make sure your community's voice is part of the DA process — not an afterthought.",
     category: "Rezoning",
     gradient: `linear-gradient(145deg, #062547 0%, #0B3A66 100%)`,
     glow: "rgba(6,37,71,0.35)",
   },
   {
     icon: "🌳",
-    title: "Transform a neglected park",
-    blurb: "Broken equipment. No lighting. Overgrown paths. Rally locals and make Council fund the fix.",
+    title: "Get your local park upgraded",
+    blurb: "Better lighting, new equipment, maintained paths. Show Council what residents actually want from their green spaces.",
     category: "Services",
     gradient: `linear-gradient(145deg, #1F5733 0%, #2D7A4A 100%)`,
     glow: "rgba(31,87,51,0.3)",
   },
   {
-    icon: "🌲",
-    title: "Stop a street tree from being removed",
-    blurb: "Council approves removals fast. Organised objections from residents can reverse the decision.",
-    category: "Services",
+    icon: "💧",
+    title: "Raise an issue about stormwater or flooding",
+    blurb: "Flooded streets after rain? Rally residents to get drainage improvements on Council's priority list.",
+    category: "Infrastructure",
     gradient: `linear-gradient(145deg, #14532D 0%, #166534 100%)`,
     glow: "rgba(20,83,45,0.3)",
   },
@@ -130,9 +130,9 @@ const RALLY_IDEAS = [
     glow: "rgba(11,58,102,0.28)",
   },
   {
-    icon: "🦮",
-    title: "Create or expand a dog off-leash area",
-    blurb: "Not enough space for dogs to run? Rally local dog owners and demand better from Council.",
+    icon: "🏃",
+    title: "Propose refreshed outdoor facilities",
+    blurb: "More seating, lighting, fitness stations, shade. Rally locals behind the amenities your suburb is missing.",
     category: "Services",
     gradient: `linear-gradient(145deg, #92400E 0%, #D97706 100%)`,
     glow: "rgba(146,64,14,0.3)",
@@ -146,18 +146,18 @@ const RALLY_IDEAS = [
     glow: "rgba(30,58,95,0.3)",
   },
   {
-    icon: "🏛",
-    title: "Protect a heritage building from demolition",
-    blurb: "Character homes and historic streetscapes disappear fast. Build community opposition now.",
-    category: "Rezoning",
+    icon: "🏙️",
+    title: "Propose a streetscape improvement",
+    blurb: "Faded shopfronts, poor lighting, no greenery. Build community support for a Council-funded street revitalisation.",
+    category: "Infrastructure",
     gradient: `linear-gradient(145deg, #3b1f6e 0%, #6B4FBB 100%)`,
     glow: "rgba(59,31,110,0.3)",
   },
   {
-    icon: "🔊",
-    title: "Stop excessive construction noise",
-    blurb: "Early starts. Weekend drilling. Make Council enforce the rules — with numbers behind you.",
-    category: "Services",
+    icon: "💡",
+    title: "Improve street lighting in your neighbourhood",
+    blurb: "Poorly lit streets affect safety and amenity for everyone. Build community support to get Council to prioritise your area.",
+    category: "Infrastructure",
     gradient: `linear-gradient(145deg, #7f1d1d 0%, #B91C1C 100%)`,
     glow: "rgba(127,29,29,0.3)",
   },
@@ -1031,9 +1031,9 @@ function HomePage({ issues, loading, error, onRetry, onOpenIssue, onVote, userVo
       {!query && (
         <Section background={COLORS.cream}>
           <SectionHeader
-            eyebrow="Make something happen"
-            title="Your street has more power than you think."
-            subtitle="Get minimum 25 verified supporters and you can email Council directly — or keep collecting more votes to strengthen your case before you send."
+            eyebrow="What residents are rallying behind"
+            title="Here's what your neighbours are making happen."
+            subtitle="These are real examples of issues residents can raise. Get minimum 25 verified supporters and you can send a formal submission directly to Council."
           />
           <div className="rally-grid">
             {RALLY_IDEAS.map((idea, idx) => (
