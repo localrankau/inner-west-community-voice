@@ -595,7 +595,7 @@ export default function App() {
     }
   }
 
-  async function handleEmailCouncil(issue) {
+  async function handleEmailCouncil(issue, ccEmail) {
     const issueUrl = `${window.location.origin}?issue=${issue.id}`;
     try {
       const { error: fnError } = await supabase.functions.invoke("send-council-email", {
@@ -604,7 +604,7 @@ export default function App() {
           title: issue.title,
           description: issue.description,
           vote_count: issue.vote_count,
-          poster_email: issue.poster_email,
+          poster_email: ccEmail,
           issue_url: issueUrl,
         },
       });
@@ -1778,7 +1778,8 @@ function CommentCard({ comment }) {
 // ────────────────────────────────────────────────────────────────────────────
 function EmailCouncilModal({ issue, onClose, onSend }) {
   const [sending, setSending] = useState(false);
-  const issueUrl = `${window.location.origin}?issue=${issue.id}`;
+  const [ccEmail, setCcEmail] = useState(issue.poster_email || "");
+  const [emailError, setEmailError] = useState("");
 
   useEffect(() => {
     const prev = document.body.style.overflow;
@@ -1786,9 +1787,18 @@ function EmailCouncilModal({ issue, onClose, onSend }) {
     return () => { document.body.style.overflow = prev; };
   }, []);
 
+  function validateEmail(val) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val);
+  }
+
   async function handleSend() {
+    if (!validateEmail(ccEmail)) {
+      setEmailError("Please enter a valid email address so we can CC you on the submission.");
+      return;
+    }
+    setEmailError("");
     setSending(true);
-    try { await onSend(issue); }
+    try { await onSend(issue, ccEmail); }
     finally { setSending(false); }
   }
 
@@ -1812,7 +1822,7 @@ function EmailCouncilModal({ issue, onClose, onSend }) {
           {[
             `Issue: "${issue.title}"`,
             "Full issue description",
-            `Link to issue page`,
+            `Link to public issue page (with live supporter count)`,
             `${(issue.vote_count || 0)} confirmed community supporters`,
           ].map((line, i) => (
             <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 8, fontSize: 13, color: COLORS.slate }}>
@@ -1825,15 +1835,24 @@ function EmailCouncilModal({ issue, onClose, onSend }) {
         <div style={{ padding: "12px 16px", background: "#E8EEF5", borderRadius: 8, marginBottom: 20, display: "flex", gap: 8, alignItems: "flex-start" }}>
           <Shield size={14} color={COLORS.authority} style={{ flexShrink: 0, marginTop: 1 }} />
           <div style={{ fontSize: 13, color: COLORS.authority, lineHeight: 1.5 }}>
-            <strong>Supporter names are kept private.</strong> Council sees the count ({issue.vote_count || 0} verified residents), not individual names.
+            <strong>Supporter names are kept private.</strong> Council sees the count ({issue.vote_count || 0} verified residents) and a link to the public issue page — not individual names.
           </div>
         </div>
 
-        {issue.poster_email && (
-          <div style={{ fontSize: 13, color: COLORS.slate, marginBottom: 24 }}>
-            A copy will be sent to: <strong style={{ color: COLORS.ink }}>{issue.poster_email}</strong>
-          </div>
-        )}
+        <div style={{ marginBottom: 24 }}>
+          <label style={{ display: "block", fontSize: 13, fontWeight: 600, color: COLORS.ink, marginBottom: 6 }}>
+            Your email <span style={{ color: COLORS.authority }}>*</span>
+            <span style={{ fontWeight: 400, color: COLORS.slate, marginLeft: 6 }}>(you'll be CC'd on the submission)</span>
+          </label>
+          <input
+            type="email"
+            value={ccEmail}
+            onChange={(e) => { setCcEmail(e.target.value); if (emailError) setEmailError(""); }}
+            placeholder="your@email.com"
+            style={{ width: "100%", padding: "10px 12px", border: `1px solid ${emailError ? "#DC2626" : COLORS.hairline}`, borderRadius: 6, fontSize: 14, color: COLORS.ink, background: "white", boxSizing: "border-box", outline: "none" }}
+          />
+          {emailError && <div style={{ fontSize: 12, color: "#DC2626", marginTop: 5 }}>{emailError}</div>}
+        </div>
 
         <div style={{ display: "flex", justifyContent: "flex-end", gap: 10 }}>
           <button type="button" onClick={onClose} style={{ padding: "12px 18px", background: COLORS.paper, border: `1px solid ${COLORS.hairline}`, borderRadius: 6, color: COLORS.ink, fontWeight: 500, fontSize: 14 }}>Cancel</button>
