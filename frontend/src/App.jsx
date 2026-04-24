@@ -1028,13 +1028,6 @@ function HomePage({ issues, loading, error, onRetry, onOpenIssue, onVote, userVo
         </div>
       )}
 
-      {!loading && !error && trending.length > 0 && (
-        <Section>
-          <SectionHeader eyebrow="Trending now" title="The issues gaining momentum" subtitle="Sorted by verified community support. Hit 25 verified supporters and you can choose to email Council — or keep building momentum first." />
-          <TrendingLeaderboard issues={trending} onOpenIssue={onOpenIssue} />
-        </Section>
-      )}
-
       {!query && (
         <Section background={COLORS.cream}>
           <SectionHeader
@@ -1094,6 +1087,13 @@ function HomePage({ issues, loading, error, onRetry, onOpenIssue, onVote, userVo
         </Section>
       )}
 
+      {!loading && !error && trending.length > 0 && (
+        <Section>
+          <SectionHeader eyebrow="Trending now" title="The issues gaining momentum" subtitle="Sorted by verified community support. Minimum 25 verified supporters unlocks a direct Council submission." />
+          <TrendingLeaderboard issues={trending} onOpenIssue={onOpenIssue} />
+        </Section>
+      )}
+
       <Section background={COLORS.paper}>
         <SectionHeader eyebrow="All issues" title="What your neighbours are raising" subtitle="Filter by suburb or category. Every vote is tracked. Every signature is verified." />
         {loading ? (
@@ -1143,7 +1143,7 @@ function HowItWorks() {
       number: "02",
       icon: "🙌",
       title: "Rally 25 verified neighbours",
-      body: "Residents sign with their name and postcode. Every signature is verified as a local. Votes are public and tracked.",
+      body: "Residents sign with their name and postcode. Every signature is verified as a local. Minimum 25 supporters needed — votes are public and tracked.",
     },
     {
       number: "03",
@@ -1158,7 +1158,7 @@ function HowItWorks() {
       <div style={{ maxWidth: 1180, margin: "0 auto", padding: "52px 24px" }}>
         <div style={{ textAlign: "center", marginBottom: 40 }}>
           <div style={{ fontSize: 11, letterSpacing: "0.12em", textTransform: "uppercase", fontWeight: 700, color: COLORS.authority, marginBottom: 8 }}>How it works</div>
-          <h2 className="serif" style={{ fontSize: "clamp(22px, 3vw, 30px)", fontWeight: 600, margin: 0, letterSpacing: "-0.02em", color: COLORS.ink }}>From street-level frustration to Council desk — in three steps</h2>
+          <h2 className="serif" style={{ fontSize: "clamp(22px, 3vw, 30px)", fontWeight: 600, margin: 0, letterSpacing: "-0.02em", color: COLORS.ink }}>From neighbourhood concern to Council desk — in three steps</h2>
         </div>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: 0, position: "relative" }}>
           {steps.map((step, i) => (
