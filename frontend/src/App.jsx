@@ -234,7 +234,12 @@ export default function App() {
   const [view, setView] = useState(() => {
     const params = new URLSearchParams(window.location.search);
     const issueId = params.get("issue");
-    return issueId ? { name: "detail", id: Number(issueId) } : { name: "home" };
+    const page = params.get("page");
+    if (issueId) return { name: "detail", id: Number(issueId) };
+    if (page === "all-issues") return { name: "all-issues" };
+    if (page === "how-it-works") return { name: "how-it-works" };
+    if (page === "about") return { name: "about" };
+    return { name: "home" };
   });
   const [showPostModal, setShowPostModal] = useState(false);
   const [showRegisterModal, setShowRegisterModal] = useState(false);
@@ -247,6 +252,12 @@ export default function App() {
 
   const sessionId = useMemo(() => getSessionId(), []);
 
+  // Refs to allow reading current state inside stable callbacks (e.g. onAuthStateChange)
+  const userVotesRef = useRef(userVotes);
+  useEffect(() => { userVotesRef.current = userVotes; }, [userVotes]);
+  const issuesRef = useRef(issues);
+  useEffect(() => { issuesRef.current = issues; }, [issues]);
+
   function showToast(message, kind = "success") {
     setToast({ message, kind, id: Date.now() });
     setTimeout(() => setToast(null), 3200);
@@ -257,8 +268,14 @@ export default function App() {
   // Sync URL with view state
   useEffect(() => {
     if (view.name === "detail") {
-      window.history.pushState({ issue: view.id }, "", `?issue=${view.id}`);
-    } else if (view.name === "home") {
+      window.history.pushState({ view: "detail", issue: view.id }, "", `?issue=${view.id}`);
+    } else if (view.name === "all-issues") {
+      window.history.pushState({ view: "all-issues" }, "", "?page=all-issues");
+    } else if (view.name === "how-it-works") {
+      window.history.pushState({ view: "how-it-works" }, "", "?page=how-it-works");
+    } else if (view.name === "about") {
+      window.history.pushState({ view: "about" }, "", "?page=about");
+    } else {
       window.history.replaceState({}, "", window.location.pathname);
     }
   }, [view]);
@@ -268,7 +285,12 @@ export default function App() {
     const onPop = () => {
       const params = new URLSearchParams(window.location.search);
       const issueId = params.get("issue");
-      setView(issueId ? { name: "detail", id: Number(issueId) } : { name: "home" });
+      const page = params.get("page");
+      if (issueId) setView({ name: "detail", id: Number(issueId) });
+      else if (page === "all-issues") setView({ name: "all-issues" });
+      else if (page === "how-it-works") setView({ name: "how-it-works" });
+      else if (page === "about") setView({ name: "about" });
+      else setView({ name: "home" });
     };
     window.addEventListener("popstate", onPop);
     return () => window.removeEventListener("popstate", onPop);
@@ -276,7 +298,7 @@ export default function App() {
 
   // Sync auth state — fires when user clicks the magic link email
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
       if (session?.user) {
         const meta = session.user.user_metadata || {};
         const synced = {
@@ -286,6 +308,45 @@ export default function App() {
         };
         localStorage.setItem("iwcv_user", JSON.stringify(synced));
         setRegisteredUser(synced);
+
+        // Complete a pending supporter signup if the confirmed email matches
+        try {
+          const pendingStr = localStorage.getItem("iwcv_pending_signup");
+          if (pendingStr) {
+            const pending = JSON.parse(pendingStr);
+            if (pending.email === session.user.email) {
+              const { error } = await supabase.from("supporter_signups").insert({
+                issue_id: pending.issueId,
+                email: pending.email,
+                name: pending.name,
+                postcode: pending.postcode,
+                postcode_verified: true,
+              });
+              if (!error || error.code === "23505") {
+                localStorage.removeItem("iwcv_pending_signup");
+                setUserSignups((s) => ({ ...s, [pending.issueId]: true }));
+
+                // Also cast upvote if not already voted
+                if (!userVotesRef.current[pending.issueId]) {
+                  const currentCount = issuesRef.current.find((i) => i.id === pending.issueId)?.vote_count || 0;
+                  const { error: ve } = await supabase.from("votes").insert({
+                    issue_id: pending.issueId, vote_type: "up", session_id: sessionId,
+                  });
+                  if (!ve || ve.code === "23505") {
+                    await supabase.from("issues").update({ vote_count: currentCount + 1 }).eq("id", pending.issueId);
+                    setUserVotes((v) => ({ ...v, [pending.issueId]: "up" }));
+                    saveVote(pending.issueId, "up");
+                    setIssues((prev) => prev.map((i) => i.id === pending.issueId ? { ...i, vote_count: (i.vote_count || 0) + 1 } : i));
+                  }
+                }
+
+                showToast("Email confirmed — you're a verified supporter! ✅", "success");
+              }
+            }
+          }
+        } catch (err) {
+          console.error("Error completing supporter signup after email confirmation:", err);
+        }
       }
     });
     return () => subscription.unsubscribe();
@@ -377,6 +438,10 @@ export default function App() {
       showToast("You've already voted on this issue", "info");
       return;
     }
+    const currentIssue = issues.find((i) => i.id === issueId);
+    const currentCount = currentIssue?.vote_count || 0;
+    const currentDownCount = currentIssue?.down_count || 0;
+
     setUserVotes((v) => ({ ...v, [issueId]: voteType }));
     saveVote(issueId, voteType);
     setIssues((prev) =>
@@ -397,12 +462,12 @@ export default function App() {
       });
       if (error) throw error;
 
-      const { data: updated } = await supabase
-        .from("issues")
-        .select("vote_count, down_count, escalated, escalated_at")
-        .eq("id", issueId)
-        .single();
-      if (updated) setIssues((prev) => prev.map((i) => (i.id === issueId ? { ...i, ...updated } : i)));
+      // Explicitly increment the count in the issues table
+      if (voteType === "up") {
+        await supabase.from("issues").update({ vote_count: currentCount + 1 }).eq("id", issueId);
+      } else {
+        await supabase.from("issues").update({ down_count: currentDownCount + 1 }).eq("id", issueId);
+      }
 
       showToast(voteType === "up" ? "Your vote counted ⬆" : "Downvote recorded", "success");
 
@@ -549,23 +614,25 @@ export default function App() {
 
   async function handleSignup(issueId, { email, name, postcode }) {
     try {
-      const { error } = await supabase.from("supporter_signups").insert({
-        issue_id: issueId, email, name, postcode, postcode_verified: true,
+      // Store pending data; insert only after email is confirmed via the magic link
+      localStorage.setItem("iwcv_pending_signup", JSON.stringify({ issueId, email, name, postcode }));
+
+      const { error } = await supabase.auth.signInWithOtp({
+        email,
+        options: {
+          shouldCreateUser: true,
+          emailRedirectTo: `${window.location.origin}?issue=${issueId}`,
+        },
       });
-      if (error) {
-        if (error.code === "23505") {
-          showToast("You've already signed up for this issue", "info");
-          setUserSignups((s) => ({ ...s, [issueId]: true }));
-          return;
-        }
-        throw error;
-      }
-      setUserSignups((s) => ({ ...s, [issueId]: true }));
-      if (!userVotes[issueId]) handleVote(issueId, "up");
-      showToast("You're a verified supporter ✓", "success");
+      if (error) throw error;
+
+      showToast("Check your email to confirm your support ✉️", "success");
+      return { pendingVerification: true };
     } catch (err) {
+      localStorage.removeItem("iwcv_pending_signup");
       showToast("Signup failed — please try again", "error");
       console.error(err);
+      throw err;
     }
   }
 
@@ -950,13 +1017,13 @@ function Hero({ query, setQuery, stats, onPost }) {
         </div>
 
         <h1 className="serif" style={{ fontSize: "clamp(36px, 6vw, 64px)", fontWeight: 500, lineHeight: 1.05, margin: 0, letterSpacing: "-0.025em", maxWidth: 900 }}>
-          Local issues that matter,
+          Ever felt like your concern
           <br />
-          <em style={{ color: COLORS.gold, fontStyle: "italic", fontWeight: 500 }}>amplified by the community.</em>
+          <em style={{ color: COLORS.gold, fontStyle: "italic", fontWeight: 500 }}>won't be heard?</em>
         </h1>
 
-        <p style={{ marginTop: 18, fontSize: 20, fontWeight: 600, color: COLORS.gold, lineHeight: 1.45, maxWidth: 600, letterSpacing: "-0.01em" }}>
-          One voice gets noted. Many voices get results. Let's make change.
+        <p style={{ marginTop: 18, fontSize: 20, fontWeight: 400, color: "rgba(255,255,255,0.92)", lineHeight: 1.55, maxWidth: 640, letterSpacing: "-0.01em" }}>
+          IWPulse captures the pulse of the community and turns it into proof — verified support that shows council what residents actually care about.
         </p>
 
         <p style={{ marginTop: 14, fontSize: 16, lineHeight: 1.55, maxWidth: 620, color: "rgba(255,255,255,0.75)" }}>
@@ -1400,6 +1467,7 @@ function SignupForm({ onSignup, registeredUser }) {
   const [postcode, setPostcode] = useState(registeredUser?.postcode || "");
   const [errors, setErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
+  const [awaitingEmail, setAwaitingEmail] = useState(false);
   const prefilled = !!registeredUser;
 
   function validate() {
@@ -1416,7 +1484,25 @@ function SignupForm({ onSignup, registeredUser }) {
     ev.preventDefault();
     if (!validate()) return;
     setSubmitting(true);
-    try { await onSignup({ email, name, postcode }); } finally { setSubmitting(false); }
+    try {
+      const result = await onSignup({ email, name, postcode });
+      if (result?.pendingVerification) setAwaitingEmail(true);
+    } finally { setSubmitting(false); }
+  }
+
+  if (awaitingEmail) {
+    return (
+      <section style={{ marginBottom: 36, padding: 24, background: "#EFF6FF", border: `1px solid #BFDBFE`, borderRadius: 12, borderTop: `3px solid ${COLORS.authority}` }}>
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center", gap: 12, padding: "8px 0" }}>
+          <div style={{ fontSize: 36 }}>✉️</div>
+          <h3 className="serif" style={{ fontSize: 20, fontWeight: 600, margin: 0, letterSpacing: "-0.015em" }}>Check your email</h3>
+          <p style={{ fontSize: 14, color: COLORS.slate, margin: 0, lineHeight: 1.6, maxWidth: 380 }}>
+            We sent a confirmation link to <strong>{email}</strong>. Click the link to verify your email and confirm your support.
+          </p>
+          <p style={{ fontSize: 12, color: COLORS.slate, margin: 0 }}>Didn't get it? Check your spam folder.</p>
+        </div>
+      </section>
+    );
   }
 
   return (
@@ -2279,14 +2365,14 @@ function Footer({ onHowItWorks, onAbout, onHome }) {
             <div style={{ fontSize: 11, fontWeight: 700, color: COLORS.slate, textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 10 }}>Trust</div>
             <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
               <button onClick={onAbout} style={{ color: COLORS.ink, textAlign: "left", padding: 0, fontSize: 13 }}>Privacy</button>
-              <a href="mailto:hello@innerwestvoice.com.au" style={{ color: COLORS.ink, fontSize: 13 }}>Contact</a>
-              <a href="https://innerwestcouncil.nsw.gov.au" target="_blank" rel="noreferrer" style={{ color: COLORS.ink, fontSize: 13 }}>Council website</a>
+              <a href="mailto:contact@iwpulse.com" style={{ color: COLORS.ink, fontSize: 13 }}>Contact</a>
+              <a href="https://www.innerwest.nsw.gov.au/" target="_blank" rel="noreferrer" style={{ color: COLORS.ink, fontSize: 13 }}>Council website</a>
             </div>
           </div>
         </div>
       </div>
       <div style={{ maxWidth: 1180, margin: "32px auto 0", paddingTop: 20, borderTop: `1px solid ${COLORS.hairline}`, fontSize: 12, color: COLORS.slate, display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: 12 }}>
-        <span>© {new Date().getFullYear()} Inner West Pulse</span>
+        <span>© {new Date().getFullYear()} Inner West Pulse · <a href="mailto:contact@iwpulse.com" style={{ color: COLORS.slate }}>contact@iwpulse.com</a></span>
         <span>Independent · Non-partisan · Free forever</span>
       </div>
     </footer>
