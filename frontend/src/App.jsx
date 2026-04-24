@@ -778,6 +778,56 @@ function GlobalStyles() {
       @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
       @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
       @keyframes cardEnter { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+      /* ── Responsive helpers ── */
+      .rally-grid { display: grid; gap: 16px; grid-template-columns: repeat(5, 1fr); }
+      .hero-stats  { display: grid; gap: 20px; max-width: 620px; margin-top: 44px; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); }
+
+      @media (max-width: 900px) {
+        .rally-grid { grid-template-columns: repeat(3, 1fr); }
+      }
+
+      @media (max-width: 768px) {
+        /* Nav: hide desktop links, show hamburger */
+        .nav-desktop      { display: none !important; }
+        .mobile-nav-toggle { display: flex !important; }
+
+        /* Logo text: smaller on mobile */
+        .logo-text { font-size: 19px !important; }
+
+        /* Hero */
+        .hero-inner { padding: 52px 20px 44px !important; }
+        .hero-search { max-width: 100% !important; }
+        .hero-stats  { grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 24px; }
+        .hero-stats .stat-number { font-size: 26px !important; }
+
+        /* Banner (example) cards: 2-col */
+        .rally-grid { grid-template-columns: repeat(2, 1fr); }
+        .rally-card { min-height: 170px !important; padding: 18px 16px !important; }
+
+        /* PostCTA */
+        .post-cta-inner { padding: 32px 22px !important; }
+        .post-cta-inner h3 { font-size: 22px !important; }
+
+        /* Post modal */
+        .post-modal-steps span.step-label { display: none; }
+        .post-modal-form { padding: 24px 20px !important; }
+        .suburb-cat-grid { grid-template-columns: 1fr !important; }
+
+        /* Issue card action row */
+        .issue-action-row { flex-wrap: wrap; }
+
+        /* Modals: full-width on mobile */
+        .modal-card { padding: 22px 18px !important; }
+
+        /* Footer */
+        .footer-cols { gap: 28px !important; }
+      }
+
+      @media (min-width: 769px) {
+        .mobile-nav-toggle { display: none !important; }
+        .mobile-nav-menu   { display: none !important; }
+      }
     `}</style>
   );
 }
@@ -786,50 +836,83 @@ function GlobalStyles() {
 // TOP NAV
 // ────────────────────────────────────────────────────────────────────────────
 function TopNav({ onHome, onPost, onHowItWorks, onAbout, onAllIssues, registeredUser, onRegister, onLogin }) {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const close = () => setMenuOpen(false);
+
   return (
-    <header style={{ position: "sticky", top: 0, zIndex: 50, background: "rgba(250, 248, 244, 0.92)", backdropFilter: "saturate(180%) blur(10px)", WebkitBackdropFilter: "saturate(180%) blur(10px)", borderBottom: `1px solid ${COLORS.hairline}` }}>
-      <div style={{ maxWidth: 1180, margin: "0 auto", padding: "14px 24px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16 }}>
-        <button onClick={onHome} style={{ display: "flex", alignItems: "center", gap: 10, padding: 0 }}>
+    <header style={{ position: "sticky", top: 0, zIndex: 50, background: "rgba(250, 248, 244, 0.97)", backdropFilter: "saturate(180%) blur(10px)", WebkitBackdropFilter: "saturate(180%) blur(10px)", borderBottom: `1px solid ${COLORS.hairline}` }}>
+      <div style={{ maxWidth: 1180, margin: "0 auto", padding: "12px 20px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
+        {/* Logo */}
+        <button onClick={() => { onHome(); close(); }} style={{ display: "flex", alignItems: "center", gap: 10, padding: 0, flexShrink: 0 }}>
           <Logo />
-          <div style={{ display: "flex", alignItems: "baseline", gap: 6 }}>
-            <span className="serif" style={{ fontSize: 26, fontWeight: 400, color: COLORS.slate, letterSpacing: "-0.02em", lineHeight: 1 }}>Inner West</span>
-            <span className="serif" style={{ fontSize: 26, fontWeight: 700, color: COLORS.authority, letterSpacing: "-0.03em", lineHeight: 1 }}>Pulse</span>
+          <div style={{ display: "flex", alignItems: "baseline", gap: 5 }}>
+            <span className="serif logo-text" style={{ fontSize: 24, fontWeight: 400, color: COLORS.slate, letterSpacing: "-0.02em", lineHeight: 1 }}>Inner West</span>
+            <span className="serif logo-text" style={{ fontSize: 24, fontWeight: 700, color: COLORS.authority, letterSpacing: "-0.03em", lineHeight: 1 }}>Pulse</span>
           </div>
         </button>
 
-        <nav style={{ display: "flex", alignItems: "center", gap: 4 }}>
-          <button onClick={onAllIssues} style={{ padding: "8px 12px", color: COLORS.ink, fontSize: 13, fontWeight: 600, borderRadius: 6, transition: "background 150ms ease" }} onMouseEnter={(e) => (e.currentTarget.style.background = COLORS.mist)} onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}>
-            All issues
-          </button>
-          <button onClick={onHowItWorks} style={{ padding: "8px 12px", color: COLORS.ink, fontSize: 13, fontWeight: 600, borderRadius: 6, transition: "background 150ms ease" }} onMouseEnter={(e) => (e.currentTarget.style.background = COLORS.mist)} onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}>
-            How it works
-          </button>
-          <button onClick={onAbout} style={{ padding: "8px 12px", color: COLORS.ink, fontSize: 13, fontWeight: 600, borderRadius: 6, transition: "background 150ms ease" }} onMouseEnter={(e) => (e.currentTarget.style.background = COLORS.mist)} onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}>
-            About
-          </button>
-
+        {/* Desktop nav */}
+        <nav className="nav-desktop" style={{ display: "flex", alignItems: "center", gap: 4 }}>
+          <button onClick={onAllIssues} style={{ padding: "8px 12px", color: COLORS.ink, fontSize: 13, fontWeight: 600, borderRadius: 6, transition: "background 150ms ease" }} onMouseEnter={(e) => (e.currentTarget.style.background = COLORS.mist)} onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}>All issues</button>
+          <button onClick={onHowItWorks} style={{ padding: "8px 12px", color: COLORS.ink, fontSize: 13, fontWeight: 600, borderRadius: 6, transition: "background 150ms ease" }} onMouseEnter={(e) => (e.currentTarget.style.background = COLORS.mist)} onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}>How it works</button>
+          <button onClick={onAbout} style={{ padding: "8px 12px", color: COLORS.ink, fontSize: 13, fontWeight: 600, borderRadius: 6, transition: "background 150ms ease" }} onMouseEnter={(e) => (e.currentTarget.style.background = COLORS.mist)} onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}>About</button>
           <div style={{ width: 1, height: 20, background: COLORS.hairline, margin: "0 8px" }} />
-
           {registeredUser ? (
             <button onClick={onRegister} style={{ display: "flex", alignItems: "center", gap: 7, padding: "8px 12px", border: `1px solid ${COLORS.hairline}`, borderRadius: 6, fontSize: 13, fontWeight: 600, color: COLORS.authority, background: COLORS.paper, transition: "background 150ms ease" }} onMouseEnter={(e) => (e.currentTarget.style.background = COLORS.mist)} onMouseLeave={(e) => (e.currentTarget.style.background = COLORS.paper)}>
               <UserCircle size={16} /> {registeredUser.name.split(" ")[0]}
             </button>
           ) : (
             <>
-              <button onClick={onLogin} style={{ padding: "8px 14px", border: `1px solid #C5D5E8`, borderRadius: 6, color: COLORS.authority, fontSize: 13, fontWeight: 600, background: "#EEF3F9", transition: "all 150ms ease" }} onMouseEnter={(e) => { e.currentTarget.style.background = "#E0EBF5"; e.currentTarget.style.borderColor = COLORS.authority; }} onMouseLeave={(e) => { e.currentTarget.style.background = "#EEF3F9"; e.currentTarget.style.borderColor = "#C5D5E8"; }}>
-                Log in
-              </button>
-              <button onClick={onRegister} style={{ padding: "8px 14px", border: `1px solid ${COLORS.authority}`, borderRadius: 6, color: COLORS.authority, fontSize: 13, fontWeight: 600, background: "transparent", transition: "all 150ms ease" }} onMouseEnter={(e) => { e.currentTarget.style.background = COLORS.authority; e.currentTarget.style.color = "white"; }} onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = COLORS.authority; }}>
-                Register
-              </button>
+              <button onClick={onLogin} style={{ padding: "8px 14px", border: `1px solid #C5D5E8`, borderRadius: 6, color: COLORS.authority, fontSize: 13, fontWeight: 600, background: "#EEF3F9", transition: "all 150ms ease" }} onMouseEnter={(e) => { e.currentTarget.style.background = "#E0EBF5"; e.currentTarget.style.borderColor = COLORS.authority; }} onMouseLeave={(e) => { e.currentTarget.style.background = "#EEF3F9"; e.currentTarget.style.borderColor = "#C5D5E8"; }}>Log in</button>
+              <button onClick={onRegister} style={{ padding: "8px 14px", border: `1px solid ${COLORS.authority}`, borderRadius: 6, color: COLORS.authority, fontSize: 13, fontWeight: 600, background: "transparent", transition: "all 150ms ease" }} onMouseEnter={(e) => { e.currentTarget.style.background = COLORS.authority; e.currentTarget.style.color = "white"; }} onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = COLORS.authority; }}>Register</button>
             </>
           )}
-
           <button onClick={onPost} style={{ display: "flex", alignItems: "center", gap: 8, background: COLORS.community, color: "white", fontWeight: 600, padding: "10px 16px", borderRadius: 6, fontSize: 14, boxShadow: "0 1px 2px rgba(0,0,0,0.08)", transition: "background 150ms ease", marginLeft: 4 }} onMouseEnter={(e) => (e.currentTarget.style.background = COLORS.communityDeep)} onMouseLeave={(e) => (e.currentTarget.style.background = COLORS.community)}>
             <Plus size={16} strokeWidth={2.5} /> Post issue
           </button>
         </nav>
+
+        {/* Mobile right: Post + hamburger */}
+        <div className="mobile-nav-toggle" style={{ display: "none", alignItems: "center", gap: 8 }}>
+          <button onClick={onPost} style={{ display: "flex", alignItems: "center", gap: 6, background: COLORS.community, color: "white", fontWeight: 600, padding: "9px 14px", borderRadius: 6, fontSize: 13 }}>
+            <Plus size={14} strokeWidth={2.5} /> Post issue
+          </button>
+          <button
+            onClick={() => setMenuOpen((o) => !o)}
+            aria-label={menuOpen ? "Close menu" : "Open menu"}
+            style={{ width: 40, height: 40, display: "flex", alignItems: "center", justifyContent: "center", borderRadius: 8, border: `1px solid ${COLORS.hairline}`, background: COLORS.paper, color: COLORS.ink, fontSize: 18, flexShrink: 0 }}
+          >
+            {menuOpen ? <X size={20} /> : <span style={{ fontFamily: "system-ui", lineHeight: 1 }}>☰</span>}
+          </button>
+        </div>
       </div>
+
+      {/* Mobile dropdown */}
+      {menuOpen && (
+        <div className="mobile-nav-menu" style={{ background: COLORS.paper, borderTop: `1px solid ${COLORS.hairline}`, padding: "8px 20px 20px" }}>
+          {[
+            { label: "All issues", fn: onAllIssues },
+            { label: "How it works", fn: onHowItWorks },
+            { label: "About", fn: onAbout },
+          ].map(({ label, fn }) => (
+            <button key={label} onClick={() => { fn(); close(); }} style={{ display: "block", width: "100%", padding: "14px 0", color: COLORS.ink, fontSize: 15, fontWeight: 600, textAlign: "left", borderBottom: `1px solid ${COLORS.hairline}` }}>
+              {label}
+            </button>
+          ))}
+          <div style={{ marginTop: 14, display: "flex", gap: 10 }}>
+            {registeredUser ? (
+              <button onClick={() => { onRegister(); close(); }} style={{ flex: 1, padding: "12px", border: `1px solid ${COLORS.hairline}`, borderRadius: 6, fontSize: 14, fontWeight: 600, color: COLORS.authority, background: COLORS.paper, display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}>
+                <UserCircle size={16} /> {registeredUser.name.split(" ")[0]}
+              </button>
+            ) : (
+              <>
+                <button onClick={() => { onLogin(); close(); }} style={{ flex: 1, padding: "12px", background: "#EEF3F9", border: `1px solid #C5D5E8`, borderRadius: 6, fontSize: 14, fontWeight: 600, color: COLORS.authority }}>Log in</button>
+                <button onClick={() => { onRegister(); close(); }} style={{ flex: 1, padding: "12px", border: `1px solid ${COLORS.authority}`, borderRadius: 6, fontSize: 14, fontWeight: 600, color: COLORS.authority }}>Register</button>
+              </>
+            )}
+          </div>
+        </div>
+      )}
     </header>
   );
 }
@@ -901,15 +984,12 @@ function HomePage({ issues, loading, error, onRetry, onOpenIssue, onVote, userVo
             title="Your street has more power than you think."
             subtitle="Get minimum 25 verified supporters and you can email Council directly — or keep collecting more votes to strengthen your case before you send."
           />
-          <div style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(5, 1fr)",
-            gap: 16,
-          }}>
+          <div className="rally-grid">
             {RALLY_IDEAS.map((idea, idx) => (
               <button
                 key={idx}
                 onClick={onPost}
+                className="rally-card"
                 style={{
                   borderRadius: 16,
                   background: idea.gradient,
@@ -1010,7 +1090,7 @@ function Hero({ query, setQuery, stats, onPost }) {
       <div style={{ position: "absolute", inset: 0, background: `linear-gradient(135deg, ${COLORS.authorityDeep}ee 0%, ${COLORS.authority}dd 50%, ${COLORS.authority}cc 100%)` }} />
       <div style={{ position: "absolute", inset: 0, backgroundImage: "radial-gradient(circle at 20% 20%, rgba(245,158,11,0.14), transparent 40%), radial-gradient(circle at 80% 80%, rgba(45,122,74,0.18), transparent 45%)" }} />
 
-      <div style={{ position: "relative", maxWidth: 1180, margin: "0 auto", padding: "80px 24px", width: "100%" }}>
+      <div className="hero-inner" style={{ position: "relative", maxWidth: 1180, margin: "0 auto", padding: "80px 24px", width: "100%" }}>
         <div style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "6px 14px", borderRadius: 999, background: "rgba(255,255,255,0.12)", border: "1px solid rgba(255,255,255,0.2)", fontSize: 12, fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 20, backdropFilter: "blur(8px)" }}>
           <span style={{ width: 6, height: 6, borderRadius: "50%", background: COLORS.gold }} />
           Grassroots · Independent · Public
@@ -1030,13 +1110,13 @@ function Hero({ query, setQuery, stats, onPost }) {
           Post an issue. Collect minimum 25 verified supporters. Your concern lands on the Council desk as a formal submission — automatically.
         </p>
 
-        <div style={{ marginTop: 32, display: "flex", alignItems: "center", gap: 10, background: "white", borderRadius: 10, padding: "6px 6px 6px 16px", maxWidth: 560, boxShadow: "0 12px 30px rgba(0,0,0,0.25)" }}>
+        <div className="hero-search" style={{ marginTop: 32, display: "flex", alignItems: "center", gap: 10, background: "white", borderRadius: 10, padding: "6px 6px 6px 16px", maxWidth: 560, boxShadow: "0 12px 30px rgba(0,0,0,0.25)" }}>
           <Search size={18} color={COLORS.slate} />
           <input type="text" placeholder="Search issues…" value={query} onChange={(e) => setQuery(e.target.value)} style={{ border: "none", padding: "10px 4px", fontSize: 15, background: "transparent", color: COLORS.ink, boxShadow: "none" }} />
           <button onClick={onPost} style={{ background: COLORS.community, color: "white", fontWeight: 600, padding: "10px 16px", borderRadius: 6, fontSize: 14, whiteSpace: "nowrap" }}>Post issue</button>
         </div>
 
-        <div style={{ marginTop: 44, display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: 20, maxWidth: 620 }}>
+        <div className="hero-stats">
           <Stat number={stats.active} label="Active issues" />
           <Stat number={stats.supporters.toLocaleString()} label="Verified supporters" />
           <Stat number={stats.escalated} label="Sent to Council" />
@@ -1048,9 +1128,9 @@ function Hero({ query, setQuery, stats, onPost }) {
 
 function Stat({ number, label }) {
   return (
-    <div style={{ borderLeft: `2px solid ${COLORS.gold}`, paddingLeft: 16 }}>
-      <div className="serif" style={{ fontSize: 36, fontWeight: 600, lineHeight: 1, letterSpacing: "-0.02em" }}>{number}</div>
-      <div style={{ marginTop: 6, fontSize: 12, letterSpacing: "0.08em", textTransform: "uppercase", fontWeight: 600, color: "rgba(255,255,255,0.75)" }}>{label}</div>
+    <div style={{ borderLeft: `2px solid ${COLORS.gold}`, paddingLeft: 12 }}>
+      <div className="serif stat-number" style={{ fontSize: 36, fontWeight: 600, lineHeight: 1, letterSpacing: "-0.02em" }}>{number}</div>
+      <div style={{ marginTop: 6, fontSize: 11, letterSpacing: "0.07em", textTransform: "uppercase", fontWeight: 600, color: "rgba(255,255,255,0.75)" }}>{label}</div>
     </div>
   );
 }
@@ -1142,7 +1222,7 @@ function PostCTA({ onPost }) {
     <section style={{ position: "relative", overflow: "hidden", borderRadius: 16, margin: "0 24px 80px" }}>
       <div style={{ position: "absolute", inset: 0, backgroundImage: `url(${TEXTURE_IMAGE})`, backgroundSize: "cover", backgroundPosition: "center", filter: "saturate(0.9)" }} />
       <div style={{ position: "absolute", inset: 0, background: `linear-gradient(100deg, ${COLORS.authorityDeep}f2 0%, ${COLORS.authority}d9 60%, ${COLORS.community}c4 100%)` }} />
-      <div style={{ position: "relative", padding: "56px 40px", color: "white", display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between", gap: 24 }}>
+      <div className="post-cta-inner" style={{ position: "relative", padding: "56px 40px", color: "white", display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between", gap: 24 }}>
         <div style={{ maxWidth: 560 }}>
           <div style={{ fontSize: 12, letterSpacing: "0.14em", textTransform: "uppercase", fontWeight: 600, color: COLORS.gold, marginBottom: 10 }}>See something? Say something.</div>
           <h3 className="serif" style={{ fontSize: "clamp(26px, 3.4vw, 36px)", fontWeight: 500, margin: 0, lineHeight: 1.1, letterSpacing: "-0.02em" }}>Minimum 25 supporters unlocks your direct line to Council.</h3>
@@ -1209,7 +1289,7 @@ function IssueCard({ issue, onOpen, onVote, userVote, onShare, index = 0, sessio
         </div>
       </div>
 
-      <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: "auto" }}>
+      <div className="issue-action-row" style={{ display: "flex", alignItems: "center", gap: 8, marginTop: "auto" }}>
         <VoteButton kind="up" count={issue.vote_count || 0} active={userVote === "up"} disabled={!!userVote} onClick={() => onVote(issue.id, "up")} />
         <VoteButton kind="down" count={issue.down_count || 0} active={userVote === "down"} disabled={!!userVote} onClick={() => onVote(issue.id, "down")} />
         <div style={{ position: "relative", marginLeft: "auto" }}>
@@ -1690,7 +1770,7 @@ function LoginModal({ onClose, onSubmit }) {
 
   return (
     <div style={{ position: "fixed", inset: 0, background: "rgba(6,37,71,0.55)", backdropFilter: "blur(6px)", WebkitBackdropFilter: "blur(6px)", zIndex: 100, display: "flex", alignItems: "flex-start", justifyContent: "center", padding: "40px 16px", overflowY: "auto", animation: "fadeIn 200ms ease" }} onClick={onClose}>
-      <form onClick={(e) => e.stopPropagation()} onSubmit={handleSubmit} style={{ background: COLORS.paper, borderRadius: 14, padding: 28, maxWidth: 420, width: "100%", boxShadow: "0 24px 60px rgba(0,0,0,0.35)", animation: "cardEnter 300ms ease" }}>
+      <form onClick={(e) => e.stopPropagation()} onSubmit={handleSubmit} className="modal-card" style={{ background: COLORS.paper, borderRadius: 14, padding: 28, maxWidth: 420, width: "100%", boxShadow: "0 24px 60px rgba(0,0,0,0.35)", animation: "cardEnter 300ms ease" }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 20 }}>
           <div>
             <div style={{ fontSize: 12, letterSpacing: "0.1em", textTransform: "uppercase", fontWeight: 700, color: COLORS.authority, marginBottom: 4 }}>
@@ -1757,7 +1837,7 @@ function RegisterModal({ onClose, onSubmit, existing }) {
 
   return (
     <div style={{ position: "fixed", inset: 0, background: "rgba(6,37,71,0.55)", backdropFilter: "blur(6px)", WebkitBackdropFilter: "blur(6px)", zIndex: 100, display: "flex", alignItems: "flex-start", justifyContent: "center", padding: "40px 16px", overflowY: "auto", animation: "fadeIn 200ms ease" }} onClick={onClose}>
-      <form onClick={(e) => e.stopPropagation()} onSubmit={handleSubmit} style={{ background: COLORS.paper, borderRadius: 14, padding: 28, maxWidth: 480, width: "100%", boxShadow: "0 24px 60px rgba(0,0,0,0.35)", animation: "cardEnter 300ms ease" }}>
+      <form onClick={(e) => e.stopPropagation()} onSubmit={handleSubmit} className="modal-card" style={{ background: COLORS.paper, borderRadius: 14, padding: 28, maxWidth: 480, width: "100%", boxShadow: "0 24px 60px rgba(0,0,0,0.35)", animation: "cardEnter 300ms ease" }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 6 }}>
           <div>
             <div style={{ fontSize: 12, letterSpacing: "0.1em", textTransform: "uppercase", fontWeight: 700, color: COLORS.authority, marginBottom: 4 }}>
@@ -1854,7 +1934,7 @@ function PostIssueModal({ onClose, onSubmit, registeredUser }) {
       <div onClick={(e) => e.stopPropagation()} style={{ maxWidth: 780, width: "100%", display: "flex", flexDirection: "column", gap: 10 }}>
 
         {/* 4-step banner */}
-        <div style={{ background: "rgba(255,255,255,0.97)", borderRadius: 12, padding: "14px 24px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8, boxShadow: "0 4px 20px rgba(0,0,0,0.15)" }}>
+        <div className="post-modal-steps" style={{ background: "rgba(255,255,255,0.97)", borderRadius: 12, padding: "14px 20px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 6, boxShadow: "0 4px 20px rgba(0,0,0,0.15)" }}>
           {[
             { label: "Post your issue", icon: "✍️" },
             { label: "Share with neighbours", icon: "📣" },
@@ -1862,16 +1942,16 @@ function PostIssueModal({ onClose, onSubmit, registeredUser }) {
             { label: "Email Council directly", icon: "🏛" },
           ].map(({ label, icon }, i, arr) => (
             <React.Fragment key={i}>
-              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
                 <span style={{ background: i === 0 ? COLORS.community : COLORS.authority, color: "white", borderRadius: "50%", width: 24, height: 24, fontSize: 12, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>{i + 1}</span>
-                <span style={{ fontSize: 13.5, color: COLORS.ink, fontWeight: i === 0 ? 700 : 500 }}>{label}</span>
+                <span className="step-label" style={{ fontSize: 13, color: COLORS.ink, fontWeight: i === 0 ? 700 : 500 }}>{label}</span>
               </div>
-              {i < arr.length - 1 && <span style={{ color: COLORS.slate, opacity: 0.5, fontSize: 18, fontWeight: 300 }}>›</span>}
+              {i < arr.length - 1 && <span style={{ color: COLORS.slate, opacity: 0.5, fontSize: 16, fontWeight: 300, flexShrink: 0 }}>›</span>}
             </React.Fragment>
           ))}
         </div>
 
-      <form onSubmit={handleSubmit} style={{ background: COLORS.paper, borderRadius: 14, padding: "32px 36px", width: "100%", boxShadow: "0 24px 60px rgba(0,0,0,0.35)", animation: "cardEnter 300ms ease" }}>
+      <form onSubmit={handleSubmit} className="post-modal-form" style={{ background: COLORS.paper, borderRadius: 14, padding: "32px 36px", width: "100%", boxShadow: "0 24px 60px rgba(0,0,0,0.35)", animation: "cardEnter 300ms ease" }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 6 }}>
           <div>
             <div style={{ fontSize: 12, letterSpacing: "0.1em", textTransform: "uppercase", fontWeight: 700, color: COLORS.community, marginBottom: 4 }}>New issue</div>
@@ -1908,7 +1988,7 @@ function PostIssueModal({ onClose, onSubmit, registeredUser }) {
               <div style={{ fontSize: 11, color: COLORS.slate }}>{description.length} / 5000</div>
             </div>
           </div>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+          <div className="suburb-cat-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
             <div>
               <label style={labelStyle}>Suburb</label>
               <select value={suburb} onChange={(e) => { setSuburb(e.target.value); setErrors((r) => ({ ...r, suburb: "" })); }} style={errors.suburb ? errorInputStyle : undefined}>
@@ -2344,7 +2424,7 @@ function Toast({ toast }) {
 function Footer({ onHowItWorks, onAbout, onHome }) {
   return (
     <footer style={{ borderTop: `1px solid ${COLORS.hairline}`, background: COLORS.paper, padding: "40px 24px", marginTop: 40 }}>
-      <div style={{ maxWidth: 1180, margin: "0 auto", display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "flex-start", gap: 24 }}>
+      <div className="footer-cols" style={{ maxWidth: 1180, margin: "0 auto", display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "flex-start", gap: 24 }}>
         <div style={{ maxWidth: 420 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
             <Logo />
