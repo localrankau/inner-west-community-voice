@@ -2164,15 +2164,13 @@ function PostIssueModal({ onClose, onSubmit, registeredUser }) {
               {errors.category && <div style={errorTextStyle}>{errors.category}</div>}
             </div>
           </div>
-          {!registeredUser && (
-            <label style={{ display: "flex", alignItems: "center", gap: 10, padding: "12px 14px", background: COLORS.mist, borderRadius: 8, fontSize: 14, color: COLORS.ink, cursor: "pointer" }}>
-              <input type="checkbox" checked={anonymous} onChange={(e) => setAnonymous(e.target.checked)} style={{ width: "auto", padding: 0 }} />
-              <div>
-                <div style={{ fontWeight: 600 }}>Post anonymously</div>
-                <div style={{ fontSize: 12, color: COLORS.slate, marginTop: 2 }}>Your name won't appear on the issue.</div>
-              </div>
-            </label>
-          )}
+          <label style={{ display: "flex", alignItems: "center", gap: 10, padding: "12px 14px", background: COLORS.mist, borderRadius: 8, fontSize: 14, color: COLORS.ink, cursor: "pointer" }}>
+            <input type="checkbox" checked={anonymous} onChange={(e) => setAnonymous(e.target.checked)} style={{ width: "auto", padding: 0 }} />
+            <div>
+              <div style={{ fontWeight: 600 }}>Post anonymously</div>
+              <div style={{ fontSize: 12, color: COLORS.slate, marginTop: 2 }}>Your name won't appear on the issue.</div>
+            </div>
+          </label>
         </div>
 
         <div style={{ display: "flex", justifyContent: "flex-end", gap: 10, marginTop: 24 }}>
