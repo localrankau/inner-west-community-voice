@@ -296,9 +296,15 @@ export default function App() {
     return () => window.removeEventListener("popstate", onPop);
   }, []);
 
+  const [showResetPasswordModal, setShowResetPasswordModal] = useState(false);
+
   // Sync auth state — fires when user clicks the magic link email
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
+      if (_event === "PASSWORD_RECOVERY") {
+        setShowResetPasswordModal(true);
+        return;
+      }
       if (session?.user) {
         const meta = session.user.user_metadata || {};
         const synced = {
@@ -441,6 +447,16 @@ export default function App() {
     localStorage.removeItem("iwcv_user");
     setRegisteredUser(null);
     showToast("You've been logged out.", "success");
+  }
+
+  async function handleResetPassword(newPassword) {
+    const { error } = await supabase.auth.updateUser({ password: newPassword });
+    if (error) {
+      showToast(error.message || "Couldn't update password.", "error");
+      throw error;
+    }
+    setShowResetPasswordModal(false);
+    showToast("Password updated — you're now logged in.", "success");
   }
 
   async function handleForgotPassword(email) {
@@ -755,6 +771,13 @@ export default function App() {
           onClose={() => setShowLoginModal(false)}
           onSubmit={handleLogin}
           onForgot={handleForgotPassword}
+        />
+      )}
+
+      {showResetPasswordModal && (
+        <ResetPasswordModal
+          onClose={() => setShowResetPasswordModal(false)}
+          onSubmit={handleResetPassword}
         />
       )}
 
@@ -1860,6 +1883,70 @@ function LoginModal({ onClose, onSubmit, onForgot }) {
           <button type="button" onClick={onClose} style={{ padding: "12px 18px", background: COLORS.paper, border: `1px solid ${COLORS.hairline}`, borderRadius: 6, color: COLORS.ink, fontWeight: 500, fontSize: 14 }}>Cancel</button>
           <button type="submit" disabled={submitting} style={{ padding: "12px 20px", background: submitting ? COLORS.slate : COLORS.authority, color: "white", fontWeight: 600, borderRadius: 6, fontSize: 14, cursor: submitting ? "not-allowed" : "pointer" }}>
             {submitting ? "Signing in…" : "Log in"}
+          </button>
+        </div>
+      </form>
+    </div>
+  );
+}
+
+function ResetPasswordModal({ onClose, onSubmit }) {
+  const [password, setPassword] = useState("");
+  const [confirm, setConfirm] = useState("");
+  const [errors, setErrors] = useState({});
+  const [submitting, setSubmitting] = useState(false);
+
+  useEffect(() => {
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => { document.body.style.overflow = prev; };
+  }, []);
+
+  async function handleSubmit(ev) {
+    ev.preventDefault();
+    const e = {};
+    if (password.length < 8) e.password = "Password must be at least 8 characters";
+    else if (password !== confirm) e.confirm = "Passwords don't match";
+    setErrors(e);
+    if (Object.keys(e).length) return;
+    setSubmitting(true);
+    try { await onSubmit(password); }
+    catch { /* toast shown by handler */ }
+    finally { setSubmitting(false); }
+  }
+
+  return (
+    <div style={{ position: "fixed", inset: 0, background: "rgba(6,37,71,0.55)", backdropFilter: "blur(6px)", WebkitBackdropFilter: "blur(6px)", zIndex: 100, display: "flex", alignItems: "flex-start", justifyContent: "center", padding: "40px 16px", overflowY: "auto", animation: "fadeIn 200ms ease" }} onClick={onClose}>
+      <form onClick={(e) => e.stopPropagation()} onSubmit={handleSubmit} className="modal-card" style={{ background: COLORS.paper, borderRadius: 14, padding: 28, maxWidth: 420, width: "100%", boxShadow: "0 24px 60px rgba(0,0,0,0.35)", animation: "cardEnter 300ms ease" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 20 }}>
+          <div>
+            <div style={{ fontSize: 12, letterSpacing: "0.1em", textTransform: "uppercase", fontWeight: 700, color: COLORS.authority, marginBottom: 4 }}>
+              <UserCircle size={12} style={{ display: "inline", verticalAlign: "-2px", marginRight: 6 }} />Set new password
+            </div>
+            <h2 className="serif" style={{ fontSize: 24, fontWeight: 600, margin: 0, letterSpacing: "-0.02em" }}>Choose a new password</h2>
+          </div>
+          <button type="button" onClick={onClose} style={{ padding: 6, color: COLORS.slate, borderRadius: 6 }} onMouseEnter={(e) => (e.currentTarget.style.background = COLORS.mist)} onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}>
+            <X size={20} />
+          </button>
+        </div>
+
+        <div style={{ display: "grid", gap: 14 }}>
+          <div>
+            <label style={labelStyle}>New password</label>
+            <input type="password" value={password} onChange={(e) => { setPassword(e.target.value); setErrors((x) => ({ ...x, password: undefined })); }} placeholder="At least 8 characters" style={errors.password ? errorInputStyle : undefined} autoFocus />
+            {errors.password && <div style={errorTextStyle}>{errors.password}</div>}
+          </div>
+          <div>
+            <label style={labelStyle}>Confirm password</label>
+            <input type="password" value={confirm} onChange={(e) => { setConfirm(e.target.value); setErrors((x) => ({ ...x, confirm: undefined })); }} placeholder="Repeat your password" style={errors.confirm ? errorInputStyle : undefined} />
+            {errors.confirm && <div style={errorTextStyle}>{errors.confirm}</div>}
+          </div>
+        </div>
+
+        <div style={{ display: "flex", justifyContent: "flex-end", gap: 10, marginTop: 24 }}>
+          <button type="button" onClick={onClose} style={{ padding: "12px 18px", background: COLORS.paper, border: `1px solid ${COLORS.hairline}`, borderRadius: 6, color: COLORS.ink, fontWeight: 500, fontSize: 14 }}>Cancel</button>
+          <button type="submit" disabled={submitting} style={{ padding: "12px 20px", background: submitting ? COLORS.slate : COLORS.authority, color: "white", fontWeight: 600, borderRadius: 6, fontSize: 14, cursor: submitting ? "not-allowed" : "pointer" }}>
+            {submitting ? "Saving…" : "Update password"}
           </button>
         </div>
       </form>
