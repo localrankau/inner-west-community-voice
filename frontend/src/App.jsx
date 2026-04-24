@@ -1210,11 +1210,7 @@ function Hero({ query, setQuery, stats, onPost }) {
         </h1>
 
         <p style={{ marginTop: 18, fontSize: 20, fontWeight: 400, color: "rgba(255,255,255,0.92)", lineHeight: 1.55, maxWidth: 640, letterSpacing: "-0.01em" }}>
-          IWPulse captures the pulse of the community and turns it into proof — verified support that shows council what residents actually care about.
-        </p>
-
-        <p style={{ marginTop: 14, fontSize: 16, lineHeight: 1.55, maxWidth: 620, color: "rgba(255,255,255,0.75)" }}>
-          Post an issue. Collect minimum 25 verified supporters. Your concern lands on the Council desk as a formal submission — automatically.
+          Post an issue. Get 25 verified neighbours to back it. It lands on Council's desk — automatically.
         </p>
 
         <div className="hero-search" style={{ marginTop: 32, display: "flex", alignItems: "center", gap: 10, background: "white", borderRadius: 10, padding: "6px 6px 6px 16px", maxWidth: 560, boxShadow: "0 12px 30px rgba(0,0,0,0.25)" }}>
