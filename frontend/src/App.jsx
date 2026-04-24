@@ -1019,6 +1019,8 @@ function HomePage({ issues, loading, error, onRetry, onOpenIssue, onVote, userVo
     <main>
       <Hero query={query} setQuery={setQuery} stats={stats} onPost={onPost} />
 
+      <HowItWorks />
+
       {error && (
         <div style={{ textAlign: "center", padding: "32px 24px", color: COLORS.error, fontSize: 15 }}>
           {error}{" "}
@@ -1126,6 +1128,55 @@ function HomePage({ issues, loading, error, onRetry, onOpenIssue, onVote, userVo
 
       <PostCTA onPost={onPost} />
     </main>
+  );
+}
+
+function HowItWorks() {
+  const steps = [
+    {
+      number: "01",
+      icon: "✏️",
+      title: "Post an issue",
+      body: "Takes 2 minutes. Anonymous if you prefer. Describe what's wrong and where — no jargon, no forms.",
+    },
+    {
+      number: "02",
+      icon: "🙌",
+      title: "Rally 25 verified neighbours",
+      body: "Residents sign with their name and postcode. Every signature is verified as a local. Votes are public and tracked.",
+    },
+    {
+      number: "03",
+      icon: "📨",
+      title: "Council gets your submission",
+      body: "Hit 25 supporters and you unlock a formal submission — sent directly to Inner West Council with your issue, supporter count, and postcodes attached.",
+    },
+  ];
+
+  return (
+    <section style={{ background: COLORS.paper, borderBottom: `1px solid ${COLORS.hairline}` }}>
+      <div style={{ maxWidth: 1180, margin: "0 auto", padding: "52px 24px" }}>
+        <div style={{ textAlign: "center", marginBottom: 40 }}>
+          <div style={{ fontSize: 11, letterSpacing: "0.12em", textTransform: "uppercase", fontWeight: 700, color: COLORS.authority, marginBottom: 8 }}>How it works</div>
+          <h2 className="serif" style={{ fontSize: "clamp(22px, 3vw, 30px)", fontWeight: 600, margin: 0, letterSpacing: "-0.02em", color: COLORS.ink }}>From street-level frustration to Council desk — in three steps</h2>
+        </div>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: 0, position: "relative" }}>
+          {steps.map((step, i) => (
+            <div key={i} style={{ padding: "28px 32px", borderLeft: i > 0 ? `1px solid ${COLORS.hairline}` : "none", position: "relative" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
+                <div style={{ width: 36, height: 36, borderRadius: "50%", background: COLORS.authority, color: "white", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, fontWeight: 700, letterSpacing: "-0.01em", flexShrink: 0 }}>{step.number}</div>
+                <div style={{ fontSize: 22 }}>{step.icon}</div>
+              </div>
+              <h3 style={{ fontSize: 17, fontWeight: 700, margin: "0 0 8px", color: COLORS.ink, letterSpacing: "-0.01em" }}>{step.title}</h3>
+              <p style={{ fontSize: 14, color: COLORS.slate, lineHeight: 1.6, margin: 0 }}>{step.body}</p>
+              {i < steps.length - 1 && (
+                <div className="step-arrow" style={{ position: "absolute", right: -14, top: "50%", transform: "translateY(-50%)", width: 28, height: 28, background: COLORS.paper, border: `1px solid ${COLORS.hairline}`, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1, color: COLORS.authority, fontSize: 14, fontWeight: 700 }}>→</div>
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
   );
 }
 
