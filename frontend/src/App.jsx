@@ -308,11 +308,14 @@ export default function App() {
 
   const [showResetPasswordModal, setShowResetPasswordModal] = useState(false);
 
-  // Sync auth state — fires when user clicks the magic link email
+  // Sync auth state. detectSessionInUrl is disabled on the client so we
+  // exchange the code manually here — AFTER subscribing — to guarantee
+  // PASSWORD_RECOVERY is never fired before we can receive it.
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
       if (_event === "PASSWORD_RECOVERY") {
         setShowResetPasswordModal(true);
+        window.history.replaceState({}, "", window.location.pathname);
         return;
       }
       if (session?.user) {
@@ -365,6 +368,18 @@ export default function App() {
         }
       }
     });
+
+    // Now that we're subscribed, exchange any ?code= in the URL.
+    // This fires onAuthStateChange with PASSWORD_RECOVERY (reset link) or
+    // SIGNED_IN (magic link / email confirmation) as appropriate.
+    const params = new URLSearchParams(window.location.search);
+    const code = params.get("code");
+    if (code) {
+      supabase.auth.exchangeCodeForSession(code).catch((err) => {
+        console.error("Code exchange failed:", err);
+      });
+    }
+
     return () => subscription.unsubscribe();
   }, []);
 
@@ -446,11 +461,23 @@ export default function App() {
   }
 
   async function handleLogin({ email, password }) {
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) {
       console.error("Login error:", error);
       showToast(error.message || "Invalid email or password.", "error");
       throw error;
+    }
+    // Sync immediately from the returned session — don't rely solely on
+    // onAuthStateChange timing, which can lag behind modal close.
+    if (data?.session?.user) {
+      const meta = data.session.user.user_metadata || {};
+      const synced = {
+        name: meta.name || data.session.user.email,
+        email: data.session.user.email,
+        postcode: meta.postcode || "",
+      };
+      localStorage.setItem("iwcv_user", JSON.stringify(synced));
+      setRegisteredUser(synced);
     }
     setShowLoginModal(false);
     if (pendingPostRef.current) {
