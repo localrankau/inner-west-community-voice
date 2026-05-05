@@ -244,6 +244,7 @@ export default function App() {
   const [showPostModal, setShowPostModal] = useState(false);
   const [showRegisterModal, setShowRegisterModal] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
+  const pendingPostRef = useRef(false);
   const [emailModalIssue, setEmailModalIssue] = useState(null);
   const [toast, setToast] = useState(null);
   const [userVotes, setUserVotes] = useState(loadStoredVotes);
@@ -261,6 +262,15 @@ export default function App() {
   function showToast(message, kind = "success") {
     setToast({ message, kind, id: Date.now() });
     setTimeout(() => setToast(null), 3200);
+  }
+
+  function openPostModal() {
+    if (!registeredUser) {
+      pendingPostRef.current = true;
+      setShowRegisterModal(true);
+    } else {
+      setShowPostModal(true);
+    }
   }
 
   useEffect(() => { fetchIssues(); }, []);
@@ -424,6 +434,10 @@ export default function App() {
     } catch (err) { console.error(err); }
 
     setShowRegisterModal(false);
+    if (pendingPostRef.current) {
+      pendingPostRef.current = false;
+      setShowPostModal(true);
+    }
     if (data?.session) {
       showToast(`Welcome, ${name}! You're logged in.`, "success");
     } else {
@@ -439,6 +453,10 @@ export default function App() {
       throw error;
     }
     setShowLoginModal(false);
+    if (pendingPostRef.current) {
+      pendingPostRef.current = false;
+      setShowPostModal(true);
+    }
     showToast("Welcome back!", "success");
   }
 
@@ -680,7 +698,7 @@ export default function App() {
       <GlobalStyles />
       <TopNav
         onHome={() => setView({ name: "home" })}
-        onPost={() => setShowPostModal(true)}
+        onPost={openPostModal}
         onAllIssues={() => setView({ name: "all-issues" })}
         onHowItWorks={() => setView({ name: "how-it-works" })}
         onAbout={() => setView({ name: "about" })}
@@ -695,7 +713,7 @@ export default function App() {
           issues={issues} loading={loading} error={error} onRetry={fetchIssues}
           onOpenIssue={(id) => setView({ name: "detail", id })}
           onVote={handleVote} userVotes={userVotes}
-          onPost={() => setShowPostModal(true)}
+          onPost={openPostModal}
           onShare={(issue) => shareIssue(issue, showToast)}
           sessionId={sessionId}
           onDelete={handleDeleteIssue}
@@ -730,14 +748,14 @@ export default function App() {
           onShare={(issue) => shareIssue(issue, showToast)}
           sessionId={sessionId}
           onDelete={handleDeleteIssue}
-          onPost={() => setShowPostModal(true)}
+          onPost={openPostModal}
         />
       )}
 
       {view.name === "how-it-works" && (
         <HowItWorksPage
           onBack={() => setView({ name: "home" })}
-          onPost={() => setShowPostModal(true)}
+          onPost={openPostModal}
         />
       )}
 
@@ -760,9 +778,10 @@ export default function App() {
       )}
       {showRegisterModal && (
         <RegisterModal
-          onClose={() => setShowRegisterModal(false)}
+          onClose={() => { pendingPostRef.current = false; setShowRegisterModal(false); }}
           onSubmit={handleRegister}
           existing={registeredUser}
+          prompt={pendingPostRef.current ? "You need an account to post an issue." : null}
         />
       )}
 
@@ -2020,7 +2039,7 @@ function ResetPasswordModal({ onClose, onSubmit }) {
   );
 }
 
-function RegisterModal({ onClose, onSubmit, existing }) {
+function RegisterModal({ onClose, onSubmit, existing, prompt }) {
   const [name, setName] = useState(existing?.name || "");
   const [email, setEmail] = useState(existing?.email || "");
   const [postcode, setPostcode] = useState(existing?.postcode || "");
@@ -2071,7 +2090,13 @@ function RegisterModal({ onClose, onSubmit, existing }) {
           </button>
         </div>
 
-        <div style={{ padding: "12px 14px", background: "#E8EEF5", borderRadius: 8, marginBottom: 20, marginTop: 12 }}>
+        {prompt && (
+          <div style={{ padding: "10px 14px", background: "#FFF8E1", border: "1px solid #FFD54F", borderRadius: 8, marginBottom: 12, marginTop: 12, fontSize: 13, color: "#5D4037", fontWeight: 500 }}>
+            {prompt}
+          </div>
+        )}
+
+        <div style={{ padding: "12px 14px", background: "#E8EEF5", borderRadius: 8, marginBottom: 20, marginTop: prompt ? 0 : 12 }}>
           <div style={{ display: "flex", gap: 8, alignItems: "flex-start" }}>
             <Shield size={14} color={COLORS.authority} style={{ marginTop: 2, flexShrink: 0 }} />
             <p style={{ margin: 0, fontSize: 13, color: COLORS.authority, lineHeight: 1.55 }}>
