@@ -464,7 +464,19 @@ export default function App() {
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) {
       console.error("Login error:", error);
-      showToast(error.message || "Invalid email or password.", "error");
+      // "Invalid login credentials" covers both wrong password AND unconfirmed
+      // email in Supabase v2. Offer to resend the confirmation email so users
+      // aren't stuck if they just haven't clicked their welcome email yet.
+      if (error.message?.toLowerCase().includes("invalid login credentials")) {
+        showToast(
+          "Wrong password, or your email isn't confirmed yet — check your inbox (and spam) for a confirmation link.",
+          "error"
+        );
+        // Try resending confirmation in case that's the issue
+        await supabase.auth.resend({ type: "signup", email });
+      } else {
+        showToast(error.message || "Couldn't sign in.", "error");
+      }
       throw error;
     }
     // Sync immediately from the returned session — don't rely solely on
@@ -506,7 +518,7 @@ export default function App() {
 
   async function handleForgotPassword(email) {
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: window.location.origin,
+      redirectTo: `${window.location.origin}/`,
     });
     if (error) {
       showToast(error.message || "Couldn't send reset email.", "error");
