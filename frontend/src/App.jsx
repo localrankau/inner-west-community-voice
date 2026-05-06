@@ -512,7 +512,7 @@ export default function App() {
   }
 
   async function handleLogout() {
-    await supabase.auth.signOut();
+    try { await supabase.auth.signOut(); } catch (err) { console.error("Sign out error:", err); }
     localStorage.removeItem("iwcv_user");
     setRegisteredUser(null);
     showToast("You've been logged out.", "success");
