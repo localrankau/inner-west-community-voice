@@ -74,6 +74,14 @@ const CATEGORIES = [
   "Other",
 ];
 const ESCALATION_THRESHOLD = 25;
+const ADMIN_EMAIL = "ricketts.ben@gmail.com";
+const BLOG_CATEGORIES = [
+  "Rezoning & Development",
+  "Infrastructure",
+  "Transport",
+  "Community",
+  "Council Watch",
+];
 
 const HERO_IMAGE =
   "https://upload.wikimedia.org/wikipedia/commons/thumb/0/06/2019-04-10_ANZAC_Bridge.jpg/1920px-2019-04-10_ANZAC_Bridge.jpg";
@@ -235,10 +243,14 @@ export default function App() {
     const params = new URLSearchParams(window.location.search);
     const issueId = params.get("issue");
     const page = params.get("page");
+    const blogSlug = params.get("blog");
     if (issueId) return { name: "detail", id: Number(issueId) };
+    if (blogSlug) return { name: "blog-post", slug: blogSlug };
     if (page === "all-issues") return { name: "all-issues" };
     if (page === "how-it-works") return { name: "how-it-works" };
     if (page === "about") return { name: "about" };
+    if (page === "blog") return { name: "blog" };
+    if (page === "blog-admin") return { name: "blog-admin" };
     return { name: "home" };
   });
   const [showPostModal, setShowPostModal] = useState(false);
@@ -285,6 +297,12 @@ export default function App() {
       window.history.pushState({ view: "how-it-works" }, "", "?page=how-it-works");
     } else if (view.name === "about") {
       window.history.pushState({ view: "about" }, "", "?page=about");
+    } else if (view.name === "blog") {
+      window.history.pushState({ view: "blog" }, "", "?page=blog");
+    } else if (view.name === "blog-post") {
+      window.history.pushState({ view: "blog-post", slug: view.slug }, "", `?blog=${view.slug}`);
+    } else if (view.name === "blog-admin") {
+      window.history.pushState({ view: "blog-admin" }, "", "?page=blog-admin");
     } else {
       window.history.replaceState({}, "", window.location.pathname);
     }
@@ -296,10 +314,14 @@ export default function App() {
       const params = new URLSearchParams(window.location.search);
       const issueId = params.get("issue");
       const page = params.get("page");
+      const blogSlug = params.get("blog");
       if (issueId) setView({ name: "detail", id: Number(issueId) });
+      else if (blogSlug) setView({ name: "blog-post", slug: blogSlug });
       else if (page === "all-issues") setView({ name: "all-issues" });
       else if (page === "how-it-works") setView({ name: "how-it-works" });
       else if (page === "about") setView({ name: "about" });
+      else if (page === "blog") setView({ name: "blog" });
+      else if (page === "blog-admin") setView({ name: "blog-admin" });
       else setView({ name: "home" });
     };
     window.addEventListener("popstate", onPop);
@@ -390,6 +412,8 @@ export default function App() {
       "all-issues": "All Issues — Inner West Pulse",
       "how-it-works": "How It Works — Inner West Pulse",
       about: "About Us — Inner West Pulse",
+      blog: "Blog — Inner West Pulse",
+      "blog-admin": "Blog Admin — Inner West Pulse",
     };
     document.title = titles[view.name] || titles.home;
   }, [view.name]);
@@ -727,6 +751,8 @@ export default function App() {
         onHome={() => setView({ name: "home" })}
         onPost={openPostModal}
         onAllIssues={() => setView({ name: "all-issues" })}
+        onBlog={() => setView({ name: "blog" })}
+        onBlogAdmin={() => setView({ name: "blog-admin" })}
         onHowItWorks={() => setView({ name: "how-it-works" })}
         onAbout={() => setView({ name: "about" })}
         registeredUser={registeredUser}
@@ -790,10 +816,33 @@ export default function App() {
         <AboutPage onBack={() => setView({ name: "home" })} />
       )}
 
+      {view.name === "blog" && (
+        <BlogIndexPage
+          onOpenPost={(slug) => setView({ name: "blog-post", slug })}
+          registeredUser={registeredUser}
+        />
+      )}
+
+      {view.name === "blog-post" && (
+        <BlogPostPage
+          slug={view.slug}
+          onBack={() => setView({ name: "blog" })}
+          onOpenIssue={(id) => setView({ name: "detail", id })}
+        />
+      )}
+
+      {view.name === "blog-admin" && (
+        <BlogAdminPage
+          registeredUser={registeredUser}
+          onBack={() => setView({ name: "blog" })}
+        />
+      )}
+
       <Footer
         onHowItWorks={() => setView({ name: "how-it-works" })}
         onAbout={() => setView({ name: "about" })}
         onHome={() => setView({ name: "home" })}
+        onBlog={() => setView({ name: "blog" })}
       />
 
       {showPostModal && (
@@ -920,6 +969,22 @@ function GlobalStyles() {
         .mobile-nav-toggle { display: none !important; }
         .mobile-nav-menu   { display: none !important; }
       }
+
+      /* ── Blog layouts ── */
+      .blog-featured-card { display: grid; grid-template-columns: 1fr 1fr; background: #fff; border-radius: 14px; border: 1px solid #E5E7EB; overflow: hidden; box-shadow: 0 2px 12px rgba(0,0,0,0.06); cursor: pointer; transition: box-shadow 200ms, transform 200ms; }
+      .blog-featured-card:hover { box-shadow: 0 8px 28px rgba(0,0,0,0.1); transform: translateY(-2px); }
+      .blog-cards-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+      .blog-post-cols { display: grid; grid-template-columns: 1fr 240px; gap: 60px; align-items: start; }
+
+      @media (max-width: 900px) {
+        .blog-featured-card { grid-template-columns: 1fr; }
+        .blog-cards-grid { grid-template-columns: repeat(2, 1fr); }
+        .blog-post-cols { grid-template-columns: 1fr; }
+        .blog-sidebar { display: none !important; }
+      }
+      @media (max-width: 600px) {
+        .blog-cards-grid { grid-template-columns: 1fr; }
+      }
     `}</style>
   );
 }
@@ -927,7 +992,7 @@ function GlobalStyles() {
 // ────────────────────────────────────────────────────────────────────────────
 // TOP NAV
 // ────────────────────────────────────────────────────────────────────────────
-function TopNav({ onHome, onPost, onHowItWorks, onAbout, onAllIssues, registeredUser, onRegister, onLogin, onLogout }) {
+function TopNav({ onHome, onPost, onHowItWorks, onAbout, onAllIssues, onBlog, onBlogAdmin, registeredUser, onRegister, onLogin, onLogout }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const close = () => setMenuOpen(false);
 
@@ -946,11 +1011,17 @@ function TopNav({ onHome, onPost, onHowItWorks, onAbout, onAllIssues, registered
         {/* Desktop nav */}
         <nav className="nav-desktop" style={{ display: "flex", alignItems: "center", gap: 4 }}>
           <button onClick={onAllIssues} style={{ padding: "8px 12px", color: COLORS.ink, fontSize: 13, fontWeight: 600, borderRadius: 6, transition: "background 150ms ease" }} onMouseEnter={(e) => (e.currentTarget.style.background = COLORS.mist)} onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}>All issues</button>
+          <button onClick={onBlog} style={{ padding: "8px 12px", color: COLORS.ink, fontSize: 13, fontWeight: 600, borderRadius: 6, transition: "background 150ms ease" }} onMouseEnter={(e) => (e.currentTarget.style.background = COLORS.mist)} onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}>Blog</button>
           <button onClick={onHowItWorks} style={{ padding: "8px 12px", color: COLORS.ink, fontSize: 13, fontWeight: 600, borderRadius: 6, transition: "background 150ms ease" }} onMouseEnter={(e) => (e.currentTarget.style.background = COLORS.mist)} onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}>How it works</button>
           <button onClick={onAbout} style={{ padding: "8px 12px", color: COLORS.ink, fontSize: 13, fontWeight: 600, borderRadius: 6, transition: "background 150ms ease" }} onMouseEnter={(e) => (e.currentTarget.style.background = COLORS.mist)} onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}>About</button>
           <div style={{ width: 1, height: 20, background: COLORS.hairline, margin: "0 8px" }} />
           {registeredUser ? (
             <>
+              {registeredUser.email === ADMIN_EMAIL && (
+                <button onClick={onBlogAdmin} style={{ padding: "8px 12px", border: `1px solid ${COLORS.hairline}`, borderRadius: 6, fontSize: 13, fontWeight: 600, color: COLORS.slate, background: COLORS.paper, transition: "background 150ms ease" }} onMouseEnter={(e) => (e.currentTarget.style.background = COLORS.mist)} onMouseLeave={(e) => (e.currentTarget.style.background = COLORS.paper)}>
+                  Admin
+                </button>
+              )}
               <button onClick={onRegister} style={{ display: "flex", alignItems: "center", gap: 7, padding: "8px 12px", border: `1px solid ${COLORS.hairline}`, borderRadius: 6, fontSize: 13, fontWeight: 600, color: COLORS.authority, background: COLORS.paper, transition: "background 150ms ease" }} onMouseEnter={(e) => (e.currentTarget.style.background = COLORS.mist)} onMouseLeave={(e) => (e.currentTarget.style.background = COLORS.paper)}>
                 <UserCircle size={16} /> {registeredUser.name.split(" ")[0]}
               </button>
@@ -989,6 +1060,7 @@ function TopNav({ onHome, onPost, onHowItWorks, onAbout, onAllIssues, registered
         <div className="mobile-nav-menu" style={{ background: COLORS.paper, borderTop: `1px solid ${COLORS.hairline}`, padding: "8px 20px 20px" }}>
           {[
             { label: "All issues", fn: onAllIssues },
+            { label: "Blog", fn: onBlog },
             { label: "How it works", fn: onHowItWorks },
             { label: "About", fn: onAbout },
           ].map(({ label, fn }) => (
@@ -2697,7 +2769,7 @@ function Toast({ toast }) {
 // ────────────────────────────────────────────────────────────────────────────
 // FOOTER
 // ────────────────────────────────────────────────────────────────────────────
-function Footer({ onHowItWorks, onAbout, onHome }) {
+function Footer({ onHowItWorks, onAbout, onHome, onBlog }) {
   return (
     <footer style={{ borderTop: `1px solid ${COLORS.hairline}`, background: COLORS.paper, padding: "40px 24px", marginTop: 40 }}>
       <div className="footer-cols" style={{ maxWidth: 1180, margin: "0 auto", display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "flex-start", gap: 24 }}>
@@ -2713,6 +2785,7 @@ function Footer({ onHowItWorks, onAbout, onHome }) {
             <div style={{ fontSize: 11, fontWeight: 700, color: COLORS.slate, textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 10 }}>Platform</div>
             <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
               <button onClick={onHome} style={{ color: COLORS.ink, textAlign: "left", padding: 0, fontSize: 13 }}>All issues</button>
+              <button onClick={onBlog} style={{ color: COLORS.ink, textAlign: "left", padding: 0, fontSize: 13 }}>Blog</button>
               <button onClick={onHowItWorks} style={{ color: COLORS.ink, textAlign: "left", padding: 0, fontSize: 13 }}>How it works</button>
               <button onClick={onAbout} style={{ color: COLORS.ink, textAlign: "left", padding: 0, fontSize: 13 }}>About us</button>
             </div>
@@ -2732,5 +2805,603 @@ function Footer({ onHowItWorks, onAbout, onHome }) {
         <span>Independent · Non-partisan · Free forever</span>
       </div>
     </footer>
+  );
+}
+
+// ────────────────────────────────────────────────────────────────────────────
+// BLOG — shared helpers
+// ────────────────────────────────────────────────────────────────────────────
+function slugify(text) {
+  return text.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+}
+
+function blogCategoryColor(cat) {
+  return {
+    "Rezoning & Development": COLORS.authority,
+    "Infrastructure": COLORS.community,
+    "Transport": "#0F766E",
+    "Community": COLORS.amber,
+    "Council Watch": "#6B4FBB",
+  }[cat] || COLORS.slate;
+}
+
+// ────────────────────────────────────────────────────────────────────────────
+// BLOG INDEX PAGE
+// ────────────────────────────────────────────────────────────────────────────
+function BlogIndexPage({ onOpenPost }) {
+  const [posts, setPosts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [filter, setFilter] = useState("All");
+
+  useEffect(() => {
+    supabase
+      .from("blog_posts")
+      .select("id, title, slug, excerpt, category, suburbs, published_at, read_time_minutes")
+      .eq("published", true)
+      .order("published_at", { ascending: false })
+      .then(({ data }) => { setPosts(data || []); setLoading(false); });
+  }, []);
+
+  const filtered = filter === "All" ? posts : posts.filter((p) => p.category === filter);
+  const [featured, ...rest] = filtered;
+
+  const navBtn = { padding: "8px 12px", color: COLORS.ink, fontSize: 13, fontWeight: 600, borderRadius: 6, transition: "background 150ms ease", background: "transparent" };
+
+  return (
+    <main style={{ paddingBottom: 0 }}>
+      {/* Hero */}
+      <section style={{ background: `linear-gradient(135deg, ${COLORS.authorityDeep} 0%, ${COLORS.authority} 60%, #1a5a8a 100%)`, color: "white", padding: "80px 24px 72px" }}>
+        <div style={{ maxWidth: 900, margin: "0 auto" }}>
+          <div style={{ fontSize: 11, letterSpacing: "0.13em", textTransform: "uppercase", fontWeight: 700, color: COLORS.gold, marginBottom: 14 }}>Inner West Pulse</div>
+          <h1 className="serif" style={{ fontSize: "clamp(38px, 5vw, 58px)", fontWeight: 500, lineHeight: 1.05, letterSpacing: "-0.03em", margin: "0 0 20px", maxWidth: 700 }}>
+            Stories from the streets of Inner West Sydney
+          </h1>
+          <p style={{ fontSize: 18, lineHeight: 1.65, color: "rgba(255,255,255,0.82)", maxWidth: 580, margin: "0 0 36px" }}>
+            Deep dives on local issues, Council decisions, and what residents are doing to make Inner West better.
+          </p>
+          <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+            {["All", ...BLOG_CATEGORIES].map((cat) => (
+              <button
+                key={cat}
+                onClick={() => setFilter(cat)}
+                style={{
+                  padding: "7px 16px", borderRadius: 20, fontSize: 13, fontWeight: 600, fontFamily: "inherit",
+                  border: "1.5px solid", cursor: "pointer", transition: "all 150ms",
+                  background: filter === cat ? "rgba(255,255,255,0.18)" : "transparent",
+                  borderColor: filter === cat ? "rgba(255,255,255,0.7)" : "rgba(255,255,255,0.3)",
+                  color: filter === cat ? "white" : "rgba(255,255,255,0.75)",
+                }}
+              >{cat}</button>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Grid */}
+      <section style={{ padding: "64px 24px 100px" }}>
+        <div style={{ maxWidth: 1100, margin: "0 auto" }}>
+          {loading ? (
+            <div style={{ textAlign: "center", padding: "80px 0", color: COLORS.slate }}>Loading posts…</div>
+          ) : filtered.length === 0 ? (
+            <div style={{ textAlign: "center", padding: "80px 0", color: COLORS.slate }}>
+              <p style={{ fontSize: 18 }}>No posts yet{filter !== "All" ? ` in ${filter}` : ""}.</p>
+            </div>
+          ) : (
+            <>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 28, paddingBottom: 16, borderBottom: `1px solid ${COLORS.hairline}` }}>
+                <h2 style={{ fontSize: 22, fontWeight: 700, letterSpacing: "-0.015em", margin: 0 }}>Latest stories</h2>
+              </div>
+
+              <div style={{ display: "grid", gap: 28 }}>
+                {/* Featured card */}
+                {featured && (
+                  <article
+                    className="blog-featured-card"
+                    onClick={() => onOpenPost(featured.slug)}
+                  >
+                    <div style={{ background: `linear-gradient(135deg, ${COLORS.authorityDeep} 0%, #1e5a8a 100%)`, minHeight: 280, position: "relative" }}>
+                      <div style={{ position: "absolute", inset: 0, background: "linear-gradient(135deg, rgba(11,58,102,0.85) 0%, rgba(45,122,74,0.5) 100%)", display: "flex", alignItems: "flex-end", padding: 28 }}>
+                        {featured.category && (
+                          <span style={{ display: "inline-flex", alignItems: "center", background: "rgba(255,255,255,0.18)", backdropFilter: "blur(8px)", padding: "5px 12px", borderRadius: 20, fontSize: 12, fontWeight: 600, color: "white", letterSpacing: "0.03em" }}>
+                            {featured.category}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                    <div style={{ padding: "36px", display: "flex", flexDirection: "column", justifyContent: "center" }}>
+                      <div style={{ fontSize: 11, letterSpacing: "0.12em", textTransform: "uppercase", fontWeight: 700, color: COLORS.community, marginBottom: 12 }}>
+                        Featured{featured.suburbs?.length ? ` · ${featured.suburbs[0]}` : ""}
+                      </div>
+                      <h2 className="serif" style={{ fontSize: "clamp(22px, 2.5vw, 30px)", fontWeight: 600, lineHeight: 1.2, letterSpacing: "-0.02em", color: COLORS.ink, margin: "0 0 14px" }}>
+                        {featured.title}
+                      </h2>
+                      {featured.excerpt && (
+                        <p style={{ fontSize: 16, lineHeight: 1.7, color: COLORS.slate, margin: "0 0 20px" }}>{featured.excerpt}</p>
+                      )}
+                      <div style={{ display: "flex", alignItems: "center", gap: 14, fontSize: 13, color: COLORS.slate }}>
+                        {featured.published_at && <span>{new Date(featured.published_at).toLocaleDateString("en-AU", { day: "numeric", month: "long", year: "numeric" })}</span>}
+                        {featured.read_time_minutes && (
+                          <><span style={{ width: 3, height: 3, background: COLORS.hairline, borderRadius: "50%", display: "inline-block" }} /><span>{featured.read_time_minutes} min read</span></>
+                        )}
+                      </div>
+                      <span style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: 14, fontWeight: 600, color: COLORS.authority, marginTop: 20 }}>Read article →</span>
+                    </div>
+                  </article>
+                )}
+
+                {/* Cards grid */}
+                {rest.length > 0 && (
+                  <div className="blog-cards-grid">
+                    {rest.map((post) => {
+                      const col = blogCategoryColor(post.category);
+                      return (
+                        <article
+                          key={post.id}
+                          onClick={() => onOpenPost(post.slug)}
+                          style={{ background: COLORS.paper, borderRadius: 12, border: `1px solid ${COLORS.hairline}`, overflow: "hidden", boxShadow: "0 1px 6px rgba(0,0,0,0.05)", display: "flex", flexDirection: "column", cursor: "pointer", transition: "box-shadow 200ms, transform 200ms" }}
+                          onMouseEnter={(e) => { e.currentTarget.style.boxShadow = "0 6px 24px rgba(0,0,0,0.09)"; e.currentTarget.style.transform = "translateY(-2px)"; }}
+                          onMouseLeave={(e) => { e.currentTarget.style.boxShadow = "0 1px 6px rgba(0,0,0,0.05)"; e.currentTarget.style.transform = ""; }}
+                        >
+                          <div style={{ height: 160, background: `linear-gradient(145deg, ${col}dd, ${col}99)`, position: "relative" }}>
+                            {post.category && (
+                              <div style={{ position: "absolute", bottom: 14, left: 14 }}>
+                                <span style={{ display: "inline-flex", alignItems: "center", background: "rgba(255,255,255,0.18)", backdropFilter: "blur(8px)", padding: "4px 10px", borderRadius: 20, fontSize: 11, fontWeight: 600, color: "white", letterSpacing: "0.03em" }}>{post.category}</span>
+                              </div>
+                            )}
+                          </div>
+                          <div style={{ padding: "22px 22px 26px", flex: 1, display: "flex", flexDirection: "column" }}>
+                            {post.suburbs?.length > 0 && (
+                              <div style={{ fontSize: 11, letterSpacing: "0.1em", textTransform: "uppercase", fontWeight: 700, color: COLORS.community, marginBottom: 10 }}>{post.suburbs[0]}</div>
+                            )}
+                            <h3 className="serif" style={{ fontSize: 18, fontWeight: 600, lineHeight: 1.3, letterSpacing: "-0.015em", color: COLORS.ink, margin: "0 0 10px" }}>{post.title}</h3>
+                            {post.excerpt && (
+                              <p style={{ fontSize: 14, lineHeight: 1.65, color: COLORS.slate, flex: 1, margin: "0 0 18px" }}>{post.excerpt}</p>
+                            )}
+                            <div style={{ display: "flex", alignItems: "center", gap: 12, fontSize: 12, color: COLORS.slate }}>
+                              {post.published_at && <span>{new Date(post.published_at).toLocaleDateString("en-AU", { day: "numeric", month: "short" })}</span>}
+                              {post.read_time_minutes && <span>{post.read_time_minutes} min read</span>}
+                            </div>
+                          </div>
+                        </article>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            </>
+          )}
+        </div>
+      </section>
+    </main>
+  );
+}
+
+// ────────────────────────────────────────────────────────────────────────────
+// BLOG POST PAGE
+// ────────────────────────────────────────────────────────────────────────────
+function BlogPostPage({ slug, onBack, onOpenIssue }) {
+  const [post, setPost] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [notFound, setNotFound] = useState(false);
+  const [issues, setIssues] = useState([]);
+  const [copied, setCopied] = useState(false);
+
+  useEffect(() => {
+    setLoading(true);
+    setNotFound(false);
+    setPost(null);
+    supabase
+      .from("blog_posts")
+      .select("*")
+      .eq("slug", slug)
+      .eq("published", true)
+      .single()
+      .then(({ data, error }) => {
+        if (error || !data) { setNotFound(true); setLoading(false); return; }
+        setPost(data);
+        setLoading(false);
+        document.title = `${data.title} — Inner West Pulse`;
+      });
+
+    supabase
+      .from("issues")
+      .select("id, title, suburb, category, vote_count")
+      .order("vote_count", { ascending: false })
+      .limit(4)
+      .then(({ data }) => setIssues(data || []));
+  }, [slug]);
+
+  function copyLink() {
+    navigator.clipboard.writeText(window.location.href).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
+  }
+
+  if (loading) return (
+    <main style={{ minHeight: "60vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
+      <span style={{ color: COLORS.slate }}>Loading…</span>
+    </main>
+  );
+
+  if (notFound || !post) return (
+    <main style={{ minHeight: "60vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 16, padding: 24 }}>
+      <h2 className="serif" style={{ fontSize: 32 }}>Post not found</h2>
+      <button onClick={onBack} style={{ color: COLORS.authority, fontWeight: 600, background: "none", border: "none", cursor: "pointer", fontFamily: "inherit" }}>← Back to Blog</button>
+    </main>
+  );
+
+  const shareUrl = window.location.href;
+  const shareText = encodeURIComponent(post.title);
+
+  return (
+    <main style={{ paddingBottom: 0 }}>
+      {/* Prose styles */}
+      <style>{`
+        .blog-prose h2 { font-family:'Fraunces',Georgia,serif; font-size:clamp(22px,2.5vw,28px); font-weight:700; letter-spacing:-0.02em; color:${COLORS.ink}; margin:48px 0 18px; line-height:1.2; }
+        .blog-prose h3 { font-family:'Fraunces',Georgia,serif; font-size:20px; font-weight:700; letter-spacing:-0.015em; color:${COLORS.ink}; margin:36px 0 14px; }
+        .blog-prose p  { font-size:18px; line-height:1.8; color:${COLORS.slate}; margin-bottom:24px; }
+        .blog-prose p strong { color:${COLORS.ink}; font-weight:600; }
+        .blog-prose ul, .blog-prose ol { font-size:17px; line-height:1.75; color:${COLORS.slate}; margin:0 0 24px 24px; padding:0; }
+        .blog-prose li { margin-bottom:8px; }
+        .blog-prose blockquote { margin:40px 0; padding:28px 32px; border-left:4px solid ${COLORS.authority}; background:#EEF4FA; border-radius:0 10px 10px 0; font-family:'Fraunces',Georgia,serif; font-size:clamp(18px,2vw,22px); line-height:1.5; color:${COLORS.authority}; font-weight:500; font-style:italic; letter-spacing:-0.01em; }
+        .blog-prose blockquote p { font-family:inherit; font-size:inherit; line-height:inherit; color:inherit; font-weight:inherit; font-style:inherit; margin:0; }
+        .blog-prose hr { border:none; border-top:2px solid ${COLORS.hairline}; margin:48px 0; }
+        .blog-prose a  { color:${COLORS.authority}; font-weight:600; }
+        .blog-prose a:hover { text-decoration:underline; }
+        .blog-callout { margin:36px 0; padding:24px 28px; background:#E6F0EA; border-radius:10px; border:1px solid #B8D9C4; }
+        .blog-callout h4 { font-size:15px; font-weight:700; color:${COLORS.communityDeep}; margin:0 0 6px; }
+        .blog-callout p  { font-size:15px !important; line-height:1.65 !important; color:${COLORS.communityDeep} !important; margin:0 !important; }
+        .blog-fact { margin:36px 0; padding:24px 28px; background:#FEF3E2; border-radius:10px; border:1px solid #F9D094; }
+        .blog-fact .fact-number { font-family:'Fraunces',Georgia,serif; font-size:48px; font-weight:700; color:${COLORS.amber}; letter-spacing:-0.03em; line-height:1; margin-bottom:6px; }
+        .blog-fact .fact-label  { font-size:14px; font-weight:700; color:${COLORS.amber}; text-transform:uppercase; letter-spacing:0.08em; }
+        .blog-fact .fact-desc   { font-size:15px; color:#6B4507; line-height:1.6; margin-top:8px; }
+      `}</style>
+
+      {/* Hero */}
+      <section style={{ background: `linear-gradient(150deg, ${COLORS.authorityDeep} 0%, #0d3f70 45%, #14527a 100%)`, color: "white", padding: "80px 24px 72px" }}>
+        <div style={{ maxWidth: 860, margin: "0 auto" }}>
+          <button onClick={onBack} style={{ display: "inline-flex", alignItems: "center", gap: 6, color: "rgba(255,255,255,0.65)", fontSize: 13, fontWeight: 500, marginBottom: 28, background: "none", border: "none", cursor: "pointer", fontFamily: "inherit" }}>
+            <ArrowLeft size={14} /> Back to Blog
+          </button>
+
+          <div style={{ display: "flex", gap: 8, marginBottom: 20, flexWrap: "wrap" }}>
+            {post.category && (
+              <span style={{ padding: "5px 13px", borderRadius: 20, fontSize: 12, fontWeight: 600, letterSpacing: "0.03em", background: "rgba(255,255,255,0.15)", color: "white" }}>
+                {post.category}
+              </span>
+            )}
+            {post.suburbs?.map((s) => (
+              <span key={s} style={{ padding: "5px 13px", borderRadius: 20, fontSize: 12, fontWeight: 600, background: "rgba(245,158,11,0.25)", color: COLORS.gold }}>
+                📍 {s}
+              </span>
+            ))}
+          </div>
+
+          <h1 className="serif" style={{ fontSize: "clamp(32px, 4.5vw, 52px)", fontWeight: 500, lineHeight: 1.08, letterSpacing: "-0.03em", margin: "0 0 22px", maxWidth: 760 }}>
+            {post.title}
+          </h1>
+
+          {post.excerpt && (
+            <p style={{ fontSize: 19, lineHeight: 1.65, color: "rgba(255,255,255,0.82)", maxWidth: 660, margin: "0 0 32px" }}>
+              {post.excerpt}
+            </p>
+          )}
+
+          <div style={{ display: "flex", alignItems: "center", gap: 16, flexWrap: "wrap", paddingTop: 24, borderTop: "1px solid rgba(255,255,255,0.15)" }}>
+            <span style={{ fontSize: 13, color: "rgba(255,255,255,0.65)", fontWeight: 500 }}>Inner West Pulse</span>
+            {post.published_at && (
+              <><span style={{ color: "rgba(255,255,255,0.25)" }}>·</span><span style={{ fontSize: 13, color: "rgba(255,255,255,0.65)", fontWeight: 500 }}>{new Date(post.published_at).toLocaleDateString("en-AU", { day: "numeric", month: "long", year: "numeric" })}</span></>
+            )}
+            {post.read_time_minutes && (
+              <><span style={{ color: "rgba(255,255,255,0.25)" }}>·</span><span style={{ fontSize: 13, color: "rgba(255,255,255,0.65)", fontWeight: 500 }}>{post.read_time_minutes} min read</span></>
+            )}
+          </div>
+        </div>
+      </section>
+
+      {/* Body: article + sidebar */}
+      <div className="blog-post-cols" style={{ maxWidth: 860, margin: "0 auto", padding: "0 24px" }}>
+        <article className="blog-prose" style={{ padding: "64px 0 100px" }} dangerouslySetInnerHTML={{ __html: post.content }} />
+
+        <aside className="blog-sidebar" style={{ padding: "64px 0 0", position: "sticky", top: 80 }}>
+          {/* Share */}
+          <div style={{ marginBottom: 32 }}>
+            <div style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: "0.12em", fontWeight: 700, color: COLORS.slate, marginBottom: 14 }}>Share this article</div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+              {[
+                { label: "Share on Facebook", icon: "f", color: "#1877F2", href: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}` },
+                { label: "Post on X / Twitter", icon: "𝕏", color: "#000", href: `https://x.com/intent/tweet?text=${shareText}&url=${encodeURIComponent(shareUrl)}` },
+                { label: "Share on WhatsApp", icon: "W", color: "#25D366", href: `https://wa.me/?text=${shareText}%20${encodeURIComponent(shareUrl)}` },
+              ].map((btn) => (
+                <a key={btn.label} href={btn.href} target="_blank" rel="noreferrer"
+                  style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 14px", borderRadius: 8, border: `1px solid ${COLORS.hairline}`, fontSize: 13, fontWeight: 600, color: COLORS.ink, background: COLORS.paper, textDecoration: "none", transition: "background 150ms" }}
+                  onMouseEnter={(e) => (e.currentTarget.style.background = COLORS.mist)}
+                  onMouseLeave={(e) => (e.currentTarget.style.background = COLORS.paper)}
+                >
+                  <span style={{ width: 18, height: 18, borderRadius: 4, background: btn.color, color: "white", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, flexShrink: 0 }}>{btn.icon}</span>
+                  {btn.label}
+                </a>
+              ))}
+              <button onClick={copyLink}
+                style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 14px", borderRadius: 8, border: `1px solid ${COLORS.hairline}`, fontSize: 13, fontWeight: 600, color: COLORS.ink, background: copied ? "#E6F0EA" : COLORS.paper, transition: "background 150ms", fontFamily: "inherit", cursor: "pointer" }}
+                onMouseEnter={(e) => { if (!copied) e.currentTarget.style.background = COLORS.mist; }}
+                onMouseLeave={(e) => { if (!copied) e.currentTarget.style.background = COLORS.paper; }}
+              >
+                <span style={{ width: 18, height: 18, borderRadius: 4, background: COLORS.mist, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, flexShrink: 0 }}>🔗</span>
+                {copied ? "Copied!" : "Copy link"}
+              </button>
+            </div>
+          </div>
+
+          {/* Related issues */}
+          {issues.length > 0 && (
+            <div>
+              <div style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: "0.12em", fontWeight: 700, color: COLORS.slate, marginBottom: 14 }}>Active issues</div>
+              {issues.map((issue, i) => (
+                <div key={issue.id} onClick={() => onOpenIssue(issue.id)}
+                  style={{ padding: "14px 0", borderBottom: i < issues.length - 1 ? `1px solid ${COLORS.hairline}` : "none", cursor: "pointer" }}
+                >
+                  <div style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: "0.08em", fontWeight: 700, color: COLORS.slate, marginBottom: 4 }}>{issue.suburb}</div>
+                  <div style={{ fontSize: 14, fontWeight: 600, color: COLORS.ink, lineHeight: 1.35 }}>{issue.title}</div>
+                  <div style={{ fontSize: 12, color: COLORS.slate, marginTop: 4 }}>{issue.vote_count} votes</div>
+                </div>
+              ))}
+            </div>
+          )}
+        </aside>
+      </div>
+
+      {/* Footer CTA */}
+      <section style={{ background: `linear-gradient(135deg, ${COLORS.communityDeep} 0%, ${COLORS.community} 100%)`, color: "white", padding: "64px 24px", textAlign: "center" }}>
+        <span style={{ fontSize: 11, letterSpacing: "0.13em", textTransform: "uppercase", fontWeight: 700, color: "#6EE7A1", display: "block", marginBottom: 14 }}>Take action</span>
+        <h2 className="serif" style={{ fontSize: "clamp(26px, 3.5vw, 38px)", fontWeight: 500, letterSpacing: "-0.025em", margin: "0 auto 14px", maxWidth: 540 }}>
+          Your suburb needs your voice
+        </h2>
+        <p style={{ fontSize: 17, color: "rgba(255,255,255,0.82)", margin: "0 0 28px" }}>
+          Post an issue, build community support, and send it directly to Council.
+        </p>
+        <button onClick={onBack}
+          style={{ display: "inline-flex", alignItems: "center", gap: 8, background: "white", color: COLORS.communityDeep, fontSize: 15, fontWeight: 700, padding: "14px 26px", borderRadius: 8, border: "none", cursor: "pointer", fontFamily: "inherit" }}
+        >
+          Browse all issues →
+        </button>
+      </section>
+    </main>
+  );
+}
+
+// ────────────────────────────────────────────────────────────────────────────
+// BLOG ADMIN PAGE
+// ────────────────────────────────────────────────────────────────────────────
+function BlogAdminPage({ registeredUser, onBack }) {
+  const isAdmin = registeredUser?.email === ADMIN_EMAIL;
+  const [posts, setPosts] = useState([]);
+  const [editing, setEditing] = useState(null);
+  const [saving, setSaving] = useState(false);
+  const [form, setForm] = useState({
+    title: "", slug: "", excerpt: "", content: "",
+    category: "", suburbs: "", read_time_minutes: 5, published: false,
+  });
+
+  useEffect(() => {
+    if (!isAdmin) return;
+    supabase
+      .from("blog_posts")
+      .select("*")
+      .order("created_at", { ascending: false })
+      .then(({ data }) => setPosts(data || []));
+  }, [isAdmin]);
+
+  function startNew() {
+    setForm({ title: "", slug: "", excerpt: "", content: "", category: "", suburbs: "", read_time_minutes: 5, published: false });
+    setEditing("new");
+  }
+
+  function startEdit(post) {
+    setForm({ ...post, suburbs: (post.suburbs || []).join(", ") });
+    setEditing(post.id);
+  }
+
+  function handleFormChange(field, value) {
+    setForm((prev) => {
+      const next = { ...prev, [field]: value };
+      if (field === "title" && editing === "new") next.slug = slugify(value);
+      return next;
+    });
+  }
+
+  async function handleSave() {
+    if (!form.title.trim() || !form.slug.trim()) { alert("Title and slug are required."); return; }
+    setSaving(true);
+    const payload = {
+      title: form.title.trim(),
+      slug: form.slug.trim(),
+      excerpt: form.excerpt.trim(),
+      content: form.content,
+      category: form.category,
+      suburbs: form.suburbs ? form.suburbs.split(",").map((s) => s.trim()).filter(Boolean) : [],
+      read_time_minutes: Number(form.read_time_minutes) || 5,
+      published: form.published,
+      published_at: form.published ? (form.published_at || new Date().toISOString()) : null,
+      updated_at: new Date().toISOString(),
+    };
+
+    let error;
+    if (editing === "new") {
+      ({ error } = await supabase.from("blog_posts").insert(payload));
+    } else {
+      ({ error } = await supabase.from("blog_posts").update(payload).eq("id", editing));
+    }
+
+    if (error) {
+      alert("Save failed: " + error.message);
+    } else {
+      const { data } = await supabase.from("blog_posts").select("*").order("created_at", { ascending: false });
+      setPosts(data || []);
+      setEditing(null);
+    }
+    setSaving(false);
+  }
+
+  async function handleDelete(id) {
+    if (!window.confirm("Delete this post? This cannot be undone.")) return;
+    await supabase.from("blog_posts").delete().eq("id", id);
+    setPosts((prev) => prev.filter((p) => p.id !== id));
+  }
+
+  async function handleTogglePublish(post) {
+    const published = !post.published;
+    const updates = { published, published_at: published ? (post.published_at || new Date().toISOString()) : null };
+    await supabase.from("blog_posts").update(updates).eq("id", post.id);
+    setPosts((prev) => prev.map((p) => p.id === post.id ? { ...p, ...updates } : p));
+  }
+
+  if (!isAdmin) {
+    return (
+      <main style={{ minHeight: "60vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 16, padding: 24 }}>
+        <h2 className="serif" style={{ fontSize: 28 }}>Admin only</h2>
+        <p style={{ color: COLORS.slate }}>Log in as admin to access this page.</p>
+        <button onClick={onBack} style={{ color: COLORS.authority, fontWeight: 600, background: "none", border: "none", cursor: "pointer", fontFamily: "inherit" }}>← Go back</button>
+      </main>
+    );
+  }
+
+  const inputStyle = { fontFamily: "inherit", fontSize: 14, border: `1px solid ${COLORS.hairline}`, borderRadius: 6, padding: "10px 12px", color: COLORS.ink, background: COLORS.paper, width: "100%", outline: "none" };
+  const labelStyle = { fontSize: 12, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", color: COLORS.slate, display: "block", marginBottom: 6 };
+
+  /* Edit / New form */
+  if (editing !== null) {
+    return (
+      <main style={{ paddingBottom: 100, minHeight: "100vh", background: COLORS.cream }}>
+        <div style={{ maxWidth: 800, margin: "0 auto", padding: "40px 24px" }}>
+          <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 16, marginBottom: 32, flexWrap: "wrap" }}>
+            <div>
+              <button onClick={() => setEditing(null)} style={{ color: COLORS.slate, fontWeight: 600, background: "none", border: "none", cursor: "pointer", fontFamily: "inherit", fontSize: 13, marginBottom: 8, padding: 0 }}>← Back to posts</button>
+              <h1 className="serif" style={{ fontSize: 28, fontWeight: 600, margin: 0 }}>{editing === "new" ? "New post" : "Edit post"}</h1>
+            </div>
+            <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+              <label style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer", fontSize: 14, fontWeight: 600, color: COLORS.ink }}>
+                <input type="checkbox" checked={form.published} onChange={(e) => handleFormChange("published", e.target.checked)} style={{ width: "auto", accentColor: COLORS.community }} />
+                Published
+              </label>
+              <button onClick={handleSave} disabled={saving}
+                style={{ background: COLORS.community, color: "white", fontWeight: 700, padding: "10px 20px", borderRadius: 6, border: "none", cursor: saving ? "not-allowed" : "pointer", fontFamily: "inherit", fontSize: 14, opacity: saving ? 0.6 : 1 }}
+              >
+                {saving ? "Saving…" : "Save post"}
+              </button>
+            </div>
+          </div>
+
+          <div style={{ display: "grid", gap: 20 }}>
+            <div>
+              <label style={labelStyle}>Title</label>
+              <input value={form.title} onChange={(e) => handleFormChange("title", e.target.value)} placeholder="Post title…" style={inputStyle} />
+            </div>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+              <div>
+                <label style={labelStyle}>Slug (URL path)</label>
+                <input value={form.slug} onChange={(e) => handleFormChange("slug", e.target.value)} placeholder="post-url-slug" style={inputStyle} />
+              </div>
+              <div>
+                <label style={labelStyle}>Read time (minutes)</label>
+                <input type="number" min="1" value={form.read_time_minutes} onChange={(e) => handleFormChange("read_time_minutes", e.target.value)} style={inputStyle} />
+              </div>
+            </div>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+              <div>
+                <label style={labelStyle}>Category</label>
+                <select value={form.category} onChange={(e) => handleFormChange("category", e.target.value)} style={inputStyle}>
+                  <option value="">— Select —</option>
+                  {BLOG_CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
+                </select>
+              </div>
+              <div>
+                <label style={labelStyle}>Suburbs (comma-separated)</label>
+                <input value={form.suburbs} onChange={(e) => handleFormChange("suburbs", e.target.value)} placeholder="Leichhardt, Annandale" style={inputStyle} />
+              </div>
+            </div>
+            <div>
+              <label style={labelStyle}>Excerpt</label>
+              <textarea value={form.excerpt} onChange={(e) => handleFormChange("excerpt", e.target.value)} placeholder="1–2 sentence summary shown on the index page and post hero…" style={{ ...inputStyle, minHeight: 80, resize: "vertical", lineHeight: 1.55 }} />
+            </div>
+            <div>
+              <label style={labelStyle}>Content (HTML)</label>
+              <div style={{ fontSize: 12, color: COLORS.slate, marginBottom: 8, lineHeight: 1.5 }}>
+                Paste formatted HTML. Supported tags: <code style={{ background: COLORS.mist, padding: "1px 5px", borderRadius: 4 }}>&lt;p&gt;</code> <code style={{ background: COLORS.mist, padding: "1px 5px", borderRadius: 4 }}>&lt;h2&gt;</code> <code style={{ background: COLORS.mist, padding: "1px 5px", borderRadius: 4 }}>&lt;h3&gt;</code> <code style={{ background: COLORS.mist, padding: "1px 5px", borderRadius: 4 }}>&lt;blockquote&gt;</code> <code style={{ background: COLORS.mist, padding: "1px 5px", borderRadius: 4 }}>&lt;ul&gt;/&lt;li&gt;</code> <code style={{ background: COLORS.mist, padding: "1px 5px", borderRadius: 4 }}>&lt;strong&gt;</code>. For callout boxes: <code style={{ background: COLORS.mist, padding: "1px 5px", borderRadius: 4 }}>&lt;div class="blog-callout"&gt;</code>. For stat boxes: <code style={{ background: COLORS.mist, padding: "1px 5px", borderRadius: 4 }}>&lt;div class="blog-fact"&gt;</code>.
+              </div>
+              <textarea
+                value={form.content}
+                onChange={(e) => handleFormChange("content", e.target.value)}
+                placeholder="<p>Start writing your post here…</p>"
+                style={{ ...inputStyle, minHeight: 500, resize: "vertical", fontFamily: "monospace", fontSize: 13, lineHeight: 1.6 }}
+              />
+            </div>
+          </div>
+        </div>
+      </main>
+    );
+  }
+
+  /* Post list */
+  return (
+    <main style={{ paddingBottom: 100, minHeight: "100vh", background: COLORS.cream }}>
+      <div style={{ maxWidth: 900, margin: "0 auto", padding: "40px 24px" }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 32 }}>
+          <div>
+            <button onClick={onBack} style={{ color: COLORS.slate, fontWeight: 600, background: "none", border: "none", cursor: "pointer", fontFamily: "inherit", fontSize: 13, marginBottom: 8, padding: 0 }}>← Back to blog</button>
+            <h1 className="serif" style={{ fontSize: 32, fontWeight: 600, margin: 0 }}>Blog admin</h1>
+          </div>
+          <button onClick={startNew}
+            style={{ background: COLORS.community, color: "white", fontWeight: 700, padding: "10px 20px", borderRadius: 6, border: "none", cursor: "pointer", fontFamily: "inherit", fontSize: 14, display: "flex", alignItems: "center", gap: 8 }}
+          >
+            <Plus size={16} /> New post
+          </button>
+        </div>
+
+        {posts.length === 0 ? (
+          <div style={{ textAlign: "center", padding: "60px 0", color: COLORS.slate }}>
+            <p style={{ fontSize: 18, marginBottom: 12 }}>No posts yet.</p>
+            <button onClick={startNew} style={{ color: COLORS.authority, fontWeight: 600, background: "none", border: "none", cursor: "pointer", fontFamily: "inherit" }}>Create your first post →</button>
+          </div>
+        ) : (
+          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+            {posts.map((post) => (
+              <div key={post.id} style={{ background: COLORS.paper, borderRadius: 10, border: `1px solid ${COLORS.hairline}`, padding: "18px 22px", display: "flex", alignItems: "center", gap: 16, flexWrap: "wrap" }}>
+                <div style={{ flex: 1 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 4, flexWrap: "wrap" }}>
+                    <span style={{ fontSize: 15, fontWeight: 700, color: COLORS.ink }}>{post.title}</span>
+                    <span style={{ fontSize: 11, fontWeight: 700, padding: "2px 8px", borderRadius: 20, background: post.published ? "#E6F4EA" : COLORS.mist, color: post.published ? COLORS.success : COLORS.slate }}>
+                      {post.published ? "Published" : "Draft"}
+                    </span>
+                  </div>
+                  <div style={{ fontSize: 12, color: COLORS.slate }}>
+                    {post.category && <span style={{ marginRight: 10 }}>{post.category}</span>}
+                    {post.published_at && <span>{new Date(post.published_at).toLocaleDateString("en-AU")}</span>}
+                  </div>
+                </div>
+                <div style={{ display: "flex", gap: 8, flexShrink: 0 }}>
+                  <button onClick={() => handleTogglePublish(post)}
+                    style={{ padding: "7px 14px", borderRadius: 6, border: `1px solid ${COLORS.hairline}`, fontSize: 12, fontWeight: 600, color: post.published ? COLORS.slate : COLORS.community, background: COLORS.paper, cursor: "pointer", fontFamily: "inherit" }}
+                  >
+                    {post.published ? "Unpublish" : "Publish"}
+                  </button>
+                  <button onClick={() => startEdit(post)}
+                    style={{ padding: "7px 14px", borderRadius: 6, border: `1px solid ${COLORS.authority}`, fontSize: 12, fontWeight: 600, color: COLORS.authority, background: COLORS.paper, cursor: "pointer", fontFamily: "inherit" }}
+                  >
+                    Edit
+                  </button>
+                  <button onClick={() => handleDelete(post.id)}
+                    style={{ padding: "7px 14px", borderRadius: 6, border: "1px solid #FECACA", fontSize: 12, fontWeight: 600, color: COLORS.error, background: "#FEF2F2", cursor: "pointer", fontFamily: "inherit" }}
+                  >
+                    Delete
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </main>
   );
 }
