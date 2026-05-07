@@ -3069,6 +3069,13 @@ function BlogPostPage({ slug, onBack, onOpenIssue }) {
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
+    // Helper: upsert a <meta> tag by attribute type (name or property)
+    function upsertMeta(attr, key, content) {
+      let el = document.querySelector(`meta[${attr}="${key}"]`);
+      if (!el) { el = document.createElement("meta"); el.setAttribute(attr, key); document.head.appendChild(el); }
+      el.setAttribute("content", content);
+    }
+
     setLoading(true);
     setNotFound(false);
     setPost(null);
@@ -3082,7 +3089,28 @@ function BlogPostPage({ slug, onBack, onOpenIssue }) {
         if (error || !data) { setNotFound(true); setLoading(false); return; }
         setPost(data);
         setLoading(false);
-        document.title = `${data.title} — Inner West Pulse`;
+
+        const pageUrl  = `${window.location.origin}/?blog=${data.slug}`;
+        const excerpt  = data.excerpt || `Inner West community reporting on ${data.title}`;
+        const fullTitle = `${data.title} — Inner West Pulse`;
+
+        // <title>
+        document.title = fullTitle;
+
+        // Standard SEO
+        upsertMeta("name",     "description",       excerpt);
+
+        // Open Graph (Facebook, WhatsApp, LinkedIn)
+        upsertMeta("property", "og:title",          fullTitle);
+        upsertMeta("property", "og:description",    excerpt);
+        upsertMeta("property", "og:type",           "article");
+        upsertMeta("property", "og:url",            pageUrl);
+        upsertMeta("property", "og:site_name",      "Inner West Pulse");
+
+        // Twitter / X Card
+        upsertMeta("name",     "twitter:card",        "summary_large_image");
+        upsertMeta("name",     "twitter:title",       fullTitle);
+        upsertMeta("name",     "twitter:description", excerpt);
       });
 
     supabase
@@ -3091,6 +3119,29 @@ function BlogPostPage({ slug, onBack, onOpenIssue }) {
       .order("vote_count", { ascending: false })
       .limit(4)
       .then(({ data }) => setIssues(data || []));
+
+    // Restore default meta tags when navigating away from a blog post
+    return () => {
+      document.title = "Inner West Pulse";
+      const defaults = [
+        ["name",     "description",    "Inner West Pulse — post local issues, collect verified supporters, and escalate to Inner West Council. 250 verified supporters triggers a formal Council submission."],
+        ["property", "og:title",       "Inner West Pulse"],
+        ["property", "og:description", "Post it. Vote on it. Escalate it. 250 verified Inner West supporters = a formal Council submission."],
+        ["property", "og:type",        "website"],
+        ["property", "og:site_name",   "Inner West Pulse"],
+      ];
+      defaults.forEach(([attr, key, val]) => {
+        const el = document.querySelector(`meta[${attr}="${key}"]`);
+        if (el) el.setAttribute("content", val);
+      });
+      // Remove og:url — only exists for specific pages
+      const ogUrl = document.querySelector(`meta[property="og:url"]`);
+      if (ogUrl) ogUrl.remove();
+      ["twitter:card", "twitter:title", "twitter:description"].forEach(key => {
+        const el = document.querySelector(`meta[name="${key}"]`);
+        if (el) el.remove();
+      });
+    };
   }, [slug]);
 
   function copyLink() {
