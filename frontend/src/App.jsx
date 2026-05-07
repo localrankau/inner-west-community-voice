@@ -472,6 +472,7 @@ export default function App() {
       );
     } catch (err) { console.error(err); }
 
+    fetchIssues();
     setShowRegisterModal(false);
     if (pendingPostRef.current) {
       pendingPostRef.current = false;
@@ -503,6 +504,7 @@ export default function App() {
       localStorage.setItem("iwcv_user", JSON.stringify(synced));
       setRegisteredUser(synced);
     }
+    fetchIssues();
     setShowLoginModal(false);
     if (pendingPostRef.current) {
       pendingPostRef.current = false;
@@ -512,9 +514,12 @@ export default function App() {
   }
 
   async function handleLogout() {
-    try { await supabase.auth.signOut(); } catch (err) { console.error("Sign out error:", err); }
+    // scope:'local' clears the session immediately without a server round-trip,
+    // so this never hangs on a slow or failing network.
+    try { await supabase.auth.signOut({ scope: "local" }); } catch (err) { console.error("Sign out error:", err); }
     localStorage.removeItem("iwcv_user");
     setRegisteredUser(null);
+    fetchIssues();
     showToast("You've been logged out.", "success");
   }
 
