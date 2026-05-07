@@ -724,10 +724,32 @@ export default function App() {
   }
 
   async function handleSignup(issueId, { email, name, postcode }) {
-    try {
-      // Store pending data; insert only after email is confirmed via the magic link
-      localStorage.setItem("iwcv_pending_signup", JSON.stringify({ issueId, email, name, postcode }));
+    // Logged-in user — insert directly, no email verification needed.
+    if (registeredUser) {
+      try {
+        const { error } = await supabase.from("supporter_signups").insert({
+          issue_id: issueId,
+          email: registeredUser.email,
+          name: registeredUser.name,
+          postcode: registeredUser.postcode,
+          postcode_verified: true,
+        });
+        if (error && error.code !== "23505") throw error;
+        setUserSignups((s) => ({ ...s, [issueId]: true }));
+        // Also cast upvote so vote_count reflects the new supporter
+        if (!userVotes[issueId]) handleVote(issueId, "up");
+        showToast("You're a verified supporter! ✅", "success");
+        return { success: true };
+      } catch (err) {
+        showToast("Something went wrong — please try again", "error");
+        console.error(err);
+        throw err;
+      }
+    }
 
+    // Anonymous user — OTP flow to verify email before adding to supporters.
+    try {
+      localStorage.setItem("iwcv_pending_signup", JSON.stringify({ issueId, email, name, postcode }));
       const { error } = await supabase.auth.signInWithOtp({
         email,
         options: {
@@ -736,7 +758,6 @@ export default function App() {
         },
       });
       if (error) throw error;
-
       showToast("Check your email to confirm your support ✉️", "success");
       return { pendingVerification: true };
     } catch (err) {
@@ -1787,8 +1808,8 @@ function SignupForm({ onSignup, registeredUser }) {
   }
 
   async function handleSubmit(ev) {
-    ev.preventDefault();
-    if (!validate()) return;
+    if (ev?.preventDefault) ev.preventDefault();
+    if (!prefilled && !validate()) return;
     setSubmitting(true);
     try {
       const result = await onSignup({ email, name, postcode });
@@ -1811,19 +1832,37 @@ function SignupForm({ onSignup, registeredUser }) {
     );
   }
 
+  // Logged-in user — one-click confirm, no form fields needed
+  if (prefilled) {
+    return (
+      <section style={{ marginBottom: 36, padding: 24, background: COLORS.paper, border: `1px solid ${COLORS.hairline}`, borderRadius: 12, borderTop: `3px solid ${COLORS.community}` }}>
+        <div style={{ fontSize: 12, letterSpacing: "0.1em", textTransform: "uppercase", fontWeight: 700, color: COLORS.community, marginBottom: 8 }}>
+          <Users size={12} style={{ display: "inline", verticalAlign: "-2px", marginRight: 6 }} />Help escalate this issue
+        </div>
+        <h3 className="serif" style={{ fontSize: 22, fontWeight: 600, margin: "0 0 6px", letterSpacing: "-0.015em" }}>Become a verified supporter</h3>
+        <p style={{ fontSize: 14, color: COLORS.slate, margin: "0 0 16px", lineHeight: 1.55 }}>
+          Add your name to the formal Council submission as <strong>{registeredUser.name}</strong> ({registeredUser.postcode}).
+        </p>
+        <button
+          onClick={handleSubmit}
+          disabled={submitting}
+          style={{ padding: "12px 20px", background: submitting ? COLORS.slate : COLORS.community, color: "white", fontWeight: 600, borderRadius: 6, fontSize: 14, display: "inline-flex", alignItems: "center", gap: 8, cursor: submitting ? "not-allowed" : "pointer" }}
+          onMouseEnter={(e) => { if (!submitting) e.currentTarget.style.background = COLORS.communityDeep; }}
+          onMouseLeave={(e) => { if (!submitting) e.currentTarget.style.background = COLORS.community; }}
+        >
+          <CheckCircle2 size={15} /> {submitting ? "Confirming…" : "Confirm my support"}
+        </button>
+      </section>
+    );
+  }
+
   return (
     <section style={{ marginBottom: 36, padding: 24, background: COLORS.paper, border: `1px solid ${COLORS.hairline}`, borderRadius: 12, borderTop: `3px solid ${COLORS.community}` }}>
       <div style={{ fontSize: 12, letterSpacing: "0.1em", textTransform: "uppercase", fontWeight: 700, color: COLORS.community, marginBottom: 8 }}>
         <Users size={12} style={{ display: "inline", verticalAlign: "-2px", marginRight: 6 }} />Help escalate this issue
       </div>
       <h3 className="serif" style={{ fontSize: 22, fontWeight: 600, margin: "0 0 8px", letterSpacing: "-0.015em" }}>Become a verified supporter</h3>
-      {prefilled ? (
-        <p style={{ fontSize: 14, color: COLORS.slate, margin: "0 0 16px", lineHeight: 1.55 }}>
-          Signing as <strong>{registeredUser.name}</strong> ({registeredUser.postcode}). Your details are pre-filled from your registration.
-        </p>
-      ) : (
-        <p style={{ fontSize: 14, color: COLORS.slate, margin: "0 0 20px", lineHeight: 1.55 }}>Your email and postcode verify you're a real Inner West resident. Council sees verified names on the submission.</p>
-      )}
+      <p style={{ fontSize: 14, color: COLORS.slate, margin: "0 0 20px", lineHeight: 1.55 }}>Your email and postcode verify you're a real Inner West resident. Council sees verified names on the submission.</p>
       <form onSubmit={handleSubmit} style={{ display: "grid", gap: 12 }}>
         <div>
           <label style={labelStyle}>Email</label>
