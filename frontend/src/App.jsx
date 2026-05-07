@@ -1726,7 +1726,7 @@ function IssueDetailPage({ issue, comments, onBack, onVote, userVote, onComment,
           <h2 className="serif" style={{ fontSize: 22, fontWeight: 600, margin: "0 0 16px", letterSpacing: "-0.015em" }}>
             Community discussion <span style={{ fontSize: 14, color: COLORS.slate, fontWeight: 400, marginLeft: 8 }}>({comments.length})</span>
           </h2>
-          <CommentForm onSubmit={onComment} />
+          <CommentForm onSubmit={onComment} registeredUser={registeredUser} />
           <div style={{ marginTop: 20, display: "flex", flexDirection: "column", gap: 12 }}>
             {comments.length === 0 && <div style={{ fontSize: 14, color: COLORS.slate, padding: "16px 0" }}>No comments yet. Be the first to weigh in.</div>}
             {comments.map((c) => <CommentCard key={c.id} comment={c} />)}
@@ -1899,16 +1899,25 @@ const labelStyle = { display: "block", fontSize: 12, fontWeight: 600, color: COL
 const errorInputStyle = { borderColor: COLORS.error, boxShadow: `0 0 0 3px rgba(220,38,38,0.08)` };
 const errorTextStyle = { fontSize: 12, color: COLORS.error, marginTop: 4 };
 
-function CommentForm({ onSubmit }) {
-  const [name, setName] = useState("");
+function CommentForm({ onSubmit, registeredUser }) {
   const [text, setText] = useState("");
-  const [anonymous, setAnonymous] = useState(true);
+  const [anonymous, setAnonymous] = useState(false);
+
+  if (!registeredUser) {
+    return (
+      <div style={{ background: COLORS.paper, border: `1px solid ${COLORS.hairline}`, borderRadius: 10, padding: "16px 20px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16, flexWrap: "wrap" }}>
+        <p style={{ margin: 0, fontSize: 14, color: COLORS.slate }}>
+          <strong style={{ color: COLORS.ink }}>Register or log in</strong> to join the discussion.
+        </p>
+      </div>
+    );
+  }
 
   function handleSubmit(e) {
     e.preventDefault();
     if (!text.trim()) return;
-    onSubmit({ name, text: text.trim(), anonymous });
-    setName(""); setText("");
+    onSubmit({ name: registeredUser.name, text: text.trim(), anonymous });
+    setText("");
   }
 
   return (
@@ -1916,7 +1925,11 @@ function CommentForm({ onSubmit }) {
       <textarea value={text} onChange={(e) => setText(e.target.value.slice(0, 300))} placeholder="Share your perspective…" rows={3} style={{ resize: "vertical" }} />
       <div style={{ fontSize: 11, color: COLORS.slate, marginTop: 4, textAlign: "right" }}>{text.length} / 300</div>
       <div style={{ display: "flex", alignItems: "center", gap: 12, marginTop: 10, flexWrap: "wrap" }}>
-        {!anonymous && <input type="text" placeholder="Your name" value={name} onChange={(e) => setName(e.target.value)} style={{ maxWidth: 220 }} />}
+        {!anonymous && (
+          <span style={{ fontSize: 13, color: COLORS.slate }}>
+            Posting as <strong style={{ color: COLORS.ink }}>{registeredUser.name}</strong>
+          </span>
+        )}
         <label style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: 13, color: COLORS.slate, cursor: "pointer" }}>
           <input type="checkbox" checked={anonymous} onChange={(e) => setAnonymous(e.target.checked)} style={{ width: "auto", padding: 0 }} />
           Post anonymously
