@@ -742,8 +742,27 @@ export default function App() {
         });
         if (error && error.code !== "23505") throw error;
         setUserSignups((s) => ({ ...s, [issueId]: true }));
-        // Also cast upvote so vote_count reflects the new supporter
-        if (!userVotes[issueId]) handleVote(issueId, "up");
+
+        // Optimistic UI update — show the new count immediately.
+        setIssues((prev) =>
+          prev.map((i) => i.id === issueId ? { ...i, vote_count: (i.vote_count || 0) + 1 } : i)
+        );
+
+        // Persist the incremented count to the DB.
+        const currentCount = issues.find((i) => i.id === issueId)?.vote_count || 0;
+        supabase.from("issues")
+          .update({ vote_count: currentCount + 1 })
+          .eq("id", issueId)
+          .then(({ error: updateErr }) => {
+            if (updateErr) {
+              // Roll back the optimistic update if the DB write failed.
+              console.error("vote_count update failed:", updateErr);
+              setIssues((prev) =>
+                prev.map((i) => i.id === issueId ? { ...i, vote_count: Math.max(0, (i.vote_count || 1) - 1) } : i)
+              );
+            }
+          });
+
         showToast("You're a verified supporter! ✅", "success");
         return { success: true };
       } catch (err) {
