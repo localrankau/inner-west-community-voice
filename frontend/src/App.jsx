@@ -340,6 +340,11 @@ export default function App() {
         window.history.replaceState({}, "", window.location.pathname);
         return;
       }
+      if (_event === "SIGNED_OUT") {
+        localStorage.removeItem("iwcv_user");
+        setRegisteredUser(null);
+        return;
+      }
       if (session?.user) {
         const meta = session.user.user_metadata || {};
         const synced = {
@@ -514,13 +519,14 @@ export default function App() {
   }
 
   async function handleLogout() {
-    // scope:'local' clears the session immediately without a server round-trip,
-    // so this never hangs on a slow or failing network.
-    try { await supabase.auth.signOut({ scope: "local" }); } catch (err) { console.error("Sign out error:", err); }
+    // Clear local state immediately so the UI updates before any async work.
     localStorage.removeItem("iwcv_user");
     setRegisteredUser(null);
-    fetchIssues();
     showToast("You've been logged out.", "success");
+    // Invalidate the server-side token so Supabase can't re-authenticate via
+    // a cached refresh token.  Fire-and-forget — UI is already updated.
+    supabase.auth.signOut({ scope: "global" }).catch((err) => console.error("Sign out error:", err));
+    fetchIssues();
   }
 
   async function handleResetPassword(newPassword) {
