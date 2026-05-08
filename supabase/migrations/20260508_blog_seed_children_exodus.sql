@@ -49,78 +49,117 @@ VALUES (
 
 <p>Across all 30 Greater Sydney councils, one pattern holds with remarkable consistency: the denser the suburb, the fewer children.</p>
 
-<!-- CHART 1: Density vs children - SVG scatter -->
+<!-- CHART 1: Density vs children - Chart.js scatter -->
 <div style="background:#f8f7f4;border:1px solid #e4e1db;border-left:4px solid #1e3a8a;border-radius:0 10px 10px 0;padding:24px 22px;margin:28px 0;">
   <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:#1e3a8a;margin-bottom:6px;">ABS 2021 Census · 30 Sydney LGAs</div>
   <div style="font-family:'Fraunces',Georgia,serif;font-size:17px;font-weight:700;color:#1a1a1a;margin:0 0 4px;letter-spacing:-0.01em;line-height:1.3;">Population density vs share of residents aged 0–14</div>
-  <div style="font-size:11.5px;color:#888;margin-bottom:14px;">Each dot is a Sydney LGA. Inner West (red star) and key councils labeled.</div>
-  <svg viewBox="0 0 900 480" style="width:100%;height:auto;max-width:100%;" xmlns="http://www.w3.org/2000/svg">
-    <defs><style>.c1-grid { stroke:#f0f0f0; stroke-width:1; } .c1-axis { stroke:#999; stroke-width:1.5; } .c1-label { font-size:11px; fill:#666; } .c1-title { font-size:12px; font-weight:600; fill:#555; } .c1-dot { stroke-width:1.5; } .c1-dot-iw { stroke-width:2.5; } .c1-iw-label { font-size:11px; font-weight:bold; fill:#b91c1c; }</style></defs>
-    <!-- Grid -->
-    <line x1="80" y1="50" x2="80" y2="420" class="c1-axis"/>
-    <line x1="80" y1="420" x2="880" y2="420" class="c1-axis"/>
-    <!-- Dots by region -->
-    <circle cx="450" cy="242" r="5.5" class="c1-dot" fill="rgba(249,115,22,0.85)" stroke="rgba(234,88,12,1)"/>
-    <circle cx="650" cy="158" r="5.5" class="c1-dot" fill="rgba(249,115,22,0.85)" stroke="rgba(234,88,12,1)"/>
-    <circle cx="580" cy="150" r="5.5" class="c1-dot" fill="rgba(249,115,22,0.85)" stroke="rgba(234,88,12,1)"/>
-    <circle cx="390" cy="164" r="5.5" class="c1-dot" fill="rgba(249,115,22,0.85)" stroke="rgba(234,88,12,1)"/>
-    <circle cx="340" cy="172" r="5.5" class="c1-dot" fill="rgba(249,115,22,0.85)" stroke="rgba(234,88,12,1)"/>
-    <circle cx="325" cy="168" r="5.5" class="c1-dot" fill="rgba(249,115,22,0.85)" stroke="rgba(234,88,12,1)"/>
-    <circle cx="460" cy="256" r="5.5" class="c1-dot" fill="rgba(236,72,153,0.8)" stroke="rgba(219,39,119,1)"/>
-    <circle cx="385" cy="145" r="5.5" class="c1-dot" fill="rgba(236,72,153,0.8)" stroke="rgba(219,39,119,1)"/>
-    <circle cx="245" cy="256" r="5.5" class="c1-dot" fill="rgba(236,72,153,0.8)" stroke="rgba(219,39,119,1)"/>
-    <circle cx="540" cy="244" r="5.5" class="c1-dot" fill="rgba(20,184,166,0.85)" stroke="rgba(13,148,136,1)"/>
-    <circle cx="220" cy="240" r="5.5" class="c1-dot" fill="rgba(20,184,166,0.85)" stroke="rgba(13,148,136,1)"/>
-    <circle cx="230" cy="172" r="5.5" class="c1-dot" fill="rgba(20,184,166,0.85)" stroke="rgba(13,148,136,1)"/>
-    <circle cx="225" cy="190" r="5.5" class="c1-dot" fill="rgba(20,184,166,0.85)" stroke="rgba(13,148,136,1)"/>
-    <circle cx="170" cy="176" r="5.5" class="c1-dot" fill="rgba(20,184,166,0.85)" stroke="rgba(13,148,136,1)"/>
-    <circle cx="105" cy="198" r="5.5" class="c1-dot" fill="rgba(59,130,246,0.85)" stroke="rgba(37,99,235,1)"/>
-    <circle cx="95" cy="192" r="5.5" class="c1-dot" fill="rgba(59,130,246,0.85)" stroke="rgba(37,99,235,1)"/>
-    <circle cx="120" cy="178" r="5.5" class="c1-dot" fill="rgba(59,130,246,0.85)" stroke="rgba(37,99,235,1)"/>
-    <circle cx="230" cy="168" r="5.5" class="c1-dot" fill="rgba(22,163,74,0.85)" stroke="rgba(15,118,55,1)"/>
-    <circle cx="335" cy="204" r="5.5" class="c1-dot" fill="rgba(22,163,74,0.85)" stroke="rgba(15,118,55,1)"/>
-    <circle cx="220" cy="206" r="5.5" class="c1-dot" fill="rgba(22,163,74,0.85)" stroke="rgba(15,118,55,1)"/>
-    <circle cx="270" cy="148" r="5.5" class="c1-dot" fill="rgba(22,163,74,0.85)" stroke="rgba(15,118,55,1)"/>
-    <circle cx="195" cy="156" r="5.5" class="c1-dot" fill="rgba(22,163,74,0.85)" stroke="rgba(15,118,55,1)"/>
-    <circle cx="145" cy="164" r="5.5" class="c1-dot" fill="rgba(22,163,74,0.85)" stroke="rgba(15,118,55,1)"/>
-    <circle cx="125" cy="256" r="5.5" class="c1-dot" fill="rgba(139,92,246,0.85)" stroke="rgba(109,40,217,1)"/>
-    <circle cx="235" cy="252" r="5.5" class="c1-dot" fill="rgba(139,92,246,0.85)" stroke="rgba(109,40,217,1)"/>
-    <circle cx="175" cy="256" r="5.5" class="c1-dot" fill="rgba(139,92,246,0.85)" stroke="rgba(109,40,217,1)"/>
-    <circle cx="215" cy="252" r="5.5" class="c1-dot" fill="rgba(139,92,246,0.85)" stroke="rgba(109,40,217,1)"/>
-    <circle cx="240" cy="244" r="5.5" class="c1-dot" fill="rgba(139,92,246,0.85)" stroke="rgba(109,40,217,1)"/>
-    <circle cx="165" cy="252" r="5.5" class="c1-dot" fill="rgba(139,92,246,0.85)" stroke="rgba(109,40,217,1)"/>
-    <circle cx="195" cy="244" r="5.5" class="c1-dot" fill="rgba(234,179,8,0.85)" stroke="rgba(202,138,4,1)"/>
-    <circle cx="100" cy="252" r="5.5" class="c1-dot" fill="rgba(156,163,175,0.85)" stroke="rgba(107,114,128,1)"/>
-    <!-- Inner West: red star -->
-    <g transform="translate(410,246)">
-      <path d="M 0,-6 L 1.8,-1.8 L 6,-0.5 L 2.4,1.8 L 3.6,6 L 0,3 L -3.6,6 L -2.4,1.8 L -6,-0.5 L -1.8,-1.8 Z" fill="rgba(220,38,38,0.92)" stroke="rgba(185,28,28,1)" stroke-width="1.5"/>
-    </g>
-    <!-- City of Sydney: large red dot -->
-    <circle cx="760" cy="362" r="6" class="c1-dot c1-dot-iw" fill="rgba(220,38,38,0.92)" stroke="rgba(185,28,28,1)"/>
-    <!-- Labels -->
-    <text x="410" y="265" text-anchor="middle" class="c1-iw-label">★ Inner West</text>
-    <text x="410" y="280" text-anchor="middle" class="c1-iw-label" font-size="10">5,423/km² | 14.6%</text>
-    <text x="760" y="380" text-anchor="middle" class="c1-label" font-weight="bold">City of Sydney</text>
-    <text x="760" y="393" text-anchor="middle" class="c1-label" font-size="10">8,893/km² | 7.6%</text>
-    <text x="95" y="270" text-anchor="middle" class="c1-label" font-size="10">Camden</text>
-    <text x="95" y="283" text-anchor="middle" class="c1-label" font-size="9">25.3%</text>
-    <!-- Axes labels -->
-    <text x="480" y="450" text-anchor="middle" class="c1-title">Population Density (persons per km²)</text>
-    <text x="30" y="230" text-anchor="middle" class="c1-title" transform="rotate(-90 30 230)">% Population Aged 0–14 Years</text>
-    <!-- Trend arrow -->
-    <line x1="150" y1="260" x2="700" y2="100" stroke="rgba(150,150,150,0.3)" stroke-width="2" stroke-dasharray="6,4"/>
-    <text x="710" y="85" font-size="10" fill="#aaa">More density → fewer children</text>
-  </svg>
-  <div style="display:flex;flex-wrap:wrap;gap:8px 18px;margin-top:16px;padding:0 0 8px;">
-    <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:#444;"><div style="width:10px;height:10px;border-radius:50%;background:rgba(249,115,22,0.85);border:1.5px solid rgba(234,88,12,1);"></div>Eastern Sydney</div>
-    <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:#444;"><div style="width:10px;height:10px;border-radius:50%;background:rgba(236,72,153,0.8);border:1.5px solid rgba(219,39,119,1);"></div>Inner suburbs</div>
-    <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:#444;"><div style="width:10px;height:10px;border-radius:50%;background:rgba(20,184,166,0.85);border:1.5px solid rgba(13,148,136,1);"></div>Lower North Shore</div>
-    <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:#444;"><div style="width:10px;height:10px;border-radius:50%;background:rgba(59,130,246,0.85);border:1.5px solid rgba(37,99,235,1);"></div>Upper North / Beaches</div>
-    <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:#444;"><div style="width:10px;height:10px;border-radius:50%;background:rgba(22,163,74,0.85);border:1.5px solid rgba(15,118,55,1);"></div>Western Sydney</div>
-    <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:#444;"><div style="width:10px;height:10px;border-radius:50%;background:rgba(139,92,246,0.85);border:1.5px solid rgba(109,40,217,1);"></div>Outer / Growth SW</div>
+  <div style="font-size:11.5px;color:#888;margin-bottom:14px;">Each dot is a Sydney LGA. Hover for detail. Inner West highlighted in red.</div>
+  <div style="position:relative;height:420px;">
+    <canvas id="iwcChart1Blog"></canvas>
   </div>
+  <div id="iwcLegend1Blog" style="display:flex;flex-wrap:wrap;gap:8px 18px;margin-top:12px;"></div>
   <div style="font-size:10.5px;color:#bbb;margin-top:12px;">Source: ABS 2021 Census QuickStats; ABS Regional Population 2023-24.</div>
 </div>
+<script>
+(function() {
+  if (typeof Chart === 'undefined') return;
+  var ex1 = Chart.getChart('iwcChart1Blog'); if (ex1) ex1.destroy();
+  var c1All = [
+    { label: 'Inner West',           x: 5423, y: 14.6, cat: 0 },
+    { label: 'City of Sydney',       x: 8893, y: 7.6,  cat: 1 },
+    { label: 'Waverley',             x: 7424, y: 15.7, cat: 1 },
+    { label: 'Woollahra',            x: 4520, y: 14.9, cat: 1 },
+    { label: 'Randwick',             x: 3907, y: 15.4, cat: 1 },
+    { label: 'Bayside',              x: 3727, y: 15.1, cat: 1 },
+    { label: 'Burwood',              x: 5258, y: 12.0, cat: 2 },
+    { label: 'Canada Bay',           x: 4401, y: 15.8, cat: 2 },
+    { label: 'Strathfield',          x: 2879, y: 12.0, cat: 2 },
+    { label: 'North Sydney',         x: 6151, y: 12.7, cat: 3 },
+    { label: 'Mosman',               x: 3164, y: 16.3, cat: 3 },
+    { label: 'Lane Cove',            x: 3277, y: 18.2, cat: 3 },
+    { label: 'Willoughby',           x: 3231, y: 18.9, cat: 3 },
+    { label: 'Hunters Hill',         x: 2460, y: 17.1, cat: 3 },
+    { label: 'Ku-ring-gai',          x: 1503, y: 19.5, cat: 4 },
+    { label: 'Hornsby',              x: 340,  y: 19.0, cat: 4 },
+    { label: 'Northern Beaches',     x: 1065, y: 18.5, cat: 4 },
+    { label: 'Parramatta',           x: 3280, y: 15.3, cat: 5 },
+    { label: 'Canterbury-Bankstown', x: 4810, y: 19.8, cat: 5 },
+    { label: 'Cumberland',           x: 3200, y: 19.9, cat: 5 },
+    { label: 'Georges River',        x: 3864, y: 15.9, cat: 5 },
+    { label: 'Ryde',                 x: 2837, y: 16.2, cat: 5 },
+    { label: 'Fairfield',            x: 2091, y: 17.9, cat: 5 },
+    { label: 'Blacktown',            x: 1837, y: 22.7, cat: 6 },
+    { label: 'Liverpool',            x: 834,  y: 22.1, cat: 6 },
+    { label: 'Campbelltown',         x: 605,  y: 22.0, cat: 6 },
+    { label: 'Camden',               x: 700,  y: 25.3, cat: 6 },
+    { label: 'Penrith',              x: 565,  y: 21.2, cat: 6 },
+    { label: 'The Hills',            x: 558,  y: 21.2, cat: 6 },
+    { label: 'Sutherland',           x: 715,  y: 18.5, cat: 7 },
+    { label: 'Central Coast',        x: 211,  y: 18.0, cat: 8 }
+  ];
+  var regionMeta = [
+    { name: 'Inner West',            color: 'rgba(220,38,38,0.92)',   border: 'rgba(185,28,28,1)',    size: 11 },
+    { name: 'Eastern Sydney',        color: 'rgba(249,115,22,0.85)',  border: 'rgba(234,88,12,1)',    size: 8  },
+    { name: 'Inner suburbs',         color: 'rgba(236,72,153,0.8)',   border: 'rgba(219,39,119,1)',   size: 8  },
+    { name: 'Lower North Shore',     color: 'rgba(20,184,166,0.85)',  border: 'rgba(13,148,136,1)',   size: 8  },
+    { name: 'Upper North / Beaches', color: 'rgba(59,130,246,0.85)', border: 'rgba(37,99,235,1)',    size: 8  },
+    { name: 'Western Sydney',        color: 'rgba(22,163,74,0.85)',   border: 'rgba(15,118,55,1)',    size: 8  },
+    { name: 'Outer / Growth SW',     color: 'rgba(139,92,246,0.85)', border: 'rgba(109,40,217,1)',   size: 8  },
+    { name: 'Sutherland',            color: 'rgba(234,179,8,0.85)',   border: 'rgba(202,138,4,1)',    size: 8  },
+    { name: 'Central Coast',         color: 'rgba(156,163,175,0.85)',border: 'rgba(107,114,128,1)',   size: 8  }
+  ];
+  var datasets = regionMeta.map(function(rm, catIdx) {
+    return {
+      label: rm.name,
+      data: c1All.filter(function(d) { return d.cat === catIdx; }).map(function(d) { return { x: d.x, y: d.y, label: d.label }; }),
+      backgroundColor: rm.color, borderColor: rm.border,
+      borderWidth: catIdx === 0 ? 2.5 : 1.5,
+      pointRadius: rm.size, pointHoverRadius: rm.size + 4
+    };
+  });
+  var ctx1 = document.getElementById('iwcChart1Blog');
+  new Chart(ctx1, {
+    type: 'scatter',
+    data: { datasets: datasets },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: function(c) {
+              var d = c.raw;
+              return [' ' + d.label, ' Density: ' + d.x.toLocaleString() + ' /km²', ' Children 0–14: ' + d.y + '%', ' Region: ' + regionMeta[c.datasetIndex].name];
+            },
+            title: function() { return ''; }
+          },
+          backgroundColor: 'rgba(20,20,40,0.92)', padding: 12, bodyFont: { size: 12 }
+        },
+        annotation: {
+          annotations: {
+            iwcLabel: { type: 'label', xValue: 5423, yValue: 14.6, xAdjust: 10, yAdjust: -22, content: ['★ Inner West', '5,423/km² | 14.6%'], color: '#b91c1c', font: { size: 10.5, weight: 'bold' }, textAlign: 'left' },
+            trendLine: { type: 'line', borderColor: 'rgba(150,150,150,0.3)', borderWidth: 1.5, borderDash: [6,4], xMin: 0, xMax: 9500, yMin: 23.5, yMax: 6.5, label: { content: 'More density → fewer children', display: true, position: 'end', color: '#aaa', font: { size: 9 }, yAdjust: -12 } }
+          }
+        }
+      },
+      scales: {
+        x: { title: { display: true, text: 'Population Density (persons per km²)', color: '#555', font: { size: 12 } }, min: 0, max: 10000, ticks: { callback: function(v) { return v.toLocaleString(); }, color: '#666', font: { size: 10 } }, grid: { color: 'rgba(0,0,0,0.05)' } },
+        y: { title: { display: true, text: '% Population Aged 0–14 Years', color: '#555', font: { size: 12 } }, min: 4, max: 28, ticks: { callback: function(v) { return v + '%'; }, color: '#666', font: { size: 10 } }, grid: { color: 'rgba(0,0,0,0.05)' } }
+      }
+    }
+  });
+  var legendEl = document.getElementById('iwcLegend1Blog');
+  if (legendEl) {
+    legendEl.innerHTML = '';
+    regionMeta.forEach(function(rm) {
+      var item = document.createElement('div');
+      item.style.cssText = 'display:flex;align-items:center;gap:6px;font-size:12px;color:#444;';
+      item.innerHTML = '<div style="width:10px;height:10px;border-radius:50%;background:' + rm.color + ';border:1.5px solid ' + rm.border + ';flex-shrink:0;"></div>' + rm.name;
+      legendEl.appendChild(item);
+    });
+  }
+})();
+</script>
 
 <p>Camden, at 700 people per km², has 25.3% of residents under 14. The City of Sydney - the densest council in Greater Sydney at nearly 9,000 per km² - has just 7.6%. The Inner West, at 5,423 per km², sits at 14.6%: well below the Greater Sydney average of 18.5%.</p>
 
@@ -129,175 +168,67 @@ VALUES (
 <!-- ══ SECTION: BIRTHS COLLAPSE ══ -->
 <h2>The births collapse - and the national comparison</h2>
 
-<!-- CHART A SVG: 3-line chart - IWC Children 0-14, IWC Births, Australia TFR 2001-2024
-     All coordinates calculated from exact data:
-     Plot area x:90-980 (890px wide), y:50-450 (400px tall)
-     x step = 890/23 per year; yLeft range 20000-32500; yRight range 1200-3600; yTFR range 1.2-2.4 -->
+<!-- CHART A: Time series - Chart.js -->
 <div style="background:#f8f7f4;border:1px solid #e4e1db;border-left:4px solid #ea580c;border-radius:0 10px 10px 0;padding:24px 22px 16px;margin:28px 0;">
   <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:#ea580c;margin-bottom:6px;">ABS Births cat. 3301.0 · IWC 2001–2024</div>
   <div style="font-family:'Fraunces',Georgia,serif;font-size:17px;font-weight:700;color:#1a1a1a;margin:0 0 4px;letter-spacing:-0.01em;line-height:1.3;">IWC children &amp; births vs Australia fertility rate</div>
-  <div style="font-size:11.5px;color:#888;margin-bottom:14px;">Baby Bonus period (2004–2014) shaded.</div>
-<svg viewBox="0 0 1120 530" style="width:100%;height:auto;max-width:100%;" xmlns="http://www.w3.org/2000/svg">
-  <defs>
-    <clipPath id="c2-clip">
-      <rect x="90" y="50" width="890" height="400"/>
-    </clipPath>
-  </defs>
-  <!-- Legend row -->
-  <rect x="90" y="12" width="12" height="12" fill="#1e3a8a" rx="2"/>
-  <text x="108" y="23" font-size="12" font-family="system-ui,sans-serif" fill="#333">IWC Children 0–14</text>
-  <rect x="320" y="12" width="12" height="12" fill="#ea580c" rx="2"/>
-  <text x="338" y="23" font-size="12" font-family="system-ui,sans-serif" fill="#333">IWC Annual Births</text>
-  <line x1="560" y1="18" x2="590" y2="18" stroke="#16a34a" stroke-width="2" stroke-dasharray="6,3"/>
-  <circle cx="575" cy="18" r="3" fill="#16a34a"/>
-  <text x="598" y="23" font-size="12" font-family="system-ui,sans-serif" fill="#333">Australia TFR (national)</text>
-  <!-- Left Y-axis (Children 0-14: 20000-32500) -->
-  <line x1="90" y1="50" x2="90" y2="450" stroke="#999" stroke-width="1.5"/>
-  <line x1="86" y1="50" x2="90" y2="50" stroke="#999" stroke-width="1.5"/>
-  <line x1="86" y1="162" x2="90" y2="162" stroke="#999" stroke-width="1.5"/>
-  <line x1="86" y1="258" x2="90" y2="258" stroke="#999" stroke-width="1.5"/>
-  <line x1="86" y1="354" x2="90" y2="354" stroke="#999" stroke-width="1.5"/>
-  <line x1="86" y1="450" x2="90" y2="450" stroke="#999" stroke-width="1.5"/>
-  <text x="82" y="54" font-size="10" font-family="system-ui,sans-serif" fill="#1e3a8a" text-anchor="end">32,500</text>
-  <text x="82" y="166" font-size="10" font-family="system-ui,sans-serif" fill="#1e3a8a" text-anchor="end">29,000</text>
-  <text x="82" y="262" font-size="10" font-family="system-ui,sans-serif" fill="#1e3a8a" text-anchor="end">26,000</text>
-  <text x="82" y="358" font-size="10" font-family="system-ui,sans-serif" fill="#1e3a8a" text-anchor="end">23,000</text>
-  <text x="82" y="454" font-size="10" font-family="system-ui,sans-serif" fill="#1e3a8a" text-anchor="end">20,000</text>
-  <text transform="translate(18,250) rotate(-90)" font-size="11" font-family="system-ui,sans-serif" fill="#1e3a8a" font-weight="600" text-anchor="middle">IWC Children aged 0–14</text>
-  <!-- X-axis -->
-  <line x1="90" y1="450" x2="980" y2="450" stroke="#999" stroke-width="1.5"/>
-  <!-- Right Y-axis (Births: 1200-3600) -->
-  <line x1="980" y1="50" x2="980" y2="450" stroke="#ea580c" stroke-width="1.5"/>
-  <line x1="980" y1="50" x2="984" y2="50" stroke="#ea580c" stroke-width="1.5"/>
-  <line x1="980" y1="150" x2="984" y2="150" stroke="#ea580c" stroke-width="1.5"/>
-  <line x1="980" y1="250" x2="984" y2="250" stroke="#ea580c" stroke-width="1.5"/>
-  <line x1="980" y1="350" x2="984" y2="350" stroke="#ea580c" stroke-width="1.5"/>
-  <line x1="980" y1="450" x2="984" y2="450" stroke="#ea580c" stroke-width="1.5"/>
-  <text x="988" y="54" font-size="10" font-family="system-ui,sans-serif" fill="#ea580c">3,600</text>
-  <text x="988" y="154" font-size="10" font-family="system-ui,sans-serif" fill="#ea580c">3,000</text>
-  <text x="988" y="254" font-size="10" font-family="system-ui,sans-serif" fill="#ea580c">2,400</text>
-  <text x="988" y="354" font-size="10" font-family="system-ui,sans-serif" fill="#ea580c">1,800</text>
-  <text x="988" y="454" font-size="10" font-family="system-ui,sans-serif" fill="#ea580c">1,200</text>
-  <text transform="translate(1060,250) rotate(90)" font-size="11" font-family="system-ui,sans-serif" fill="#ea580c" font-weight="600" text-anchor="middle">IWC Annual Births</text>
-  <!-- TFR axis (right offset: 1.2-2.4) -->
-  <line x1="1075" y1="50" x2="1075" y2="450" stroke="#16a34a" stroke-width="1" stroke-dasharray="3,2"/>
-  <line x1="1073" y1="50" x2="1075" y2="50" stroke="#16a34a" stroke-width="1"/>
-  <line x1="1073" y1="183" x2="1075" y2="183" stroke="#16a34a" stroke-width="1"/>
-  <line x1="1073" y1="317" x2="1075" y2="317" stroke="#16a34a" stroke-width="1"/>
-  <line x1="1073" y1="450" x2="1075" y2="450" stroke="#16a34a" stroke-width="1"/>
-  <text x="1079" y="54" font-size="9" font-family="system-ui,sans-serif" fill="#16a34a">2.4</text>
-  <text x="1079" y="187" font-size="9" font-family="system-ui,sans-serif" fill="#16a34a">2.0</text>
-  <text x="1079" y="321" font-size="9" font-family="system-ui,sans-serif" fill="#16a34a">1.6</text>
-  <text x="1079" y="454" font-size="9" font-family="system-ui,sans-serif" fill="#16a34a">1.2</text>
-  <!-- Grid lines (horizontal, light) -->
-  <line x1="90" y1="162" x2="980" y2="162" stroke="#f0f0f0" stroke-width="1"/>
-  <line x1="90" y1="258" x2="980" y2="258" stroke="#f0f0f0" stroke-width="1"/>
-  <line x1="90" y1="354" x2="980" y2="354" stroke="#f0f0f0" stroke-width="1"/>
-  <!-- Baby Bonus box (2004=x206, 2014=x591) -->
-  <rect x="206" y="50" width="385" height="400" fill="rgba(254,240,138,0.18)" stroke="rgba(234,179,8,0.4)" stroke-width="1" clip-path="url(#c2-clip)"/>
-  <text x="398" y="76" font-size="9" font-family="system-ui,sans-serif" fill="#92400e" font-weight="bold" text-anchor="middle">Baby Bonus</text>
-  <text x="398" y="88" font-size="9" font-family="system-ui,sans-serif" fill="#92400e" font-weight="bold" text-anchor="middle">2004–2014</text>
-  <!-- Fill: Children (blue, semi-transparent) -->
-  <polygon points="90,450 90,344 129,351 167,351 206,351 244,351 283,341 321,322 360,290 398,242 437,236 475,223 514,178 552,156 591,146 629,156 668,149 706,146 745,136 783,162 822,194 860,236 899,287 937,293 976,271 976,450" fill="rgba(30,58,138,0.08)" clip-path="url(#c2-clip)"/>
-  <!-- Fill: Births (orange, semi-transparent) -->
-  <polygon points="90,450 90,258 129,253 167,250 206,237 244,208 283,197 321,153 360,125 398,142 437,125 475,150 514,170 552,155 591,237 629,200 668,235 706,240 745,208 783,283 822,300 860,253 899,317 937,340 976,342 976,450" fill="rgba(234,88,12,0.07)" clip-path="url(#c2-clip)"/>
-  <!-- Line: Children 0-14 (blue solid) -->
-  <polyline points="90,344 129,351 167,351 206,351 244,351 283,341 321,322 360,290 398,242 437,236 475,223 514,178 552,156 591,146 629,156 668,149 706,146 745,136 783,162 822,194 860,236 899,287 937,293 976,271" stroke="#1e3a8a" stroke-width="2.5" fill="none" stroke-linejoin="round" clip-path="url(#c2-clip)"/>
-  <!-- Dots: Children -->
-  <circle cx="90" cy="344" r="3" fill="#1e3a8a" stroke="white" stroke-width="1.5"/>
-  <circle cx="129" cy="351" r="3" fill="#1e3a8a" stroke="white" stroke-width="1.5"/>
-  <circle cx="167" cy="351" r="3" fill="#1e3a8a" stroke="white" stroke-width="1.5"/>
-  <circle cx="206" cy="351" r="3" fill="#1e3a8a" stroke="white" stroke-width="1.5"/>
-  <circle cx="244" cy="351" r="3" fill="#1e3a8a" stroke="white" stroke-width="1.5"/>
-  <circle cx="283" cy="341" r="3" fill="#1e3a8a" stroke="white" stroke-width="1.5"/>
-  <circle cx="321" cy="322" r="3" fill="#1e3a8a" stroke="white" stroke-width="1.5"/>
-  <circle cx="360" cy="290" r="3" fill="#1e3a8a" stroke="white" stroke-width="1.5"/>
-  <circle cx="398" cy="242" r="3" fill="#1e3a8a" stroke="white" stroke-width="1.5"/>
-  <circle cx="437" cy="236" r="3" fill="#1e3a8a" stroke="white" stroke-width="1.5"/>
-  <circle cx="475" cy="223" r="3" fill="#1e3a8a" stroke="white" stroke-width="1.5"/>
-  <circle cx="514" cy="178" r="3" fill="#1e3a8a" stroke="white" stroke-width="1.5"/>
-  <circle cx="552" cy="156" r="3" fill="#1e3a8a" stroke="white" stroke-width="1.5"/>
-  <circle cx="591" cy="146" r="3" fill="#1e3a8a" stroke="white" stroke-width="1.5"/>
-  <circle cx="629" cy="156" r="3" fill="#1e3a8a" stroke="white" stroke-width="1.5"/>
-  <circle cx="668" cy="149" r="3" fill="#1e3a8a" stroke="white" stroke-width="1.5"/>
-  <circle cx="706" cy="146" r="3" fill="#1e3a8a" stroke="white" stroke-width="1.5"/>
-  <circle cx="745" cy="136" r="3" fill="#1e3a8a" stroke="white" stroke-width="1.5"/>
-  <circle cx="783" cy="162" r="3" fill="#1e3a8a" stroke="white" stroke-width="1.5"/>
-  <circle cx="822" cy="194" r="3" fill="#1e3a8a" stroke="white" stroke-width="1.5"/>
-  <circle cx="860" cy="236" r="3" fill="#1e3a8a" stroke="white" stroke-width="1.5"/>
-  <circle cx="899" cy="287" r="3" fill="#1e3a8a" stroke="white" stroke-width="1.5"/>
-  <circle cx="937" cy="293" r="3" fill="#1e3a8a" stroke="white" stroke-width="1.5"/>
-  <circle cx="976" cy="271" r="3" fill="#1e3a8a" stroke="white" stroke-width="1.5"/>
-  <!-- Line: Annual Births (orange solid) -->
-  <polyline points="90,258 129,253 167,250 206,237 244,208 283,197 321,153 360,125 398,142 437,125 475,150 514,170 552,155 591,237 629,200 668,235 706,240 745,208 783,283 822,300 860,253 899,317 937,340 976,342" stroke="#ea580c" stroke-width="2.5" fill="none" stroke-linejoin="round" clip-path="url(#c2-clip)"/>
-  <!-- Dots: Births -->
-  <circle cx="90" cy="258" r="3" fill="#ea580c" stroke="white" stroke-width="1.5"/>
-  <circle cx="129" cy="253" r="3" fill="#ea580c" stroke="white" stroke-width="1.5"/>
-  <circle cx="167" cy="250" r="3" fill="#ea580c" stroke="white" stroke-width="1.5"/>
-  <circle cx="206" cy="237" r="3" fill="#ea580c" stroke="white" stroke-width="1.5"/>
-  <circle cx="244" cy="208" r="3" fill="#ea580c" stroke="white" stroke-width="1.5"/>
-  <circle cx="283" cy="197" r="3" fill="#ea580c" stroke="white" stroke-width="1.5"/>
-  <circle cx="321" cy="153" r="3" fill="#ea580c" stroke="white" stroke-width="1.5"/>
-  <circle cx="360" cy="125" r="3" fill="#ea580c" stroke="white" stroke-width="1.5"/>
-  <circle cx="398" cy="142" r="3" fill="#ea580c" stroke="white" stroke-width="1.5"/>
-  <circle cx="437" cy="125" r="3" fill="#ea580c" stroke="white" stroke-width="1.5"/>
-  <circle cx="475" cy="150" r="3" fill="#ea580c" stroke="white" stroke-width="1.5"/>
-  <circle cx="514" cy="170" r="3" fill="#ea580c" stroke="white" stroke-width="1.5"/>
-  <circle cx="552" cy="155" r="3" fill="#ea580c" stroke="white" stroke-width="1.5"/>
-  <circle cx="591" cy="237" r="3" fill="#ea580c" stroke="white" stroke-width="1.5"/>
-  <circle cx="629" cy="200" r="3" fill="#ea580c" stroke="white" stroke-width="1.5"/>
-  <circle cx="668" cy="235" r="3" fill="#ea580c" stroke="white" stroke-width="1.5"/>
-  <circle cx="706" cy="240" r="3" fill="#ea580c" stroke="white" stroke-width="1.5"/>
-  <circle cx="745" cy="208" r="3" fill="#ea580c" stroke="white" stroke-width="1.5"/>
-  <circle cx="783" cy="283" r="3" fill="#ea580c" stroke="white" stroke-width="1.5"/>
-  <circle cx="822" cy="300" r="3" fill="#ea580c" stroke="white" stroke-width="1.5"/>
-  <circle cx="860" cy="253" r="3" fill="#ea580c" stroke="white" stroke-width="1.5"/>
-  <circle cx="899" cy="317" r="3" fill="#ea580c" stroke="white" stroke-width="1.5"/>
-  <circle cx="937" cy="340" r="3" fill="#ea580c" stroke="white" stroke-width="1.5"/>
-  <circle cx="976" cy="342" r="3" fill="#ea580c" stroke="white" stroke-width="1.5"/>
-  <!-- Line: Australia TFR (green dashed) -->
-  <polyline points="90,273 129,265 167,266 206,258 244,254 283,247 321,206 360,176 398,216 437,221 475,223 514,233 552,243 591,250 629,259 668,269 706,270 745,270 783,297 822,323 860,283 899,307 937,350 976,356" stroke="#16a34a" stroke-width="2" stroke-dasharray="7,4" fill="none" stroke-linejoin="round" clip-path="url(#c2-clip)"/>
-  <!-- Dots: TFR -->
-  <circle cx="90" cy="273" r="2.5" fill="#16a34a" stroke="white" stroke-width="1.5"/>
-  <circle cx="129" cy="265" r="2.5" fill="#16a34a" stroke="white" stroke-width="1.5"/>
-  <circle cx="167" cy="266" r="2.5" fill="#16a34a" stroke="white" stroke-width="1.5"/>
-  <circle cx="206" cy="258" r="2.5" fill="#16a34a" stroke="white" stroke-width="1.5"/>
-  <circle cx="244" cy="254" r="2.5" fill="#16a34a" stroke="white" stroke-width="1.5"/>
-  <circle cx="283" cy="247" r="2.5" fill="#16a34a" stroke="white" stroke-width="1.5"/>
-  <circle cx="321" cy="206" r="2.5" fill="#16a34a" stroke="white" stroke-width="1.5"/>
-  <circle cx="360" cy="176" r="2.5" fill="#16a34a" stroke="white" stroke-width="1.5"/>
-  <circle cx="398" cy="216" r="2.5" fill="#16a34a" stroke="white" stroke-width="1.5"/>
-  <circle cx="437" cy="221" r="2.5" fill="#16a34a" stroke="white" stroke-width="1.5"/>
-  <circle cx="475" cy="223" r="2.5" fill="#16a34a" stroke="white" stroke-width="1.5"/>
-  <circle cx="514" cy="233" r="2.5" fill="#16a34a" stroke="white" stroke-width="1.5"/>
-  <circle cx="552" cy="243" r="2.5" fill="#16a34a" stroke="white" stroke-width="1.5"/>
-  <circle cx="591" cy="250" r="2.5" fill="#16a34a" stroke="white" stroke-width="1.5"/>
-  <circle cx="629" cy="259" r="2.5" fill="#16a34a" stroke="white" stroke-width="1.5"/>
-  <circle cx="668" cy="269" r="2.5" fill="#16a34a" stroke="white" stroke-width="1.5"/>
-  <circle cx="706" cy="270" r="2.5" fill="#16a34a" stroke="white" stroke-width="1.5"/>
-  <circle cx="745" cy="270" r="2.5" fill="#16a34a" stroke="white" stroke-width="1.5"/>
-  <circle cx="783" cy="297" r="2.5" fill="#16a34a" stroke="white" stroke-width="1.5"/>
-  <circle cx="822" cy="323" r="2.5" fill="#16a34a" stroke="white" stroke-width="1.5"/>
-  <circle cx="860" cy="283" r="2.5" fill="#16a34a" stroke="white" stroke-width="1.5"/>
-  <circle cx="899" cy="307" r="2.5" fill="#16a34a" stroke="white" stroke-width="1.5"/>
-  <circle cx="937" cy="350" r="2.5" fill="#16a34a" stroke="white" stroke-width="1.5"/>
-  <circle cx="976" cy="356" r="2.5" fill="#16a34a" stroke="white" stroke-width="1.5"/>
-  <!-- X-axis year labels (every 2 years, rotated 45deg) -->
-  <text transform="translate(90,465) rotate(30)" font-size="10" font-family="system-ui,sans-serif" fill="#666">2001</text>
-  <text transform="translate(167,465) rotate(30)" font-size="10" font-family="system-ui,sans-serif" fill="#666">2003</text>
-  <text transform="translate(244,465) rotate(30)" font-size="10" font-family="system-ui,sans-serif" fill="#666">2005</text>
-  <text transform="translate(321,465) rotate(30)" font-size="10" font-family="system-ui,sans-serif" fill="#666">2007</text>
-  <text transform="translate(398,465) rotate(30)" font-size="10" font-family="system-ui,sans-serif" fill="#666">2009</text>
-  <text transform="translate(475,465) rotate(30)" font-size="10" font-family="system-ui,sans-serif" fill="#666">2011</text>
-  <text transform="translate(552,465) rotate(30)" font-size="10" font-family="system-ui,sans-serif" fill="#666">2013</text>
-  <text transform="translate(629,465) rotate(30)" font-size="10" font-family="system-ui,sans-serif" fill="#666">2015</text>
-  <text transform="translate(706,465) rotate(30)" font-size="10" font-family="system-ui,sans-serif" fill="#666">2017</text>
-  <text transform="translate(783,465) rotate(30)" font-size="10" font-family="system-ui,sans-serif" fill="#666">2019</text>
-  <text transform="translate(860,465) rotate(30)" font-size="10" font-family="system-ui,sans-serif" fill="#666">2021</text>
-  <text transform="translate(937,465) rotate(30)" font-size="10" font-family="system-ui,sans-serif" fill="#666">2023</text>
-</svg>
+  <div style="font-size:11.5px;color:#888;margin-bottom:14px;">Hover for year detail. Baby Bonus period (2004–2014) shaded.</div>
+  <div style="position:relative;height:380px;">
+    <canvas id="iwcChartABlog"></canvas>
+  </div>
   <div style="font-size:10.5px;color:#bbb;margin-top:12px;">Source: ABS Births cat. 3301.0; ABS Regional Population by Age and Sex; ABS Demographic Statistics. IWC values approximate ±50.</div>
 </div>
+<script>
+(function() {
+  if (typeof Chart === 'undefined') return;
+  var exA = Chart.getChart('iwcChartABlog'); if (exA) exA.destroy();
+  var years = ['2001','2002','2003','2004','2005','2006','2007','2008','2009','2010','2011','2012','2013','2014','2015','2016','2017','2018','2019','2020','2021','2022','2023','2024'];
+  var childrenData = [23300,23100,23100,23100,23100,23400,24000,25000,26500,26700,27100,28500,29200,29500,29200,29400,29500,29800,29000,28000,26700,25100,24900,25600];
+  var birthsData   = [2350,2380,2400,2480,2650,2720,2980,3150,3050,3150,3000,2880,2970,2480,2700,2490,2460,2650,2200,2100,2380,2000,1860,1850];
+  var australiaTFR = [1.730,1.754,1.752,1.777,1.789,1.808,1.933,2.023,1.903,1.886,1.882,1.850,1.820,1.800,1.773,1.742,1.741,1.740,1.660,1.580,1.700,1.630,1.500,1.481];
+  var ctxA = document.getElementById('iwcChartABlog');
+  new Chart(ctxA, {
+    type: 'line',
+    data: {
+      labels: years,
+      datasets: [
+        { label: 'IWC – Children 0–14', data: childrenData, yAxisID: 'yLeft', borderColor: '#1e3a8a', backgroundColor: 'rgba(30,58,138,0.08)', borderWidth: 2.5, fill: true, tension: 0.3, pointRadius: 3, pointHoverRadius: 7, pointBackgroundColor: '#1e3a8a' },
+        { label: 'IWC – Annual Births',       data: birthsData,   yAxisID: 'yRight', borderColor: '#ea580c', backgroundColor: 'rgba(234,88,12,0.07)',  borderWidth: 2.5, fill: true, tension: 0.3, pointRadius: 3, pointHoverRadius: 7, pointBackgroundColor: '#ea580c' },
+        { label: 'Australia TFR (national)',       data: australiaTFR, yAxisID: 'yTFR',  borderColor: '#16a34a', backgroundColor: 'transparent', borderWidth: 2, borderDash: [7,4], fill: false, tension: 0.3, pointRadius: 2.5, pointHoverRadius: 7, pointBackgroundColor: '#16a34a' }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: { position: 'top', labels: { font: { size: 12 }, color: '#333', padding: 16 } },
+        tooltip: {
+          backgroundColor: 'rgba(20,20,40,0.92)', padding: 12,
+          callbacks: {
+            label: function(c) {
+              if (c.datasetIndex === 0) return ' IWC Children 0–14: ' + c.parsed.y.toLocaleString();
+              if (c.datasetIndex === 1) return ' IWC Births: ' + c.parsed.y.toLocaleString();
+              return ' Australia TFR: ' + c.parsed.y.toFixed(3);
+            }
+          }
+        },
+        annotation: {
+          annotations: {
+            babyBonus: { type: 'box', xMin: '2004', xMax: '2014', backgroundColor: 'rgba(254,240,138,0.18)', borderColor: 'rgba(234,179,8,0.4)', borderWidth: 1 },
+            babyBonusLabel: { type: 'label', xValue: '2009', yScaleID: 'yLeft', yValue: 31600, content: ['Baby Bonus','2004–2014'], color: '#92400e', font: { size: 9, weight: 'bold' }, textAlign: 'center' }
+          }
+        }
+      },
+      scales: {
+        x: { ticks: { color: '#666', font: { size: 10 }, maxRotation: 45 }, grid: { color: 'rgba(0,0,0,0.04)' } },
+        yLeft:  { type: 'linear', position: 'left',  title: { display: true, text: 'IWC Children aged 0–14', color: '#1e3a8a', font: { size: 11 } }, min: 20000, max: 32500, ticks: { color: '#1e3a8a', callback: function(v) { return v.toLocaleString(); }, font: { size: 10 } }, grid: { color: 'rgba(0,0,0,0.05)' } },
+        yRight: { type: 'linear', position: 'right', title: { display: true, text: 'IWC Annual Births', color: '#ea580c', font: { size: 11 } }, min: 1200, max: 3600, ticks: { color: '#ea580c', callback: function(v) { return v.toLocaleString(); }, font: { size: 10 } }, grid: { display: false } },
+        yTFR:   { type: 'linear', position: 'right', offset: true, title: { display: true, text: 'Australia TFR', color: '#16a34a', font: { size: 11 } }, min: 1.2, max: 2.4, ticks: { color: '#16a34a', callback: function(v) { return v.toFixed(1); }, font: { size: 10 }, stepSize: 0.2 }, grid: { display: false } }
+      }
+    }
+  });
+})();
+</script>
 
 <p>There's a visible bump in the births data between 2004 and 2014. That's the Baby Bonus era - the Howard and Rudd governments' $5,000–$7,500 payment per birth. Inner West births peaked at around 3,150 in 2008–10 before the payment was wound back from 2009 and abolished entirely in 2014. When it ended, births fell sharply, recovered briefly in 2016–18, then collapsed to a 23-year low in 2024.</p>
 
