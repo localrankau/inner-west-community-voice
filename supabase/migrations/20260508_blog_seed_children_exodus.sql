@@ -121,7 +121,6 @@ VALUES (
   </div>
   <div style="font-size:10.5px;color:#bbb;margin-top:12px;">Source: ABS 2021 Census QuickStats; ABS Regional Population 2023-24.</div>
 </div>
-</script>
 
 <p>Camden, at 700 people per km², has 25.3% of residents under 14. The City of Sydney - the densest council in Greater Sydney at nearly 9,000 per km² - has just 7.6%. The Inner West, at 5,423 per km², sits at 14.6%: well below the Greater Sydney average of 18.5%.</p>
 
@@ -130,159 +129,175 @@ VALUES (
 <!-- ══ SECTION: BIRTHS COLLAPSE ══ -->
 <h2>The births collapse - and the national comparison</h2>
 
-<!-- CHART A: Time series - Chart.js -->
+<!-- CHART A SVG: 3-line chart - IWC Children 0-14, IWC Births, Australia TFR 2001-2024
+     All coordinates calculated from exact data:
+     Plot area x:90-980 (890px wide), y:50-450 (400px tall)
+     x step = 890/23 per year; yLeft range 20000-32500; yRight range 1200-3600; yTFR range 1.2-2.4 -->
 <div style="background:#f8f7f4;border:1px solid #e4e1db;border-left:4px solid #ea580c;border-radius:0 10px 10px 0;padding:24px 22px 16px;margin:28px 0;">
   <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:#ea580c;margin-bottom:6px;">ABS Births cat. 3301.0 · IWC 2001–2024</div>
   <div style="font-family:'Fraunces',Georgia,serif;font-size:17px;font-weight:700;color:#1a1a1a;margin:0 0 4px;letter-spacing:-0.01em;line-height:1.3;">IWC children &amp; births vs Australia fertility rate</div>
-  <div style="font-size:11.5px;color:#888;margin-bottom:14px;">Hover for year detail. Baby Bonus period (2004–2014) shaded.</div>
-  <div style="position:relative;height:380px;">
-    <canvas id="iwcChartABlog"></canvas>
-  </div>
+  <div style="font-size:11.5px;color:#888;margin-bottom:14px;">Baby Bonus period (2004–2014) shaded.</div>
+<svg viewBox="0 0 1120 530" style="width:100%;height:auto;max-width:100%;" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <clipPath id="c2-clip">
+      <rect x="90" y="50" width="890" height="400"/>
+    </clipPath>
+  </defs>
+  <!-- Legend row -->
+  <rect x="90" y="12" width="12" height="12" fill="#1e3a8a" rx="2"/>
+  <text x="108" y="23" font-size="12" font-family="system-ui,sans-serif" fill="#333">IWC Children 0–14</text>
+  <rect x="320" y="12" width="12" height="12" fill="#ea580c" rx="2"/>
+  <text x="338" y="23" font-size="12" font-family="system-ui,sans-serif" fill="#333">IWC Annual Births</text>
+  <line x1="560" y1="18" x2="590" y2="18" stroke="#16a34a" stroke-width="2" stroke-dasharray="6,3"/>
+  <circle cx="575" cy="18" r="3" fill="#16a34a"/>
+  <text x="598" y="23" font-size="12" font-family="system-ui,sans-serif" fill="#333">Australia TFR (national)</text>
+  <!-- Left Y-axis (Children 0-14: 20000-32500) -->
+  <line x1="90" y1="50" x2="90" y2="450" stroke="#999" stroke-width="1.5"/>
+  <line x1="86" y1="50" x2="90" y2="50" stroke="#999" stroke-width="1.5"/>
+  <line x1="86" y1="162" x2="90" y2="162" stroke="#999" stroke-width="1.5"/>
+  <line x1="86" y1="258" x2="90" y2="258" stroke="#999" stroke-width="1.5"/>
+  <line x1="86" y1="354" x2="90" y2="354" stroke="#999" stroke-width="1.5"/>
+  <line x1="86" y1="450" x2="90" y2="450" stroke="#999" stroke-width="1.5"/>
+  <text x="82" y="54" font-size="10" font-family="system-ui,sans-serif" fill="#1e3a8a" text-anchor="end">32,500</text>
+  <text x="82" y="166" font-size="10" font-family="system-ui,sans-serif" fill="#1e3a8a" text-anchor="end">29,000</text>
+  <text x="82" y="262" font-size="10" font-family="system-ui,sans-serif" fill="#1e3a8a" text-anchor="end">26,000</text>
+  <text x="82" y="358" font-size="10" font-family="system-ui,sans-serif" fill="#1e3a8a" text-anchor="end">23,000</text>
+  <text x="82" y="454" font-size="10" font-family="system-ui,sans-serif" fill="#1e3a8a" text-anchor="end">20,000</text>
+  <text transform="translate(18,250) rotate(-90)" font-size="11" font-family="system-ui,sans-serif" fill="#1e3a8a" font-weight="600" text-anchor="middle">IWC Children aged 0–14</text>
+  <!-- X-axis -->
+  <line x1="90" y1="450" x2="980" y2="450" stroke="#999" stroke-width="1.5"/>
+  <!-- Right Y-axis (Births: 1200-3600) -->
+  <line x1="980" y1="50" x2="980" y2="450" stroke="#ea580c" stroke-width="1.5"/>
+  <line x1="980" y1="50" x2="984" y2="50" stroke="#ea580c" stroke-width="1.5"/>
+  <line x1="980" y1="150" x2="984" y2="150" stroke="#ea580c" stroke-width="1.5"/>
+  <line x1="980" y1="250" x2="984" y2="250" stroke="#ea580c" stroke-width="1.5"/>
+  <line x1="980" y1="350" x2="984" y2="350" stroke="#ea580c" stroke-width="1.5"/>
+  <line x1="980" y1="450" x2="984" y2="450" stroke="#ea580c" stroke-width="1.5"/>
+  <text x="988" y="54" font-size="10" font-family="system-ui,sans-serif" fill="#ea580c">3,600</text>
+  <text x="988" y="154" font-size="10" font-family="system-ui,sans-serif" fill="#ea580c">3,000</text>
+  <text x="988" y="254" font-size="10" font-family="system-ui,sans-serif" fill="#ea580c">2,400</text>
+  <text x="988" y="354" font-size="10" font-family="system-ui,sans-serif" fill="#ea580c">1,800</text>
+  <text x="988" y="454" font-size="10" font-family="system-ui,sans-serif" fill="#ea580c">1,200</text>
+  <text transform="translate(1060,250) rotate(90)" font-size="11" font-family="system-ui,sans-serif" fill="#ea580c" font-weight="600" text-anchor="middle">IWC Annual Births</text>
+  <!-- TFR axis (right offset: 1.2-2.4) -->
+  <line x1="1075" y1="50" x2="1075" y2="450" stroke="#16a34a" stroke-width="1" stroke-dasharray="3,2"/>
+  <line x1="1073" y1="50" x2="1075" y2="50" stroke="#16a34a" stroke-width="1"/>
+  <line x1="1073" y1="183" x2="1075" y2="183" stroke="#16a34a" stroke-width="1"/>
+  <line x1="1073" y1="317" x2="1075" y2="317" stroke="#16a34a" stroke-width="1"/>
+  <line x1="1073" y1="450" x2="1075" y2="450" stroke="#16a34a" stroke-width="1"/>
+  <text x="1079" y="54" font-size="9" font-family="system-ui,sans-serif" fill="#16a34a">2.4</text>
+  <text x="1079" y="187" font-size="9" font-family="system-ui,sans-serif" fill="#16a34a">2.0</text>
+  <text x="1079" y="321" font-size="9" font-family="system-ui,sans-serif" fill="#16a34a">1.6</text>
+  <text x="1079" y="454" font-size="9" font-family="system-ui,sans-serif" fill="#16a34a">1.2</text>
+  <!-- Grid lines (horizontal, light) -->
+  <line x1="90" y1="162" x2="980" y2="162" stroke="#f0f0f0" stroke-width="1"/>
+  <line x1="90" y1="258" x2="980" y2="258" stroke="#f0f0f0" stroke-width="1"/>
+  <line x1="90" y1="354" x2="980" y2="354" stroke="#f0f0f0" stroke-width="1"/>
+  <!-- Baby Bonus box (2004=x206, 2014=x591) -->
+  <rect x="206" y="50" width="385" height="400" fill="rgba(254,240,138,0.18)" stroke="rgba(234,179,8,0.4)" stroke-width="1" clip-path="url(#c2-clip)"/>
+  <text x="398" y="76" font-size="9" font-family="system-ui,sans-serif" fill="#92400e" font-weight="bold" text-anchor="middle">Baby Bonus</text>
+  <text x="398" y="88" font-size="9" font-family="system-ui,sans-serif" fill="#92400e" font-weight="bold" text-anchor="middle">2004–2014</text>
+  <!-- Fill: Children (blue, semi-transparent) -->
+  <polygon points="90,450 90,344 129,351 167,351 206,351 244,351 283,341 321,322 360,290 398,242 437,236 475,223 514,178 552,156 591,146 629,156 668,149 706,146 745,136 783,162 822,194 860,236 899,287 937,293 976,271 976,450" fill="rgba(30,58,138,0.08)" clip-path="url(#c2-clip)"/>
+  <!-- Fill: Births (orange, semi-transparent) -->
+  <polygon points="90,450 90,258 129,253 167,250 206,237 244,208 283,197 321,153 360,125 398,142 437,125 475,150 514,170 552,155 591,237 629,200 668,235 706,240 745,208 783,283 822,300 860,253 899,317 937,340 976,342 976,450" fill="rgba(234,88,12,0.07)" clip-path="url(#c2-clip)"/>
+  <!-- Line: Children 0-14 (blue solid) -->
+  <polyline points="90,344 129,351 167,351 206,351 244,351 283,341 321,322 360,290 398,242 437,236 475,223 514,178 552,156 591,146 629,156 668,149 706,146 745,136 783,162 822,194 860,236 899,287 937,293 976,271" stroke="#1e3a8a" stroke-width="2.5" fill="none" stroke-linejoin="round" clip-path="url(#c2-clip)"/>
+  <!-- Dots: Children -->
+  <circle cx="90" cy="344" r="3" fill="#1e3a8a" stroke="white" stroke-width="1.5"/>
+  <circle cx="129" cy="351" r="3" fill="#1e3a8a" stroke="white" stroke-width="1.5"/>
+  <circle cx="167" cy="351" r="3" fill="#1e3a8a" stroke="white" stroke-width="1.5"/>
+  <circle cx="206" cy="351" r="3" fill="#1e3a8a" stroke="white" stroke-width="1.5"/>
+  <circle cx="244" cy="351" r="3" fill="#1e3a8a" stroke="white" stroke-width="1.5"/>
+  <circle cx="283" cy="341" r="3" fill="#1e3a8a" stroke="white" stroke-width="1.5"/>
+  <circle cx="321" cy="322" r="3" fill="#1e3a8a" stroke="white" stroke-width="1.5"/>
+  <circle cx="360" cy="290" r="3" fill="#1e3a8a" stroke="white" stroke-width="1.5"/>
+  <circle cx="398" cy="242" r="3" fill="#1e3a8a" stroke="white" stroke-width="1.5"/>
+  <circle cx="437" cy="236" r="3" fill="#1e3a8a" stroke="white" stroke-width="1.5"/>
+  <circle cx="475" cy="223" r="3" fill="#1e3a8a" stroke="white" stroke-width="1.5"/>
+  <circle cx="514" cy="178" r="3" fill="#1e3a8a" stroke="white" stroke-width="1.5"/>
+  <circle cx="552" cy="156" r="3" fill="#1e3a8a" stroke="white" stroke-width="1.5"/>
+  <circle cx="591" cy="146" r="3" fill="#1e3a8a" stroke="white" stroke-width="1.5"/>
+  <circle cx="629" cy="156" r="3" fill="#1e3a8a" stroke="white" stroke-width="1.5"/>
+  <circle cx="668" cy="149" r="3" fill="#1e3a8a" stroke="white" stroke-width="1.5"/>
+  <circle cx="706" cy="146" r="3" fill="#1e3a8a" stroke="white" stroke-width="1.5"/>
+  <circle cx="745" cy="136" r="3" fill="#1e3a8a" stroke="white" stroke-width="1.5"/>
+  <circle cx="783" cy="162" r="3" fill="#1e3a8a" stroke="white" stroke-width="1.5"/>
+  <circle cx="822" cy="194" r="3" fill="#1e3a8a" stroke="white" stroke-width="1.5"/>
+  <circle cx="860" cy="236" r="3" fill="#1e3a8a" stroke="white" stroke-width="1.5"/>
+  <circle cx="899" cy="287" r="3" fill="#1e3a8a" stroke="white" stroke-width="1.5"/>
+  <circle cx="937" cy="293" r="3" fill="#1e3a8a" stroke="white" stroke-width="1.5"/>
+  <circle cx="976" cy="271" r="3" fill="#1e3a8a" stroke="white" stroke-width="1.5"/>
+  <!-- Line: Annual Births (orange solid) -->
+  <polyline points="90,258 129,253 167,250 206,237 244,208 283,197 321,153 360,125 398,142 437,125 475,150 514,170 552,155 591,237 629,200 668,235 706,240 745,208 783,283 822,300 860,253 899,317 937,340 976,342" stroke="#ea580c" stroke-width="2.5" fill="none" stroke-linejoin="round" clip-path="url(#c2-clip)"/>
+  <!-- Dots: Births -->
+  <circle cx="90" cy="258" r="3" fill="#ea580c" stroke="white" stroke-width="1.5"/>
+  <circle cx="129" cy="253" r="3" fill="#ea580c" stroke="white" stroke-width="1.5"/>
+  <circle cx="167" cy="250" r="3" fill="#ea580c" stroke="white" stroke-width="1.5"/>
+  <circle cx="206" cy="237" r="3" fill="#ea580c" stroke="white" stroke-width="1.5"/>
+  <circle cx="244" cy="208" r="3" fill="#ea580c" stroke="white" stroke-width="1.5"/>
+  <circle cx="283" cy="197" r="3" fill="#ea580c" stroke="white" stroke-width="1.5"/>
+  <circle cx="321" cy="153" r="3" fill="#ea580c" stroke="white" stroke-width="1.5"/>
+  <circle cx="360" cy="125" r="3" fill="#ea580c" stroke="white" stroke-width="1.5"/>
+  <circle cx="398" cy="142" r="3" fill="#ea580c" stroke="white" stroke-width="1.5"/>
+  <circle cx="437" cy="125" r="3" fill="#ea580c" stroke="white" stroke-width="1.5"/>
+  <circle cx="475" cy="150" r="3" fill="#ea580c" stroke="white" stroke-width="1.5"/>
+  <circle cx="514" cy="170" r="3" fill="#ea580c" stroke="white" stroke-width="1.5"/>
+  <circle cx="552" cy="155" r="3" fill="#ea580c" stroke="white" stroke-width="1.5"/>
+  <circle cx="591" cy="237" r="3" fill="#ea580c" stroke="white" stroke-width="1.5"/>
+  <circle cx="629" cy="200" r="3" fill="#ea580c" stroke="white" stroke-width="1.5"/>
+  <circle cx="668" cy="235" r="3" fill="#ea580c" stroke="white" stroke-width="1.5"/>
+  <circle cx="706" cy="240" r="3" fill="#ea580c" stroke="white" stroke-width="1.5"/>
+  <circle cx="745" cy="208" r="3" fill="#ea580c" stroke="white" stroke-width="1.5"/>
+  <circle cx="783" cy="283" r="3" fill="#ea580c" stroke="white" stroke-width="1.5"/>
+  <circle cx="822" cy="300" r="3" fill="#ea580c" stroke="white" stroke-width="1.5"/>
+  <circle cx="860" cy="253" r="3" fill="#ea580c" stroke="white" stroke-width="1.5"/>
+  <circle cx="899" cy="317" r="3" fill="#ea580c" stroke="white" stroke-width="1.5"/>
+  <circle cx="937" cy="340" r="3" fill="#ea580c" stroke="white" stroke-width="1.5"/>
+  <circle cx="976" cy="342" r="3" fill="#ea580c" stroke="white" stroke-width="1.5"/>
+  <!-- Line: Australia TFR (green dashed) -->
+  <polyline points="90,273 129,265 167,266 206,258 244,254 283,247 321,206 360,176 398,216 437,221 475,223 514,233 552,243 591,250 629,259 668,269 706,270 745,270 783,297 822,323 860,283 899,307 937,350 976,356" stroke="#16a34a" stroke-width="2" stroke-dasharray="7,4" fill="none" stroke-linejoin="round" clip-path="url(#c2-clip)"/>
+  <!-- Dots: TFR -->
+  <circle cx="90" cy="273" r="2.5" fill="#16a34a" stroke="white" stroke-width="1.5"/>
+  <circle cx="129" cy="265" r="2.5" fill="#16a34a" stroke="white" stroke-width="1.5"/>
+  <circle cx="167" cy="266" r="2.5" fill="#16a34a" stroke="white" stroke-width="1.5"/>
+  <circle cx="206" cy="258" r="2.5" fill="#16a34a" stroke="white" stroke-width="1.5"/>
+  <circle cx="244" cy="254" r="2.5" fill="#16a34a" stroke="white" stroke-width="1.5"/>
+  <circle cx="283" cy="247" r="2.5" fill="#16a34a" stroke="white" stroke-width="1.5"/>
+  <circle cx="321" cy="206" r="2.5" fill="#16a34a" stroke="white" stroke-width="1.5"/>
+  <circle cx="360" cy="176" r="2.5" fill="#16a34a" stroke="white" stroke-width="1.5"/>
+  <circle cx="398" cy="216" r="2.5" fill="#16a34a" stroke="white" stroke-width="1.5"/>
+  <circle cx="437" cy="221" r="2.5" fill="#16a34a" stroke="white" stroke-width="1.5"/>
+  <circle cx="475" cy="223" r="2.5" fill="#16a34a" stroke="white" stroke-width="1.5"/>
+  <circle cx="514" cy="233" r="2.5" fill="#16a34a" stroke="white" stroke-width="1.5"/>
+  <circle cx="552" cy="243" r="2.5" fill="#16a34a" stroke="white" stroke-width="1.5"/>
+  <circle cx="591" cy="250" r="2.5" fill="#16a34a" stroke="white" stroke-width="1.5"/>
+  <circle cx="629" cy="259" r="2.5" fill="#16a34a" stroke="white" stroke-width="1.5"/>
+  <circle cx="668" cy="269" r="2.5" fill="#16a34a" stroke="white" stroke-width="1.5"/>
+  <circle cx="706" cy="270" r="2.5" fill="#16a34a" stroke="white" stroke-width="1.5"/>
+  <circle cx="745" cy="270" r="2.5" fill="#16a34a" stroke="white" stroke-width="1.5"/>
+  <circle cx="783" cy="297" r="2.5" fill="#16a34a" stroke="white" stroke-width="1.5"/>
+  <circle cx="822" cy="323" r="2.5" fill="#16a34a" stroke="white" stroke-width="1.5"/>
+  <circle cx="860" cy="283" r="2.5" fill="#16a34a" stroke="white" stroke-width="1.5"/>
+  <circle cx="899" cy="307" r="2.5" fill="#16a34a" stroke="white" stroke-width="1.5"/>
+  <circle cx="937" cy="350" r="2.5" fill="#16a34a" stroke="white" stroke-width="1.5"/>
+  <circle cx="976" cy="356" r="2.5" fill="#16a34a" stroke="white" stroke-width="1.5"/>
+  <!-- X-axis year labels (every 2 years, rotated 45deg) -->
+  <text transform="translate(90,465) rotate(30)" font-size="10" font-family="system-ui,sans-serif" fill="#666">2001</text>
+  <text transform="translate(167,465) rotate(30)" font-size="10" font-family="system-ui,sans-serif" fill="#666">2003</text>
+  <text transform="translate(244,465) rotate(30)" font-size="10" font-family="system-ui,sans-serif" fill="#666">2005</text>
+  <text transform="translate(321,465) rotate(30)" font-size="10" font-family="system-ui,sans-serif" fill="#666">2007</text>
+  <text transform="translate(398,465) rotate(30)" font-size="10" font-family="system-ui,sans-serif" fill="#666">2009</text>
+  <text transform="translate(475,465) rotate(30)" font-size="10" font-family="system-ui,sans-serif" fill="#666">2011</text>
+  <text transform="translate(552,465) rotate(30)" font-size="10" font-family="system-ui,sans-serif" fill="#666">2013</text>
+  <text transform="translate(629,465) rotate(30)" font-size="10" font-family="system-ui,sans-serif" fill="#666">2015</text>
+  <text transform="translate(706,465) rotate(30)" font-size="10" font-family="system-ui,sans-serif" fill="#666">2017</text>
+  <text transform="translate(783,465) rotate(30)" font-size="10" font-family="system-ui,sans-serif" fill="#666">2019</text>
+  <text transform="translate(860,465) rotate(30)" font-size="10" font-family="system-ui,sans-serif" fill="#666">2021</text>
+  <text transform="translate(937,465) rotate(30)" font-size="10" font-family="system-ui,sans-serif" fill="#666">2023</text>
+</svg>
   <div style="font-size:10.5px;color:#bbb;margin-top:12px;">Source: ABS Births cat. 3301.0; ABS Regional Population by Age and Sex; ABS Demographic Statistics. IWC values approximate ±50.</div>
 </div>
-<svg viewBox="0 0 1080 500" style="width:100%;height:auto;max-width:100%;" xmlns="http://www.w3.org/2000/svg">
-  <defs>
-    <style>
-      .c2-axis { stroke:#999; stroke-width:1.5; }
-      .c2-grid { stroke:#f0f0f0; stroke-width:1; }
-      .c2-label { font-size:10px; fill:#666; font-family:system-ui; }
-      .c2-axis-label { font-size:11px; font-weight:600; fill:#333; font-family:system-ui; }
-      .c2-line-children { stroke:#1e3a8a; stroke-width:2.5; fill:none; }
-      .c2-line-births { stroke:#ea580c; stroke-width:2.5; fill:none; }
-      .c2-line-tfr { stroke:#16a34a; stroke-width:2; fill:none; stroke-dasharray:7,4; }
-      .c2-dot-children { fill:#1e3a8a; stroke:#fff; stroke-width:2; }
-      .c2-dot-births { fill:#ea580c; stroke:#fff; stroke-width:2; }
-      .c2-dot-tfr { fill:#16a34a; stroke:#fff; stroke-width:2; }
-      .c2-legend { font-size:12px; font-weight:500; fill:#333; font-family:system-ui; }
-      .c2-annotation-box { fill:rgba(254,240,138,0.18); stroke:rgba(234,179,8,0.4); stroke-width:1; }
-      .c2-annotation-text { font-size:9px; font-weight:bold; fill:#92400e; font-family:system-ui; text-anchor:middle; }
-      .c2-title { font-size:13px; font-weight:600; fill:#555; font-family:system-ui; }
-    </style>
-  </defs>
-  <!-- Legend -->
-  <text x="60" y="24" class="c2-legend">
-    <tspan fill="#1e3a8a">■</tspan> IWC Children 0-14
-    <tspan x="300" fill="#ea580c">■</tspan> IWC Annual Births
-    <tspan x="550" fill="#16a34a">■ - -</tspan> Australia TFR
-  </text>
-  <!-- Axes -->
-  <line x1="60" y1="50" x2="60" y2="450" class="c2-axis"/>
-  <line x1="60" y1="450" x2="1050" y2="450" class="c2-axis"/>
-  <line x1="1050" y1="50" x2="1050" y2="450" class="c2-axis"/>
-  <!-- Left axis: Children 0-14 (20000-32500) -->
-  <text x="15" y="55" class="c2-axis-label" text-anchor="end">32500</text>
-  <text x="15" y="160" class="c2-axis-label" text-anchor="end">29000</text>
-  <text x="15" y="265" class="c2-axis-label" text-anchor="end">25500</text>
-  <text x="15" y="370" class="c2-axis-label" text-anchor="end">22000</text>
-  <text x="15" y="455" class="c2-axis-label" text-anchor="end">20000</text>
-  <text x="25" y="240" class="c2-axis-label" text-anchor="middle" transform="rotate(-90 25 240)" fill="#1e3a8a">IWC Children aged 0–14</text>
-  <!-- Right axis: Births (1200-3600) -->
-  <text x="1065" y="55" class="c2-axis-label">3600</text>
-  <text x="1065" y="160" class="c2-axis-label">3000</text>
-  <text x="1065" y="265" class="c2-axis-label">2400</text>
-  <text x="1065" y="370" class="c2-axis-label">1800</text>
-  <text x="1065" y="455" class="c2-axis-label">1200</text>
-  <text x="1045" y="240" class="c2-axis-label" text-anchor="middle" transform="rotate(90 1045 240)" fill="#ea580c">IWC Annual Births</text>
-  <!-- Right offset axis: TFR (1.2-2.4) -->
-  <text x="1070" y="140" class="c2-axis-label" font-size="9">2.4</text>
-  <text x="1070" y="245" class="c2-axis-label" font-size="9">2.0</text>
-  <text x="1070" y="350" class="c2-axis-label" font-size="9">1.6</text>
-  <text x="1070" y="455" class="c2-axis-label" font-size="9">1.2</text>
-  <!-- Grid lines (major) -->
-  <line x1="60" y1="160" x2="1050" y2="160" class="c2-grid"/>
-  <line x1="60" y1="270" x2="1050" y2="270" class="c2-grid"/>
-  <line x1="60" y1="380" x2="1050" y2="380" class="c2-grid"/>
-  <!-- Baby Bonus annotation box (2004-2014 era) -->
-  <rect x="140" y="60" width="410" height="380" class="c2-annotation-box"/>
-  <text x="345" y="100" class="c2-annotation-text">Baby Bonus</text>
-  <text x="345" y="112" class="c2-annotation-text">2004-2014</text>
-  <!-- Data lines and points for Children 0-14 (left axis, 20000-32500 range) -->
-  <polyline points="80,420 95,433 110,433 125,433 140,433 155,418 170,402 185,375 200,325 215,307 230,275 245,212 260,162 275,130 290,162 305,142 320,158 335,115 350,75 365,78 380,102 395,142 410,147 425,175" class="c2-line-children"/>
-  <circle cx="80" cy="420" r="3" class="c2-dot-children"/>
-  <circle cx="95" cy="433" r="3" class="c2-dot-children"/>
-  <circle cx="110" cy="433" r="3" class="c2-dot-children"/>
-  <circle cx="125" cy="433" r="3" class="c2-dot-children"/>
-  <circle cx="140" cy="433" r="3" class="c2-dot-children"/>
-  <circle cx="155" cy="418" r="3" class="c2-dot-children"/>
-  <circle cx="170" cy="402" r="3" class="c2-dot-children"/>
-  <circle cx="185" cy="375" r="3" class="c2-dot-children"/>
-  <circle cx="200" cy="325" r="3" class="c2-dot-children"/>
-  <circle cx="215" cy="307" r="3" class="c2-dot-children"/>
-  <circle cx="230" cy="275" r="3" class="c2-dot-children"/>
-  <circle cx="245" cy="212" r="3" class="c2-dot-children"/>
-  <circle cx="260" cy="162" r="3" class="c2-dot-children"/>
-  <circle cx="275" cy="130" r="3" class="c2-dot-children"/>
-  <circle cx="290" cy="162" r="3" class="c2-dot-children"/>
-  <circle cx="305" cy="142" r="3" class="c2-dot-children"/>
-  <circle cx="320" cy="158" r="3" class="c2-dot-children"/>
-  <circle cx="335" cy="115" r="3" class="c2-dot-children"/>
-  <circle cx="350" cy="75" r="3" class="c2-dot-children"/>
-  <circle cx="365" cy="78" r="3" class="c2-dot-children"/>
-  <circle cx="380" cy="102" r="3" class="c2-dot-children"/>
-  <circle cx="395" cy="142" r="3" class="c2-dot-children"/>
-  <circle cx="410" cy="147" r="3" class="c2-dot-children"/>
-  <circle cx="425" cy="175" r="3" class="c2-dot-children"/>
-  <!-- Data lines and points for Births (right axis, 1200-3600 range) -->
-  <polyline points="80,405 95,398 110,390 125,377 140,360 155,348 170,312 185,280 200,298 215,280 230,305 245,340 260,320 275,360 290,315 305,365 320,375 335,362 350,340 365,330 380,368 395,405 410,415 425,420" class="c2-line-births"/>
-  <circle cx="80" cy="405" r="3" class="c2-dot-births"/>
-  <circle cx="95" cy="398" r="3" class="c2-dot-births"/>
-  <circle cx="110" cy="390" r="3" class="c2-dot-births"/>
-  <circle cx="125" cy="377" r="3" class="c2-dot-births"/>
-  <circle cx="140" cy="360" r="3" class="c2-dot-births"/>
-  <circle cx="155" cy="348" r="3" class="c2-dot-births"/>
-  <circle cx="170" cy="312" r="3" class="c2-dot-births"/>
-  <circle cx="185" cy="280" r="3" class="c2-dot-births"/>
-  <circle cx="200" cy="298" r="3" class="c2-dot-births"/>
-  <circle cx="215" cy="280" r="3" class="c2-dot-births"/>
-  <circle cx="230" cy="305" r="3" class="c2-dot-births"/>
-  <circle cx="245" cy="340" r="3" class="c2-dot-births"/>
-  <circle cx="260" cy="320" r="3" class="c2-dot-births"/>
-  <circle cx="275" cy="360" r="3" class="c2-dot-births"/>
-  <circle cx="290" cy="315" r="3" class="c2-dot-births"/>
-  <circle cx="305" cy="365" r="3" class="c2-dot-births"/>
-  <circle cx="320" cy="375" r="3" class="c2-dot-births"/>
-  <circle cx="335" cy="362" r="3" class="c2-dot-births"/>
-  <circle cx="350" cy="340" r="3" class="c2-dot-births"/>
-  <circle cx="365" cy="330" r="3" class="c2-dot-births"/>
-  <circle cx="380" cy="368" r="3" class="c2-dot-births"/>
-  <circle cx="395" cy="405" r="3" class="c2-dot-births"/>
-  <circle cx="410" cy="415" r="3" class="c2-dot-births"/>
-  <circle cx="425" cy="420" r="3" class="c2-dot-births"/>
-  <!-- Data lines and points for Australia TFR (right offset axis, 1.2-2.4 range) -->
-  <polyline points="80,165 95,158 110,159 125,154 140,150 155,144 170,118 185,95 200,111 215,118 230,122 245,137 260,147 275,157 290,175 305,182 320,182 335,187 350,197 365,217 380,230 395,245 410,260 425,280" class="c2-line-tfr"/>
-  <circle cx="80" cy="165" r="2.5" class="c2-dot-tfr"/>
-  <circle cx="95" cy="158" r="2.5" class="c2-dot-tfr"/>
-  <circle cx="110" cy="159" r="2.5" class="c2-dot-tfr"/>
-  <circle cx="125" cy="154" r="2.5" class="c2-dot-tfr"/>
-  <circle cx="140" cy="150" r="2.5" class="c2-dot-tfr"/>
-  <circle cx="155" cy="144" r="2.5" class="c2-dot-tfr"/>
-  <circle cx="170" cy="118" r="2.5" class="c2-dot-tfr"/>
-  <circle cx="185" cy="95" r="2.5" class="c2-dot-tfr"/>
-  <circle cx="200" cy="111" r="2.5" class="c2-dot-tfr"/>
-  <circle cx="215" cy="118" r="2.5" class="c2-dot-tfr"/>
-  <circle cx="230" cy="122" r="2.5" class="c2-dot-tfr"/>
-  <circle cx="245" cy="137" r="2.5" class="c2-dot-tfr"/>
-  <circle cx="260" cy="147" r="2.5" class="c2-dot-tfr"/>
-  <circle cx="275" cy="157" r="2.5" class="c2-dot-tfr"/>
-  <circle cx="290" cy="175" r="2.5" class="c2-dot-tfr"/>
-  <circle cx="305" cy="182" r="2.5" class="c2-dot-tfr"/>
-  <circle cx="320" cy="182" r="2.5" class="c2-dot-tfr"/>
-  <circle cx="335" cy="187" r="2.5" class="c2-dot-tfr"/>
-  <circle cx="350" cy="197" r="2.5" class="c2-dot-tfr"/>
-  <circle cx="365" cy="217" r="2.5" class="c2-dot-tfr"/>
-  <circle cx="380" cy="230" r="2.5" class="c2-dot-tfr"/>
-  <circle cx="395" cy="245" r="2.5" class="c2-dot-tfr"/>
-  <circle cx="410" cy="260" r="2.5" class="c2-dot-tfr"/>
-  <circle cx="425" cy="280" r="2.5" class="c2-dot-tfr"/>
-  <!-- X-axis year labels (every 2 years) -->
-  <text x="80" y="475" class="c2-label" text-anchor="middle">2001</text>
-  <text x="140" y="475" class="c2-label" text-anchor="middle">2004</text>
-  <text x="200" y="475" class="c2-label" text-anchor="middle">2007</text>
-  <text x="260" y="475" class="c2-label" text-anchor="middle">2010</text>
-  <text x="320" y="475" class="c2-label" text-anchor="middle">2013</text>
-  <text x="380" y="475" class="c2-label" text-anchor="middle">2016</text>
-  <text x="425" y="475" class="c2-label" text-anchor="middle">2024</text>
-</svg>
 
 <p>There's a visible bump in the births data between 2004 and 2014. That's the Baby Bonus era - the Howard and Rudd governments' $5,000–$7,500 payment per birth. Inner West births peaked at around 3,150 in 2008–10 before the payment was wound back from 2009 and abolished entirely in 2014. When it ended, births fell sharply, recovered briefly in 2016–18, then collapsed to a 23-year low in 2024.</p>
 
