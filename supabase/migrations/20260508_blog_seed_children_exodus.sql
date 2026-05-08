@@ -16,7 +16,7 @@ INSERT INTO blog_posts (
 VALUES (
   'Where Have All the Children Gone? Inner West''s Quiet Family Exodus',
   'where-have-all-the-children-gone',
-  'Inner West births have fallen 41% from their peak — and 21% since 2001, steeper than the national trend. As the suburb''s population grows, its children are disappearing. The data tells a story that the housing debate isn''t.',
+  'Inner West births have fallen 41% from their peak - and 21% since 2001, steeper than the national trend. As the suburb''s population grows, its children are disappearing. The data tells a story that the housing debate isn''t.',
   $POST_CONTENT$<style>
 /* ── Children exodus post ── */
 @keyframes ce-grow { from { width: 0 } to { width: var(--w, 0%) } }
@@ -42,14 +42,14 @@ VALUES (
 <!-- ══ OPENING ══ -->
 <p>The Inner West is growing. More people, more apartments, more cafes. But one number doesn't fit the story: the number of children being born here each year has collapsed.</p>
 
-<p>From a peak of around 3,150 births in 2008–10, the Inner West recorded just 1,850 in 2024 — a 41% fall. The number of children aged 0–14 living in the area has dropped by nearly 5,000 since its 2018 peak. This is happening while the council's total population has continued to grow. Children aren't just declining in absolute terms. They're becoming a shrinking fraction of a growing suburb.</p>
+<p>From a peak of around 3,150 births in 2008–10, the Inner West recorded just 1,850 in 2024 - a 41% fall. The number of children aged 0–14 living in the area has dropped by nearly 5,000 since its 2018 peak. This is happening while the council's total population has continued to grow. Children aren't just declining in absolute terms. They're becoming a shrinking fraction of a growing suburb.</p>
 
 <!-- ══ SECTION: DENSITY TRAP ══ -->
 <h2>The density trap</h2>
 
 <p>Across all 30 Greater Sydney councils, one pattern holds with remarkable consistency: the denser the suburb, the fewer children.</p>
 
-<!-- CHART 1: Density vs children — Chart.js scatter -->
+<!-- CHART 1: Density vs children - Chart.js scatter -->
 <div style="background:#f8f7f4;border:1px solid #e4e1db;border-left:4px solid #1e3a8a;border-radius:0 10px 10px 0;padding:24px 22px;margin:28px 0;">
   <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:#1e3a8a;margin-bottom:6px;">ABS 2021 Census · 30 Sydney LGAs</div>
   <div style="font-family:'Fraunces',Georgia,serif;font-size:17px;font-weight:700;color:#1a1a1a;margin:0 0 4px;letter-spacing:-0.01em;line-height:1.3;">Population density vs share of residents aged 0–14</div>
@@ -161,14 +161,14 @@ VALUES (
 })();
 </script>
 
-<p>Camden, at 700 people per km², has 25.3% of residents under 14. The City of Sydney — the densest council in Greater Sydney at nearly 9,000 per km² — has just 7.6%. The Inner West, at 5,423 per km², sits at 14.6%: well below the Greater Sydney average of 18.5%.</p>
+<p>Camden, at 700 people per km², has 25.3% of residents under 14. The City of Sydney - the densest council in Greater Sydney at nearly 9,000 per km² - has just 7.6%. The Inner West, at 5,423 per km², sits at 14.6%: well below the Greater Sydney average of 18.5%.</p>
 
-<p>This is correlation, not causation. Dense suburbs don't drive families away directly. But the correlation reflects two consistent pressures: affordability and housing type. As density increases, so do prices — and families on tight budgets are priced out first. And as density increases, the housing mix shifts steadily toward the smaller, investor-targeted apartments that don't suit a family with school-age children.</p>
+<p>This is correlation, not causation. Dense suburbs don't drive families away directly. But the correlation reflects two consistent pressures: affordability and housing type. As density increases, so do prices - and families on tight budgets are priced out first. And as density increases, the housing mix shifts steadily toward the smaller, investor-targeted apartments that don't suit a family with school-age children.</p>
 
 <!-- ══ SECTION: BIRTHS COLLAPSE ══ -->
-<h2>The births collapse — and the national comparison</h2>
+<h2>The births collapse - and the national comparison</h2>
 
-<!-- CHART A: Time series — Chart.js -->
+<!-- CHART A: Time series - Chart.js -->
 <div style="background:#f8f7f4;border:1px solid #e4e1db;border-left:4px solid #ea580c;border-radius:0 10px 10px 0;padding:24px 22px 16px;margin:28px 0;">
   <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:#ea580c;margin-bottom:6px;">ABS Births cat. 3301.0 · IWC 2001–2024</div>
   <div style="font-family:'Fraunces',Georgia,serif;font-size:17px;font-weight:700;color:#1a1a1a;margin:0 0 4px;letter-spacing:-0.01em;line-height:1.3;">IWC children &amp; births vs Australia fertility rate</div>
@@ -230,30 +230,50 @@ VALUES (
 })();
 </script>
 
-<p>There's a visible bump in the births data between 2004 and 2014. That's the Baby Bonus era — the Howard and Rudd governments' $5,000–$7,500 payment per birth. Inner West births peaked at around 3,150 in 2008–10 before the payment was wound back from 2009 and abolished entirely in 2014. When it ended, births fell sharply, recovered briefly in 2016–18, then collapsed to a 23-year low in 2024.</p>
+<p>There's a visible bump in the births data between 2004 and 2014. That's the Baby Bonus era - the Howard and Rudd governments' $5,000–$7,500 payment per birth. Inner West births peaked at around 3,150 in 2008–10 before the payment was wound back from 2009 and abolished entirely in 2014. When it ended, births fell sharply, recovered briefly in 2016–18, then collapsed to a 23-year low in 2024.</p>
 
-<p>The more revealing comparison is with Australia's national Total Fertility Rate. Index both to 2001=100 and the picture sharpens: Australia's TFR has fallen about 14% since 2001. The Inner West's birth count has fallen 21% over the same period. The Inner West isn't simply tracking the national trend. It's declining faster — and the gap has widened. Families who might have children are leaving the Inner West, or being priced out before they reach that stage of life.</p>
+<p>The more revealing comparison is with Australia's national Total Fertility Rate. Index both to 2001=100 and the picture sharpens: Australia's TFR has fallen about 14% since 2001. The Inner West's birth count has fallen 21% over the same period. The Inner West isn't simply tracking the national trend. It's declining faster - and the gap has widened. Families who might have children are leaving the Inner West, or being priced out before they reach that stage of life.</p>
 
 <!-- ══ SECTION: WHAT'S BEING BUILT ══ -->
 <h2>What's actually being built</h2>
 
 <p>The standard response to this kind of data is: build more housing. Increase supply, reduce prices, make it affordable for families again. In theory, it's sound. In practice, the housing being built in the Inner West isn't what families need.</p>
 
-<p>Nationally, 40% of housing demand is for three or more bedrooms. But new apartment supply delivers just 25% three-bedroom units. In the City of Sydney — a clear preview of the Inner West's trajectory — only 14.4% of existing housing stock is three or more bedrooms, compared to 29.7% across Greater Sydney. RMIT urban planner Liam Davies has documented why: developers building high-rise for investors focus on one and two-bedroom apartments because they yield higher returns per square metre. Three-bedroom Sydney apartments jumped 18% in price in the year to March 2024 — a market signal that demand exists but supply is not following. The market is delivering what's most profitable, not what young families actually need.</p>
+<p>Nationally, 40% of housing demand is for three or more bedrooms. But new apartment supply delivers just 25% three-bedroom units. In the City of Sydney - a clear preview of the Inner West's trajectory - only 14.4% of existing housing stock is three or more bedrooms, compared to 29.7% across Greater Sydney. RMIT urban planner Liam Davies has documented why: developers building high-rise for investors focus on one and two-bedroom apartments because they yield higher returns per square metre. Three-bedroom Sydney apartments jumped 18% in price in the year to March 2024 - a market signal that demand exists but supply is not following. The market is delivering what's most profitable, not what young families actually need.</p>
 
 <!-- ══ SECTION: YIMBY COUNTER ══ -->
 <h2>The supply argument, examined</h2>
 
-<p>Advocates of aggressive densification argue the solution is simply more supply — and that concerns about housing type or family suitability are just NIMBYism dressed in demographics. That's a serious argument. Here's a serious answer.</p>
+<p>Advocates of aggressive densification argue the solution is simply more supply - and that concerns about housing type or family suitability are just NIMBYism dressed in demographics. That's a serious argument. Here's a serious answer.</p>
 
-<p>The councils delivering the most new housing in Sydney are Parramatta and Blacktown. Parramatta built 79% of its annual NSW Government housing target last financial year; Blacktown delivered 58%. Both have substantially higher child populations than the Inner West — Parramatta at 15.3%, Blacktown at 22.7%. More housing supply is being delivered <em>where children already live</em>. Less supply is being built — and more investor apartments are already concentrated — where children are disappearing. Quantity of supply matters, but type and affordability floor matter too. A suburb full of one-bedroom investor apartments doesn't attract families, regardless of how many units are built.</p>
+<p>The councils delivering the most new housing in Sydney are Parramatta and Blacktown. Parramatta built 79% of its annual NSW Government housing target last financial year; Blacktown delivered 58%. Both have substantially higher child populations than the Inner West - Parramatta at 15.3%, Blacktown at 22.7%. More housing supply is being delivered <em>where children already live</em>. Less supply is being built - and more investor apartments are already concentrated - where children are disappearing. Quantity of supply matters, but type and affordability floor matter too. A suburb full of one-bedroom investor apartments doesn't attract families, regardless of how many units are built.</p>
 
-<p>There's also an infrastructure dimension that rarely features in the supply debate. Inner West primary schools are operating close to capacity. Childcare waitlists in suburbs like Marrickville and Newtown stretch to 18 months or more. Supply cannot solve a capacity crisis in the services families depend on — and without those services, new housing doesn't translate into new families.</p>
+<p>There's also an infrastructure dimension that rarely features in the supply debate. Inner West primary schools are operating close to capacity. Childcare waitlists in suburbs like Marrickville and Newtown stretch to 18 months or more. Supply cannot solve a capacity crisis in the services families depend on - and without those services, new housing doesn't translate into new families.</p>
+
+<!-- ══ SECTION: FAIRER FUTURE ══ -->
+<h2>The Fairer Future Plan: denser, but fairer for whom?</h2>
+
+<p>Inner West Council's response to the housing crisis is the "Our Fairer Future" plan - 31,000 new dwellings in Phase 1 alone, more than double the NSW Government's own target for the area. Council presents it as the solution to affordability. The data in this article suggests it will make the family exodus worse, not better.</p>
+
+<p>The plan proposes density without the conditions that could make it family-friendly. There is no mandate for a minimum proportion of three-bedroom dwellings - the family-sized housing this article shows is already critically undersupplied. Without that requirement, the market will do what it always does: deliver one and two-bedroom investor apartments that maximise return per square metre. More of the same housing type, at greater scale, produces more of the same demographic outcome.</p>
+
+<p>The affordability case is weaker still. Council's plan defines "affordable housing" as 80 per cent of market rent. In the Inner West, where median rents sit around $700 per week, that means "affordable" is $560 per week. That figure is out of reach for young families, essential workers, and anyone on a median income. It is a discount. It is not a solution. And the plan delivers zero additional public housing directly - only aspirational targets dependent on state government cooperation that has not been funded.</p>
+
+<!-- Callout: City of Sydney preview -->
+<div style="background:#fff3f3;border:1px solid #fca5a5;border-left:4px solid #dc2626;border-radius:0 10px 10px 0;padding:20px 22px;margin:28px 0;">
+  <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:#dc2626;margin-bottom:6px;">Where this trajectory leads</div>
+  <div style="font-family:'Fraunces',Georgia,serif;font-size:16px;font-weight:700;color:#1a1a1a;margin:0 0 10px;line-height:1.3;">City of Sydney: 8,893 people/km² - 7.6% children under 14</div>
+  <p style="font-size:13.5px;color:#555;line-height:1.65;margin:0;">The City of Sydney is the densest council in Greater Sydney and has the lowest share of children of any major LGA. The Inner West is currently at 5,423/km² and 14.6% children. The Fairer Future Plan accelerates density without changing the housing mix or affordability floor. The City of Sydney is not a warning. It is a preview.</p>
+</div>
+
+<p>A plan that adds 31,000 dwellings - predominantly small apartments, at rents families cannot afford, without the schools, childcare places, or parks to support them - is not a fairer future for families. It is a continuation of the conditions already driving them out. The Inner West already has fewer children per resident than almost any comparable council in Sydney. The question the plan does not answer is: after another decade of this kind of density, how many will be left?</p>
+
+<p><a href="https://www.iwpulse.com/?blog=fairer-future-inner-west-development-plan" style="color:#1e3a8a;font-weight:600;text-decoration:underline;">Read IW Pulse's full analysis of the Fairer Future Plan</a> - including the 8-7 council vote, the consultation data showing 85% of respondents opposed the scale of the uplift, and the suburb-by-suburb breakdown of where the density lands.</p>
 
 <!-- ══ SECTION: WHAT COMES NEXT ══ -->
 <h2>What comes next</h2>
 
-<p>The 2026 census will be the first hard population count since this decline accelerated. If the trend holds, the Inner West will record a measurable fall in its child population for the first time in modern history — even as its total population continues to grow. No one voted for that outcome. Understanding what's driving it — and what combination of housing policy, infrastructure investment, and planning decisions could reverse it — is the conversation the Inner West needs to have before the next round of rezoning locks in another decade of outcomes.</p>
+<p>The 2026 census will be the first hard population count since this decline accelerated. If the trend holds, the Inner West will record a measurable fall in its child population for the first time in modern history - even as its total population continues to grow. No one voted for that outcome. Understanding what's driving it - and what combination of housing policy, infrastructure investment, and planning decisions could reverse it - is the conversation the Inner West needs to have before the next round of rezoning locks in another decade of outcomes.</p>
 
 <p style="border-top:1px solid #e5e7eb;padding-top:18px;margin-top:28px;font-size:13px;color:#555;line-height:1.7;"><strong>IW Pulse</strong> is tracking the data behind Inner West's demographic shift. If you have access to school enrolment data, childcare waitlist figures, or ABS time-series data not referenced here, <a href="mailto:hello@iwpulse.com.au" style="color:#1e3a8a;text-decoration:underline;">get in touch</a>. All data cited in this article is publicly available from the ABS and NSW Planning Portal.</p>
 $POST_CONTENT$,

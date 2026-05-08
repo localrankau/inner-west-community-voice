@@ -3126,19 +3126,44 @@ function BlogPostPage({ slug, onBack, onOpenIssue }) {
     };
   }, [slug]);
 
-  // Execute any Chart.js scripts injected via dangerouslySetInnerHTML
+  // Execute any Chart.js scripts injected via dangerouslySetInnerHTML.
+  // Poll until Chart.js CDN has loaded before executing, to avoid the silent
+  // bail-out when the script runs before the CDN response arrives.
+  // Also resize all charts on visibilitychange — alt+tab causes the browser to
+  // report 0 canvas dimensions, collapsing charts until they're explicitly resized.
   useEffect(() => {
     if (!post) return;
-    const article = document.querySelector("article.blog-prose");
-    if (!article) return;
-    Array.from(article.querySelectorAll("script")).forEach((oldScript) => {
-      const newScript = document.createElement("script");
-      Array.from(oldScript.attributes).forEach((attr) =>
-        newScript.setAttribute(attr.name, attr.value)
-      );
-      newScript.textContent = oldScript.textContent;
-      oldScript.parentNode.replaceChild(newScript, oldScript);
-    });
+    let mounted = true;
+
+    function execScripts() {
+      if (!mounted) return;
+      const article = document.querySelector("article.blog-prose");
+      if (!article) return;
+      if (typeof Chart === "undefined") { setTimeout(execScripts, 50); return; }
+      Array.from(article.querySelectorAll("script")).forEach((oldScript) => {
+        const newScript = document.createElement("script");
+        Array.from(oldScript.attributes).forEach((attr) =>
+          newScript.setAttribute(attr.name, attr.value)
+        );
+        newScript.textContent = oldScript.textContent;
+        oldScript.parentNode.replaceChild(newScript, oldScript);
+      });
+    }
+
+    function handleVisibility() {
+      if (document.hidden || typeof Chart === "undefined") return;
+      document.querySelectorAll("article.blog-prose canvas").forEach((canvas) => {
+        const chart = Chart.getChart(canvas);
+        if (chart) chart.resize();
+      });
+    }
+
+    execScripts();
+    document.addEventListener("visibilitychange", handleVisibility);
+    return () => {
+      mounted = false;
+      document.removeEventListener("visibilitychange", handleVisibility);
+    };
   }, [post]);
 
   function copyLink() {
