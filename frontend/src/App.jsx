@@ -2980,16 +2980,8 @@ function BlogIndexPage({ onOpenPost }) {
                   <article
                     className="blog-featured-card"
                     onClick={() => onOpenPost(featured.slug)}
+                    style={{ display: "block" }}
                   >
-                    <div style={{ background: `linear-gradient(135deg, ${COLORS.authorityDeep} 0%, #1e5a8a 100%)`, minHeight: 280, position: "relative" }}>
-                      <div style={{ position: "absolute", inset: 0, background: "linear-gradient(135deg, rgba(11,58,102,0.85) 0%, rgba(45,122,74,0.5) 100%)", display: "flex", alignItems: "flex-end", padding: 28 }}>
-                        {featured.category && (
-                          <span style={{ display: "inline-flex", alignItems: "center", background: "rgba(255,255,255,0.18)", backdropFilter: "blur(8px)", padding: "5px 12px", borderRadius: 20, fontSize: 12, fontWeight: 600, color: "white", letterSpacing: "0.03em" }}>
-                            {featured.category}
-                          </span>
-                        )}
-                      </div>
-                    </div>
                     <div style={{ padding: "36px", display: "flex", flexDirection: "column", justifyContent: "center" }}>
                       <div style={{ fontSize: 11, letterSpacing: "0.12em", textTransform: "uppercase", fontWeight: 700, color: COLORS.community, marginBottom: 12 }}>
                         Featured{featured.suburbs?.length ? ` · ${featured.suburbs[0]}` : ""}
@@ -3024,17 +3016,15 @@ function BlogIndexPage({ onOpenPost }) {
                           onMouseEnter={(e) => { e.currentTarget.style.boxShadow = "0 6px 24px rgba(0,0,0,0.09)"; e.currentTarget.style.transform = "translateY(-2px)"; }}
                           onMouseLeave={(e) => { e.currentTarget.style.boxShadow = "0 1px 6px rgba(0,0,0,0.05)"; e.currentTarget.style.transform = ""; }}
                         >
-                          <div style={{ height: 160, background: `linear-gradient(145deg, ${col}dd, ${col}99)`, position: "relative" }}>
-                            {post.category && (
-                              <div style={{ position: "absolute", bottom: 14, left: 14 }}>
-                                <span style={{ display: "inline-flex", alignItems: "center", background: "rgba(255,255,255,0.18)", backdropFilter: "blur(8px)", padding: "4px 10px", borderRadius: 20, fontSize: 11, fontWeight: 600, color: "white", letterSpacing: "0.03em" }}>{post.category}</span>
-                              </div>
-                            )}
-                          </div>
                           <div style={{ padding: "22px 22px 26px", flex: 1, display: "flex", flexDirection: "column" }}>
-                            {post.suburbs?.length > 0 && (
-                              <div style={{ fontSize: 11, letterSpacing: "0.1em", textTransform: "uppercase", fontWeight: 700, color: COLORS.community, marginBottom: 10 }}>{post.suburbs[0]}</div>
-                            )}
+                            <div style={{ display: "flex", gap: 8, marginBottom: 10, flexWrap: "wrap" }}>
+                              {post.category && (
+                                <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.07em", textTransform: "uppercase", color: col, padding: "3px 9px", borderRadius: 12, background: `${col}18`, border: `1px solid ${col}33` }}>{post.category}</span>
+                              )}
+                              {post.suburbs?.length > 0 && (
+                                <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.07em", textTransform: "uppercase", color: COLORS.community }}>{post.suburbs[0]}</span>
+                              )}
+                            </div>
                             <h3 className="serif" style={{ fontSize: 18, fontWeight: 600, lineHeight: 1.3, letterSpacing: "-0.015em", color: COLORS.ink, margin: "0 0 10px" }}>{post.title}</h3>
                             {post.excerpt && (
                               <p style={{ fontSize: 14, lineHeight: 1.65, color: COLORS.slate, flex: 1, margin: "0 0 18px" }}>{post.excerpt}</p>
@@ -3065,7 +3055,6 @@ function BlogPostPage({ slug, onBack, onOpenIssue }) {
   const [post, setPost] = useState(null);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
-  const [issues, setIssues] = useState([]);
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
@@ -3090,7 +3079,7 @@ function BlogPostPage({ slug, onBack, onOpenIssue }) {
         setPost(data);
         setLoading(false);
 
-        const pageUrl  = `${window.location.origin}/?blog=${data.slug}`;
+        const pageUrl = `${window.location.origin}/?blog=${data.slug}`;
         const excerpt  = data.excerpt || `Inner West community reporting on ${data.title}`;
         const fullTitle = `${data.title} — Inner West Pulse`;
 
@@ -3112,13 +3101,6 @@ function BlogPostPage({ slug, onBack, onOpenIssue }) {
         upsertMeta("name",     "twitter:title",       fullTitle);
         upsertMeta("name",     "twitter:description", excerpt);
       });
-
-    supabase
-      .from("issues")
-      .select("id, title, suburb, category, vote_count")
-      .order("vote_count", { ascending: false })
-      .limit(4)
-      .then(({ data }) => setIssues(data || []));
 
     // Restore default meta tags when navigating away from a blog post
     return () => {
@@ -3143,6 +3125,21 @@ function BlogPostPage({ slug, onBack, onOpenIssue }) {
       });
     };
   }, [slug]);
+
+  // Execute any Chart.js scripts injected via dangerouslySetInnerHTML
+  useEffect(() => {
+    if (!post) return;
+    const article = document.querySelector("article.blog-prose");
+    if (!article) return;
+    Array.from(article.querySelectorAll("script")).forEach((oldScript) => {
+      const newScript = document.createElement("script");
+      Array.from(oldScript.attributes).forEach((attr) =>
+        newScript.setAttribute(attr.name, attr.value)
+      );
+      newScript.textContent = oldScript.textContent;
+      oldScript.parentNode.replaceChild(newScript, oldScript);
+    });
+  }, [post]);
 
   function copyLink() {
     navigator.clipboard.writeText(window.location.href).then(() => {
@@ -3233,56 +3230,38 @@ function BlogPostPage({ slug, onBack, onOpenIssue }) {
         </div>
       </section>
 
-      {/* Body: article + sidebar */}
-      <div className="blog-post-cols" style={{ maxWidth: 860, margin: "0 auto", padding: "0 24px" }}>
-        <article className="blog-prose" style={{ padding: "64px 0 100px" }} dangerouslySetInnerHTML={{ __html: post.content }} />
+      {/* Body */}
+      <div style={{ maxWidth: 860, margin: "0 auto", padding: "0 24px" }}>
+        <article className="blog-prose" style={{ padding: "64px 0 48px" }} dangerouslySetInnerHTML={{ __html: post.content }} />
 
-        <aside className="blog-sidebar" style={{ padding: "64px 0 0", position: "sticky", top: 80 }}>
-          {/* Share */}
-          <div style={{ marginBottom: 32 }}>
-            <div style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: "0.12em", fontWeight: 700, color: COLORS.slate, marginBottom: 14 }}>Share this article</div>
-            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-              {[
-                { label: "Share on Facebook", icon: "f", color: "#1877F2", href: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}` },
-                { label: "Post on X / Twitter", icon: "𝕏", color: "#000", href: `https://x.com/intent/tweet?text=${shareText}&url=${encodeURIComponent(shareUrl)}` },
-                { label: "Share on WhatsApp", icon: "W", color: "#25D366", href: `https://wa.me/?text=${shareText}%20${encodeURIComponent(shareUrl)}` },
-              ].map((btn) => (
-                <a key={btn.label} href={btn.href} target="_blank" rel="noreferrer"
-                  style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 14px", borderRadius: 8, border: `1px solid ${COLORS.hairline}`, fontSize: 13, fontWeight: 600, color: COLORS.ink, background: COLORS.paper, textDecoration: "none", transition: "background 150ms" }}
-                  onMouseEnter={(e) => (e.currentTarget.style.background = COLORS.mist)}
-                  onMouseLeave={(e) => (e.currentTarget.style.background = COLORS.paper)}
-                >
-                  <span style={{ width: 18, height: 18, borderRadius: 4, background: btn.color, color: "white", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, flexShrink: 0 }}>{btn.icon}</span>
-                  {btn.label}
-                </a>
-              ))}
-              <button onClick={copyLink}
-                style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 14px", borderRadius: 8, border: `1px solid ${COLORS.hairline}`, fontSize: 13, fontWeight: 600, color: COLORS.ink, background: copied ? "#E6F0EA" : COLORS.paper, transition: "background 150ms", fontFamily: "inherit", cursor: "pointer" }}
-                onMouseEnter={(e) => { if (!copied) e.currentTarget.style.background = COLORS.mist; }}
-                onMouseLeave={(e) => { if (!copied) e.currentTarget.style.background = COLORS.paper; }}
+        {/* Share — bottom of article */}
+        <div style={{ borderTop: `1px solid ${COLORS.hairline}`, padding: "32px 0 80px" }}>
+          <div style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: "0.12em", fontWeight: 700, color: COLORS.slate, marginBottom: 14 }}>Share this article</div>
+          <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+            {[
+              { label: "Share on Facebook", icon: "f", color: "#1877F2", href: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}` },
+              { label: "Post on X / Twitter", icon: "𝕏", color: "#000", href: `https://x.com/intent/tweet?text=${shareText}&url=${encodeURIComponent(shareUrl)}` },
+              { label: "Share on WhatsApp", icon: "W", color: "#25D366", href: `https://wa.me/?text=${shareText}%20${encodeURIComponent(shareUrl)}` },
+            ].map((btn) => (
+              <a key={btn.label} href={btn.href} target="_blank" rel="noreferrer"
+                style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "9px 14px", borderRadius: 8, border: `1px solid ${COLORS.hairline}`, fontSize: 13, fontWeight: 600, color: COLORS.ink, background: COLORS.paper, textDecoration: "none", transition: "background 150ms" }}
+                onMouseEnter={(e) => (e.currentTarget.style.background = COLORS.mist)}
+                onMouseLeave={(e) => (e.currentTarget.style.background = COLORS.paper)}
               >
-                <span style={{ width: 18, height: 18, borderRadius: 4, background: COLORS.mist, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, flexShrink: 0 }}>🔗</span>
-                {copied ? "Copied!" : "Copy link"}
-              </button>
-            </div>
+                <span style={{ width: 18, height: 18, borderRadius: 4, background: btn.color, color: "white", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, flexShrink: 0 }}>{btn.icon}</span>
+                {btn.label}
+              </a>
+            ))}
+            <button onClick={copyLink}
+              style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "9px 14px", borderRadius: 8, border: `1px solid ${COLORS.hairline}`, fontSize: 13, fontWeight: 600, color: COLORS.ink, background: copied ? "#E6F0EA" : COLORS.paper, transition: "background 150ms", fontFamily: "inherit", cursor: "pointer" }}
+              onMouseEnter={(e) => { if (!copied) e.currentTarget.style.background = COLORS.mist; }}
+              onMouseLeave={(e) => { if (!copied) e.currentTarget.style.background = COLORS.paper; }}
+            >
+              <span style={{ width: 18, height: 18, borderRadius: 4, background: COLORS.mist, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, flexShrink: 0 }}>🔗</span>
+              {copied ? "Copied!" : "Copy link"}
+            </button>
           </div>
-
-          {/* Related issues */}
-          {issues.length > 0 && (
-            <div>
-              <div style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: "0.12em", fontWeight: 700, color: COLORS.slate, marginBottom: 14 }}>Active issues</div>
-              {issues.map((issue, i) => (
-                <div key={issue.id} onClick={() => onOpenIssue(issue.id)}
-                  style={{ padding: "14px 0", borderBottom: i < issues.length - 1 ? `1px solid ${COLORS.hairline}` : "none", cursor: "pointer" }}
-                >
-                  <div style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: "0.08em", fontWeight: 700, color: COLORS.slate, marginBottom: 4 }}>{issue.suburb}</div>
-                  <div style={{ fontSize: 14, fontWeight: 600, color: COLORS.ink, lineHeight: 1.35 }}>{issue.title}</div>
-                  <div style={{ fontSize: 12, color: COLORS.slate, marginTop: 4 }}>{issue.vote_count} votes</div>
-                </div>
-              ))}
-            </div>
-          )}
-        </aside>
+        </div>
       </div>
 
       {/* Footer CTA */}

@@ -20,10 +20,7 @@ VALUES (
   $POST_CONTENT$<style>
 /* ── Children exodus post ── */
 @keyframes ce-grow { from { width: 0 } to { width: var(--w, 0%) } }
-.ce-bar { width: 0; animation: ce-grow 1.2s cubic-bezier(0.22,1,0.36,1) forwards; }
-@media (max-width:600px) {
-  .ce-stats { grid-template-columns: repeat(2,1fr) !important; }
-}
+@media (max-width:600px) { .ce-stats { grid-template-columns: repeat(2,1fr) !important; } }
 </style>
 
 <!-- ══ STAT STRIP ══ -->
@@ -52,73 +49,117 @@ VALUES (
 
 <p>Across all 30 Greater Sydney councils, one pattern holds with remarkable consistency: the denser the suburb, the fewer children.</p>
 
-<!-- CHART 1: Density vs children — CSS horizontal bars -->
+<!-- CHART 1: Density vs children — Chart.js scatter -->
 <div style="background:#f8f7f4;border:1px solid #e4e1db;border-left:4px solid #1e3a8a;border-radius:0 10px 10px 0;padding:24px 22px;margin:28px 0;">
-  <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:#1e3a8a;margin-bottom:6px;">ABS 2021 Census · Selected Sydney LGAs</div>
-  <div style="font-family:'Fraunces',Georgia,serif;font-size:17px;font-weight:700;color:#1a1a1a;margin:0 0 18px;letter-spacing:-0.01em;line-height:1.3;">Population density vs share of residents aged 0–14</div>
-
-  <div style="margin-bottom:11px;">
-    <div style="display:flex;justify-content:space-between;margin-bottom:3px;">
-      <span style="font-size:12.5px;color:#333;">Camden <span style="color:#888;font-size:11px;">700 /km²</span></span>
-      <span style="font-size:13px;font-weight:700;color:#6d28d9;">25.3%</span>
-    </div>
-    <div style="background:#e8e4e0;border-radius:4px;height:17px;overflow:hidden;">
-      <div class="ce-bar" style="--w:97.3%;height:100%;background:#6d28d9;border-radius:4px;animation-delay:0.05s;"></div>
-    </div>
+  <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:#1e3a8a;margin-bottom:6px;">ABS 2021 Census · 30 Sydney LGAs</div>
+  <div style="font-family:'Fraunces',Georgia,serif;font-size:17px;font-weight:700;color:#1a1a1a;margin:0 0 4px;letter-spacing:-0.01em;line-height:1.3;">Population density vs share of residents aged 0–14</div>
+  <div style="font-size:11.5px;color:#888;margin-bottom:14px;">Each dot is a Sydney LGA. Hover for detail. Inner West highlighted in red.</div>
+  <div style="position:relative;height:420px;">
+    <canvas id="iwcChart1Blog"></canvas>
   </div>
-
-  <div style="margin-bottom:11px;">
-    <div style="display:flex;justify-content:space-between;margin-bottom:3px;">
-      <span style="font-size:12.5px;color:#333;">Blacktown <span style="color:#888;font-size:11px;">1,837 /km²</span></span>
-      <span style="font-size:13px;font-weight:700;color:#6d28d9;">22.7%</span>
-    </div>
-    <div style="background:#e8e4e0;border-radius:4px;height:17px;overflow:hidden;">
-      <div class="ce-bar" style="--w:87.3%;height:100%;background:#7c3aed;border-radius:4px;animation-delay:0.12s;"></div>
-    </div>
-  </div>
-
-  <div style="margin-bottom:11px;">
-    <div style="display:flex;justify-content:space-between;margin-bottom:3px;">
-      <span style="font-size:12.5px;color:#777;font-style:italic;">Greater Sydney average <span style="color:#aaa;font-size:11px;">~450 /km²</span></span>
-      <span style="font-size:13px;font-weight:700;color:#6b7280;">18.5%</span>
-    </div>
-    <div style="background:#e8e4e0;border-radius:4px;height:17px;overflow:hidden;">
-      <div class="ce-bar" style="--w:71.2%;height:100%;background:#9ca3af;border-radius:4px;animation-delay:0.19s;"></div>
-    </div>
-  </div>
-
-  <div style="margin-bottom:11px;background:rgba(239,68,68,0.06);border-radius:6px;padding:7px 8px;">
-    <div style="display:flex;justify-content:space-between;margin-bottom:3px;">
-      <span style="font-size:12.5px;color:#b91c1c;font-weight:700;">★ Inner West <span style="color:#ef4444;font-size:11px;font-weight:400;">5,423 /km²</span></span>
-      <span style="font-size:13px;font-weight:700;color:#b91c1c;">14.6%</span>
-    </div>
-    <div style="background:#fecaca;border-radius:4px;height:17px;overflow:hidden;">
-      <div class="ce-bar" style="--w:56.2%;height:100%;background:#dc2626;border-radius:4px;animation-delay:0.26s;"></div>
-    </div>
-  </div>
-
-  <div style="margin-bottom:11px;">
-    <div style="display:flex;justify-content:space-between;margin-bottom:3px;">
-      <span style="font-size:12.5px;color:#333;">North Sydney <span style="color:#888;font-size:11px;">6,151 /km²</span></span>
-      <span style="font-size:13px;font-weight:700;color:#1e3a8a;">12.7%</span>
-    </div>
-    <div style="background:#e8e4e0;border-radius:4px;height:17px;overflow:hidden;">
-      <div class="ce-bar" style="--w:48.8%;height:100%;background:#1e3a8a;border-radius:4px;animation-delay:0.33s;"></div>
-    </div>
-  </div>
-
-  <div style="margin-bottom:4px;">
-    <div style="display:flex;justify-content:space-between;margin-bottom:3px;">
-      <span style="font-size:12.5px;color:#333;">City of Sydney <span style="color:#888;font-size:11px;">8,893 /km²</span></span>
-      <span style="font-size:13px;font-weight:700;color:#1e40af;">7.6%</span>
-    </div>
-    <div style="background:#e8e4e0;border-radius:4px;height:17px;overflow:hidden;">
-      <div class="ce-bar" style="--w:29.2%;height:100%;background:#1d4ed8;border-radius:4px;animation-delay:0.40s;"></div>
-    </div>
-  </div>
-
-  <div style="font-size:10.5px;color:#bbb;margin-top:14px;">Source: ABS 2021 Census QuickStats by LGA. Bar length = % residents aged 0–14. Full 30-LGA dataset available in IW Pulse research charts.</div>
+  <div id="iwcLegend1Blog" style="display:flex;flex-wrap:wrap;gap:8px 18px;margin-top:12px;"></div>
+  <div style="font-size:10.5px;color:#bbb;margin-top:12px;">Source: ABS 2021 Census QuickStats; ABS Regional Population 2023-24.</div>
 </div>
+<script>
+(function() {
+  if (typeof Chart === 'undefined') return;
+  var ex1 = Chart.getChart('iwcChart1Blog'); if (ex1) ex1.destroy();
+  var c1All = [
+    { label: 'Inner West',           x: 5423, y: 14.6, cat: 0 },
+    { label: 'City of Sydney',       x: 8893, y: 7.6,  cat: 1 },
+    { label: 'Waverley',             x: 7424, y: 15.7, cat: 1 },
+    { label: 'Woollahra',            x: 4520, y: 14.9, cat: 1 },
+    { label: 'Randwick',             x: 3907, y: 15.4, cat: 1 },
+    { label: 'Bayside',              x: 3727, y: 15.1, cat: 1 },
+    { label: 'Burwood',              x: 5258, y: 12.0, cat: 2 },
+    { label: 'Canada Bay',           x: 4401, y: 15.8, cat: 2 },
+    { label: 'Strathfield',          x: 2879, y: 12.0, cat: 2 },
+    { label: 'North Sydney',         x: 6151, y: 12.7, cat: 3 },
+    { label: 'Mosman',               x: 3164, y: 16.3, cat: 3 },
+    { label: 'Lane Cove',            x: 3277, y: 18.2, cat: 3 },
+    { label: 'Willoughby',           x: 3231, y: 18.9, cat: 3 },
+    { label: 'Hunters Hill',         x: 2460, y: 17.1, cat: 3 },
+    { label: 'Ku-ring-gai',          x: 1503, y: 19.5, cat: 4 },
+    { label: 'Hornsby',              x: 340,  y: 19.0, cat: 4 },
+    { label: 'Northern Beaches',     x: 1065, y: 18.5, cat: 4 },
+    { label: 'Parramatta',           x: 3280, y: 15.3, cat: 5 },
+    { label: 'Canterbury-Bankstown', x: 4810, y: 19.8, cat: 5 },
+    { label: 'Cumberland',           x: 3200, y: 19.9, cat: 5 },
+    { label: 'Georges River',        x: 3864, y: 15.9, cat: 5 },
+    { label: 'Ryde',                 x: 2837, y: 16.2, cat: 5 },
+    { label: 'Fairfield',            x: 2091, y: 17.9, cat: 5 },
+    { label: 'Blacktown',            x: 1837, y: 22.7, cat: 6 },
+    { label: 'Liverpool',            x: 834,  y: 22.1, cat: 6 },
+    { label: 'Campbelltown',         x: 605,  y: 22.0, cat: 6 },
+    { label: 'Camden',               x: 700,  y: 25.3, cat: 6 },
+    { label: 'Penrith',              x: 565,  y: 21.2, cat: 6 },
+    { label: 'The Hills',            x: 558,  y: 21.2, cat: 6 },
+    { label: 'Sutherland',           x: 715,  y: 18.5, cat: 7 },
+    { label: 'Central Coast',        x: 211,  y: 18.0, cat: 8 }
+  ];
+  var regionMeta = [
+    { name: 'Inner West',            color: 'rgba(220,38,38,0.92)',   border: 'rgba(185,28,28,1)',    size: 11 },
+    { name: 'Eastern Sydney',        color: 'rgba(249,115,22,0.85)',  border: 'rgba(234,88,12,1)',    size: 8  },
+    { name: 'Inner suburbs',         color: 'rgba(236,72,153,0.8)',   border: 'rgba(219,39,119,1)',   size: 8  },
+    { name: 'Lower North Shore',     color: 'rgba(20,184,166,0.85)',  border: 'rgba(13,148,136,1)',   size: 8  },
+    { name: 'Upper North / Beaches', color: 'rgba(59,130,246,0.85)', border: 'rgba(37,99,235,1)',    size: 8  },
+    { name: 'Western Sydney',        color: 'rgba(22,163,74,0.85)',   border: 'rgba(15,118,55,1)',    size: 8  },
+    { name: 'Outer / Growth SW',     color: 'rgba(139,92,246,0.85)', border: 'rgba(109,40,217,1)',   size: 8  },
+    { name: 'Sutherland',            color: 'rgba(234,179,8,0.85)',   border: 'rgba(202,138,4,1)',    size: 8  },
+    { name: 'Central Coast',         color: 'rgba(156,163,175,0.85)',border: 'rgba(107,114,128,1)',   size: 8  }
+  ];
+  var datasets = regionMeta.map(function(rm, catIdx) {
+    return {
+      label: rm.name,
+      data: c1All.filter(function(d) { return d.cat === catIdx; }).map(function(d) { return { x: d.x, y: d.y, label: d.label }; }),
+      backgroundColor: rm.color, borderColor: rm.border,
+      borderWidth: catIdx === 0 ? 2.5 : 1.5,
+      pointRadius: rm.size, pointHoverRadius: rm.size + 4
+    };
+  });
+  var ctx1 = document.getElementById('iwcChart1Blog');
+  new Chart(ctx1, {
+    type: 'scatter',
+    data: { datasets: datasets },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: function(c) {
+              var d = c.raw;
+              return [' ' + d.label, ' Density: ' + d.x.toLocaleString() + ' /km²', ' Children 0–14: ' + d.y + '%', ' Region: ' + regionMeta[c.datasetIndex].name];
+            },
+            title: function() { return ''; }
+          },
+          backgroundColor: 'rgba(20,20,40,0.92)', padding: 12, bodyFont: { size: 12 }
+        },
+        annotation: {
+          annotations: {
+            iwcLabel: { type: 'label', xValue: 5423, yValue: 14.6, xAdjust: 10, yAdjust: -22, content: ['★ Inner West', '5,423/km² | 14.6%'], color: '#b91c1c', font: { size: 10.5, weight: 'bold' }, textAlign: 'left' },
+            trendLine: { type: 'line', borderColor: 'rgba(150,150,150,0.3)', borderWidth: 1.5, borderDash: [6,4], xMin: 0, xMax: 9500, yMin: 23.5, yMax: 6.5, label: { content: 'More density → fewer children', display: true, position: 'end', color: '#aaa', font: { size: 9 }, yAdjust: -12 } }
+          }
+        }
+      },
+      scales: {
+        x: { title: { display: true, text: 'Population Density (persons per km²)', color: '#555', font: { size: 12 } }, min: 0, max: 10000, ticks: { callback: function(v) { return v.toLocaleString(); }, color: '#666', font: { size: 10 } }, grid: { color: 'rgba(0,0,0,0.05)' } },
+        y: { title: { display: true, text: '% Population Aged 0–14 Years', color: '#555', font: { size: 12 } }, min: 4, max: 28, ticks: { callback: function(v) { return v + '%'; }, color: '#666', font: { size: 10 } }, grid: { color: 'rgba(0,0,0,0.05)' } }
+      }
+    }
+  });
+  var legendEl = document.getElementById('iwcLegend1Blog');
+  if (legendEl) {
+    legendEl.innerHTML = '';
+    regionMeta.forEach(function(rm) {
+      var item = document.createElement('div');
+      item.style.cssText = 'display:flex;align-items:center;gap:6px;font-size:12px;color:#444;';
+      item.innerHTML = '<div style="width:10px;height:10px;border-radius:50%;background:' + rm.color + ';border:1.5px solid ' + rm.border + ';flex-shrink:0;"></div>' + rm.name;
+      legendEl.appendChild(item);
+    });
+  }
+})();
+</script>
 
 <p>Camden, at 700 people per km², has 25.3% of residents under 14. The City of Sydney — the densest council in Greater Sydney at nearly 9,000 per km² — has just 7.6%. The Inner West, at 5,423 per km², sits at 14.6%: well below the Greater Sydney average of 18.5%.</p>
 
@@ -127,67 +168,71 @@ VALUES (
 <!-- ══ SECTION: BIRTHS COLLAPSE ══ -->
 <h2>The births collapse — and the national comparison</h2>
 
-<!-- CHART A: SVG indexed births vs Australia TFR -->
+<!-- CHART A: Time series — Chart.js -->
 <div style="background:#f8f7f4;border:1px solid #e4e1db;border-left:4px solid #ea580c;border-radius:0 10px 10px 0;padding:24px 22px 16px;margin:28px 0;">
-  <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:#ea580c;margin-bottom:6px;">ABS Births cat. 3301.0 · 2001–2024 · Indexed (2001 = 100)</div>
-  <div style="font-family:'Fraunces',Georgia,serif;font-size:17px;font-weight:700;color:#1a1a1a;margin:0 0 4px;letter-spacing:-0.01em;line-height:1.3;">IWC annual births vs Australia TFR — who's falling faster?</div>
-  <div style="font-size:11.5px;color:#888;margin-bottom:16px;">Both series indexed to 100 in 2001. A value of 80 = 20% below the 2001 level.</div>
-
-  <svg viewBox="0 0 660 240" style="width:100%;max-width:100%;display:block;overflow:visible;" aria-label="Indexed births comparison: IWC vs Australia TFR 2001-2024">
-    <!-- Baby Bonus shaded band (2004=x124 to 2014=x372) -->
-    <rect x="124" y="20" width="248" height="175" fill="rgba(253,224,71,0.2)" stroke="rgba(202,138,4,0.35)" stroke-width="1"/>
-    <text x="248" y="35" text-anchor="middle" font-size="9" fill="#92400e" font-weight="700">Baby Bonus 2004–2014</text>
-
-    <!-- Horizontal gridlines -->
-    <line x1="50" y1="78" x2="620" y2="78" stroke="#e5e7eb" stroke-width="1" stroke-dasharray="4,3"/>
-    <line x1="50" y1="125" x2="620" y2="125" stroke="#9ca3af" stroke-width="1.5" stroke-dasharray="5,3"/>
-    <line x1="50" y1="172" x2="620" y2="172" stroke="#e5e7eb" stroke-width="1" stroke-dasharray="4,3"/>
-
-    <!-- Y-axis labels -->
-    <text x="44" y="81" text-anchor="end" font-size="9" fill="#9ca3af">120</text>
-    <text x="44" y="128" text-anchor="end" font-size="9" fill="#6b7280" font-weight="600">100</text>
-    <text x="44" y="175" text-anchor="end" font-size="9" fill="#9ca3af">80</text>
-
-    <!-- Shaded area under IWC births line -->
-    <polygon
-      points="50,125 75,122 100,120 124,112 149,95 174,88 199,63 223,46 248,56 273,46 298,60 322,72 347,63 372,112 397,90 421,111 446,114 471,95 496,140 520,150 545,122 570,160 595,174 620,175 620,195 50,195"
-      fill="rgba(234,88,12,0.08)"/>
-
-    <!-- Australia TFR line (green dashed) -->
-    <polyline
-      points="50,125 75,122 100,122 124,119 149,117 174,115 199,98 223,86 248,102 273,104 298,105 322,109 347,113 372,116 397,119 421,123 446,123 471,123 496,135 520,145 545,129 570,139 595,156 620,159"
-      fill="none" stroke="#16a34a" stroke-width="2" stroke-dasharray="7,4" stroke-linejoin="round"/>
-
-    <!-- IWC births line (orange) -->
-    <polyline
-      points="50,125 75,122 100,120 124,112 149,95 174,88 199,63 223,46 248,56 273,46 298,60 322,72 347,63 372,112 397,90 421,111 446,114 471,95 496,140 520,150 545,122 570,160 595,174 620,175"
-      fill="none" stroke="#ea580c" stroke-width="2.5" stroke-linejoin="round"/>
-
-    <!-- End labels -->
-    <text x="626" y="178" font-size="9.5" fill="#ea580c" font-weight="700">IWC −21%</text>
-    <text x="626" y="162" font-size="9.5" fill="#16a34a" font-weight="700">Aus −14%</text>
-
-    <!-- Year labels -->
-    <text x="50"  y="212" text-anchor="middle" font-size="9" fill="#9ca3af">2001</text>
-    <text x="174" y="212" text-anchor="middle" font-size="9" fill="#9ca3af">2006</text>
-    <text x="298" y="212" text-anchor="middle" font-size="9" fill="#9ca3af">2011</text>
-    <text x="421" y="212" text-anchor="middle" font-size="9" fill="#9ca3af">2016</text>
-    <text x="545" y="212" text-anchor="middle" font-size="9" fill="#9ca3af">2021</text>
-    <text x="620" y="212" text-anchor="middle" font-size="9" fill="#9ca3af">2024</text>
-
-    <!-- Legend -->
-    <line x1="50" y1="230" x2="78" y2="230" stroke="#ea580c" stroke-width="2.5"/>
-    <text x="83" y="233" font-size="9.5" fill="#555">IWC annual births (indexed)</text>
-    <line x1="240" y1="230" x2="268" y2="230" stroke="#16a34a" stroke-width="2" stroke-dasharray="6,3"/>
-    <text x="273" y="233" font-size="9.5" fill="#555">Australia TFR (indexed)</text>
-  </svg>
-
-  <div style="font-size:10.5px;color:#bbb;margin-top:12px;">Source: ABS Births cat. 3301.0; ABS Demographic Statistics cat. 3101.0. IWC values approximate ±50 (read from ABS Data by Region). Both series indexed: 2001 = 100.</div>
+  <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:#ea580c;margin-bottom:6px;">ABS Births cat. 3301.0 · IWC 2001–2024</div>
+  <div style="font-family:'Fraunces',Georgia,serif;font-size:17px;font-weight:700;color:#1a1a1a;margin:0 0 4px;letter-spacing:-0.01em;line-height:1.3;">IWC children &amp; births vs Australia fertility rate</div>
+  <div style="font-size:11.5px;color:#888;margin-bottom:14px;">Hover for year detail. Baby Bonus period (2004–2014) shaded.</div>
+  <div style="position:relative;height:380px;">
+    <canvas id="iwcChartABlog"></canvas>
+  </div>
+  <div style="font-size:10.5px;color:#bbb;margin-top:12px;">Source: ABS Births cat. 3301.0; ABS Regional Population by Age and Sex; ABS Demographic Statistics. IWC values approximate ±50.</div>
 </div>
+<script>
+(function() {
+  if (typeof Chart === 'undefined') return;
+  var exA = Chart.getChart('iwcChartABlog'); if (exA) exA.destroy();
+  var years = ['2001','2002','2003','2004','2005','2006','2007','2008','2009','2010','2011','2012','2013','2014','2015','2016','2017','2018','2019','2020','2021','2022','2023','2024'];
+  var childrenData = [23300,23100,23100,23100,23100,23400,24000,25000,26500,26700,27100,28500,29200,29500,29200,29400,29500,29800,29000,28000,26700,25100,24900,25600];
+  var birthsData   = [2350,2380,2400,2480,2650,2720,2980,3150,3050,3150,3000,2880,2970,2480,2700,2490,2460,2650,2200,2100,2380,2000,1860,1850];
+  var australiaTFR = [1.730,1.754,1.752,1.777,1.789,1.808,1.933,2.023,1.903,1.886,1.882,1.850,1.820,1.800,1.773,1.742,1.741,1.740,1.660,1.580,1.700,1.630,1.500,1.481];
+  var ctxA = document.getElementById('iwcChartABlog');
+  new Chart(ctxA, {
+    type: 'line',
+    data: {
+      labels: years,
+      datasets: [
+        { label: 'IWC – Children 0–14', data: childrenData, yAxisID: 'yLeft', borderColor: '#1e3a8a', backgroundColor: 'rgba(30,58,138,0.08)', borderWidth: 2.5, fill: true, tension: 0.3, pointRadius: 3, pointHoverRadius: 7, pointBackgroundColor: '#1e3a8a' },
+        { label: 'IWC – Annual Births',       data: birthsData,   yAxisID: 'yRight', borderColor: '#ea580c', backgroundColor: 'rgba(234,88,12,0.07)',  borderWidth: 2.5, fill: true, tension: 0.3, pointRadius: 3, pointHoverRadius: 7, pointBackgroundColor: '#ea580c' },
+        { label: 'Australia TFR (national)',       data: australiaTFR, yAxisID: 'yTFR',  borderColor: '#16a34a', backgroundColor: 'transparent', borderWidth: 2, borderDash: [7,4], fill: false, tension: 0.3, pointRadius: 2.5, pointHoverRadius: 7, pointBackgroundColor: '#16a34a' }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: { position: 'top', labels: { font: { size: 12 }, color: '#333', padding: 16 } },
+        tooltip: {
+          backgroundColor: 'rgba(20,20,40,0.92)', padding: 12,
+          callbacks: {
+            label: function(c) {
+              if (c.datasetIndex === 0) return ' IWC Children 0–14: ' + c.parsed.y.toLocaleString();
+              if (c.datasetIndex === 1) return ' IWC Births: ' + c.parsed.y.toLocaleString();
+              return ' Australia TFR: ' + c.parsed.y.toFixed(3);
+            }
+          }
+        },
+        annotation: {
+          annotations: {
+            babyBonus: { type: 'box', xMin: '2004', xMax: '2014', backgroundColor: 'rgba(254,240,138,0.18)', borderColor: 'rgba(234,179,8,0.4)', borderWidth: 1 },
+            babyBonusLabel: { type: 'label', xValue: '2009', yScaleID: 'yLeft', yValue: 31600, content: ['Baby Bonus','2004–2014'], color: '#92400e', font: { size: 9, weight: 'bold' }, textAlign: 'center' }
+          }
+        }
+      },
+      scales: {
+        x: { ticks: { color: '#666', font: { size: 10 }, maxRotation: 45 }, grid: { color: 'rgba(0,0,0,0.04)' } },
+        yLeft:  { type: 'linear', position: 'left',  title: { display: true, text: 'IWC Children aged 0–14', color: '#1e3a8a', font: { size: 11 } }, min: 20000, max: 32500, ticks: { color: '#1e3a8a', callback: function(v) { return v.toLocaleString(); }, font: { size: 10 } }, grid: { color: 'rgba(0,0,0,0.05)' } },
+        yRight: { type: 'linear', position: 'right', title: { display: true, text: 'IWC Annual Births', color: '#ea580c', font: { size: 11 } }, min: 1200, max: 3600, ticks: { color: '#ea580c', callback: function(v) { return v.toLocaleString(); }, font: { size: 10 } }, grid: { display: false } },
+        yTFR:   { type: 'linear', position: 'right', offset: true, title: { display: true, text: 'Australia TFR', color: '#16a34a', font: { size: 11 } }, min: 1.2, max: 2.4, ticks: { color: '#16a34a', callback: function(v) { return v.toFixed(1); }, font: { size: 10 }, stepSize: 0.2 }, grid: { display: false } }
+      }
+    }
+  });
+})();
+</script>
 
 <p>There's a visible bump in the births data between 2004 and 2014. That's the Baby Bonus era — the Howard and Rudd governments' $5,000–$7,500 payment per birth. Inner West births peaked at around 3,150 in 2008–10 before the payment was wound back from 2009 and abolished entirely in 2014. When it ended, births fell sharply, recovered briefly in 2016–18, then collapsed to a 23-year low in 2024.</p>
 
-<p>The more revealing comparison is with Australia's national Total Fertility Rate. Index both to 2001=100 and the picture sharpens: Australia's TFR fell about 14% by 2024. The Inner West's birth count fell 21% over the same period. The Inner West isn't simply tracking the national trend. It's declining faster — and the gap has widened. That's a structural signal: families who might have children are leaving the Inner West, or being priced out before they reach that stage of life.</p>
+<p>The more revealing comparison is with Australia's national Total Fertility Rate. Index both to 2001=100 and the picture sharpens: Australia's TFR has fallen about 14% since 2001. The Inner West's birth count has fallen 21% over the same period. The Inner West isn't simply tracking the national trend. It's declining faster — and the gap has widened. Families who might have children are leaving the Inner West, or being priced out before they reach that stage of life.</p>
 
 <!-- ══ SECTION: WHAT'S BEING BUILT ══ -->
 <h2>What's actually being built</h2>
@@ -219,11 +264,11 @@ $POST_CONTENT$,
   5
 )
 ON CONFLICT (slug) DO UPDATE SET
-  title            = EXCLUDED.title,
-  excerpt          = EXCLUDED.excerpt,
-  content          = EXCLUDED.content,
-  category         = EXCLUDED.category,
-  suburbs          = EXCLUDED.suburbs,
-  published        = EXCLUDED.published,
-  published_at     = EXCLUDED.published_at,
+  title             = EXCLUDED.title,
+  excerpt           = EXCLUDED.excerpt,
+  content           = EXCLUDED.content,
+  category          = EXCLUDED.category,
+  suburbs           = EXCLUDED.suburbs,
+  published         = EXCLUDED.published,
+  published_at      = EXCLUDED.published_at,
   read_time_minutes = EXCLUDED.read_time_minutes;
