@@ -1197,6 +1197,13 @@ function HomePage({ issues, loading, error, onRetry, onOpenIssue, onVote, userVo
         </div>
       )}
 
+      {!loading && !error && trending.length > 0 && (
+        <Section>
+          <SectionHeader eyebrow="Trending now" title="The issues gaining momentum" subtitle="Sorted by verified community support. Minimum 25 verified supporters unlocks a direct Council submission." />
+          <TrendingLeaderboard issues={trending} onOpenIssue={onOpenIssue} />
+        </Section>
+      )}
+
       {!query && (
         <Section background={COLORS.cream}>
           <SectionHeader
@@ -1253,13 +1260,6 @@ function HomePage({ issues, loading, error, onRetry, onOpenIssue, onVote, userVo
               </button>
             ))}
           </div>
-        </Section>
-      )}
-
-      {!loading && !error && trending.length > 0 && (
-        <Section>
-          <SectionHeader eyebrow="Trending now" title="The issues gaining momentum" subtitle="Sorted by verified community support. Minimum 25 verified supporters unlocks a direct Council submission." />
-          <TrendingLeaderboard issues={trending} onOpenIssue={onOpenIssue} />
         </Section>
       )}
 
