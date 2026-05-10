@@ -821,6 +821,8 @@ export default function App() {
           onShare={(issue) => shareIssue(issue, showToast)}
           sessionId={sessionId}
           onDelete={handleDeleteIssue}
+          onBlog={() => setView({ name: "blog" })}
+          onOpenPost={(slug) => setView({ name: "blog-post", slug })}
         />
       )}
 
@@ -1021,6 +1023,14 @@ function GlobalStyles() {
         .mobile-nav-menu   { display: none !important; }
       }
 
+      /* ── Home blog strip ── */
+      .home-blog-grid { display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: 20px; }
+      @media (max-width: 900px) { .home-blog-grid { grid-template-columns: 1fr 1fr; } }
+      @media (max-width: 580px) { .home-blog-grid { grid-template-columns: 1fr; } }
+      .home-blog-card { background: #fff; border: 1px solid #E5E7EB; border-radius: 14px; padding: 24px; display: flex; flex-direction: column; cursor: pointer; transition: box-shadow 200ms, transform 200ms; }
+      .home-blog-card:hover { box-shadow: 0 8px 28px rgba(0,0,0,0.1); transform: translateY(-2px); }
+      .home-blog-card--featured { padding: 28px; }
+
       /* ── Blog layouts ── */
       .blog-featured-card { display: grid; grid-template-columns: 1fr 1fr; background: #fff; border-radius: 14px; border: 1px solid #E5E7EB; overflow: hidden; box-shadow: 0 2px 12px rgba(0,0,0,0.06); cursor: pointer; transition: box-shadow 200ms, transform 200ms; }
       .blog-featured-card:hover { box-shadow: 0 8px 28px rgba(0,0,0,0.1); transform: translateY(-2px); }
@@ -1156,7 +1166,129 @@ function Logo() {
 // ────────────────────────────────────────────────────────────────────────────
 // HOME PAGE
 // ────────────────────────────────────────────────────────────────────────────
-function HomePage({ issues, loading, error, onRetry, onOpenIssue, onVote, userVotes, onPost, onShare, sessionId, onDelete }) {
+function blogCategoryColorHome(cat) {
+  const map = {
+    "Rezoning & Development": { bg: "#E8EEF5", fg: COLORS.authority },
+    Infrastructure: { bg: "#E6F0EA", fg: COLORS.communityDeep },
+    Transport: { bg: "#E0F2F1", fg: "#0F766E" },
+    Community: { bg: "#FEF3E2", fg: "#9A4D07" },
+    "Council Watch": { bg: "#F3E8FF", fg: "#6D28D9" },
+  };
+  return map[cat] || { bg: COLORS.mist, fg: COLORS.slate };
+}
+
+function HomeBlogStrip({ onBlog, onOpenPost }) {
+  const [posts, setPosts] = useState([]);
+  const [loaded, setLoaded] = useState(false);
+
+  useEffect(() => {
+    supabase
+      .from("blog_posts")
+      .select("id, title, slug, excerpt, category, published_at, read_time_minutes")
+      .eq("published", true)
+      .order("published_at", { ascending: false })
+      .limit(3)
+      .then(({ data }) => { setPosts(data || []); setLoaded(true); });
+  }, []);
+
+  if (!loaded || posts.length === 0) return null;
+
+  const [featured, ...rest] = posts;
+
+  return (
+    <Section background={COLORS.paper}>
+      <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", marginBottom: 28 }}>
+        <SectionHeader
+          eyebrow="From the blog"
+          title="Stories from Inner West streets"
+          subtitle={null}
+        />
+        <button
+          onClick={onBlog}
+          style={{ flexShrink: 0, fontSize: 13, fontWeight: 600, color: COLORS.authority, whiteSpace: "nowrap", marginTop: 4 }}
+        >
+          View all stories →
+        </button>
+      </div>
+
+      <div className="home-blog-grid">
+        {/* Featured card */}
+        <article
+          className="home-blog-card home-blog-card--featured"
+          onClick={() => onOpenPost(featured.slug)}
+          aria-label={`Read: ${featured.title}`}
+        >
+          {featured.category && (() => {
+            const col = blogCategoryColorHome(featured.category);
+            return (
+              <span style={{ display: "inline-block", fontSize: 11, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: col.fg, background: col.bg, borderRadius: 6, padding: "3px 8px", marginBottom: 14 }}>
+                {featured.category}
+              </span>
+            );
+          })()}
+          <h3 className="serif" style={{ fontSize: "clamp(18px, 2vw, 22px)", fontWeight: 600, lineHeight: 1.25, letterSpacing: "-0.02em", color: COLORS.ink, margin: "0 0 10px", flex: 1 }}>
+            {featured.title}
+          </h3>
+          {featured.excerpt && (
+            <p style={{ fontSize: 14, lineHeight: 1.65, color: COLORS.slate, margin: "0 0 16px", display: "-webkit-box", WebkitLineClamp: 3, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
+              {featured.excerpt}
+            </p>
+          )}
+          <div style={{ display: "flex", alignItems: "center", gap: 10, fontSize: 12, color: COLORS.slate, marginTop: "auto" }}>
+            {featured.published_at && (
+              <time dateTime={featured.published_at}>
+                {new Date(featured.published_at).toLocaleDateString("en-AU", { day: "numeric", month: "short", year: "numeric" })}
+              </time>
+            )}
+            {featured.read_time_minutes && (
+              <><span style={{ width: 3, height: 3, borderRadius: "50%", background: COLORS.hairline, display: "inline-block" }} /><span>{featured.read_time_minutes} min read</span></>
+            )}
+          </div>
+          <span style={{ fontSize: 13, fontWeight: 600, color: COLORS.authority, marginTop: 14 }}>Read article →</span>
+        </article>
+
+        {/* Remaining cards */}
+        {rest.map((post) => {
+          const col = blogCategoryColorHome(post.category);
+          return (
+            <article
+              key={post.id}
+              className="home-blog-card"
+              onClick={() => onOpenPost(post.slug)}
+              aria-label={`Read: ${post.title}`}
+            >
+              {post.category && (
+                <span style={{ display: "inline-block", fontSize: 11, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: col.fg, background: col.bg, borderRadius: 6, padding: "3px 8px", marginBottom: 12 }}>
+                  {post.category}
+                </span>
+              )}
+              <h3 className="serif" style={{ fontSize: 16, fontWeight: 600, lineHeight: 1.3, letterSpacing: "-0.01em", color: COLORS.ink, margin: "0 0 8px", flex: 1 }}>
+                {post.title}
+              </h3>
+              {post.excerpt && (
+                <p style={{ fontSize: 13, lineHeight: 1.6, color: COLORS.slate, margin: "0 0 14px", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
+                  {post.excerpt}
+                </p>
+              )}
+              <div style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 12, color: COLORS.slate, marginTop: "auto" }}>
+                {post.published_at && (
+                  <time dateTime={post.published_at}>
+                    {new Date(post.published_at).toLocaleDateString("en-AU", { day: "numeric", month: "short" })}
+                  </time>
+                )}
+                {post.read_time_minutes && (
+                  <><span style={{ width: 3, height: 3, borderRadius: "50%", background: COLORS.hairline, display: "inline-block" }} /><span>{post.read_time_minutes} min</span></>
+                )}
+              </div>
+            </article>
+          );
+        })}
+      </div>
+    </Section>
+  );
+}
+
+function HomePage({ issues, loading, error, onRetry, onOpenIssue, onVote, userVotes, onPost, onShare, sessionId, onDelete, onBlog, onOpenPost }) {
   const [query, setQuery] = useState("");
   const [suburbFilter, setSuburbFilter] = useState("All");
   const [categoryFilter, setCategoryFilter] = useState("All");
@@ -1203,6 +1335,8 @@ function HomePage({ issues, loading, error, onRetry, onOpenIssue, onVote, userVo
           <TrendingLeaderboard issues={trending} onOpenIssue={onOpenIssue} />
         </Section>
       )}
+
+      {!query && <HomeBlogStrip onBlog={onBlog} onOpenPost={onOpenPost} />}
 
       {!query && (
         <Section background={COLORS.cream}>
