@@ -58,7 +58,7 @@ VALUES (
 <!-- ══ SECTION 2 ══ -->
 <h2>What Is the "Fairer Future" Plan?</h2>
 
-<p>The "Our Fairer Future" plan is Inner West Council's alternative to the NSW State Government's Transport Oriented Development (TOD) and Low &amp; Mid-Rise Housing (LMR) reforms. The State Government set housing targets for the Inner West. Council's response was not to push back on those targets but to exceed them — substantially. The plan proposes approximately 31,000 new dwellings in Phase 1 alone, more than double the State's target of roughly 15,000. An additional 5,000 dwellings are earmarked for the Bays Precinct under Phase 2, and a further 8,000 along the Parramatta Road Corridor were announced separately through a partnership with the State Government.</p>
+<p>The "Our Fairer Future" plan is Inner West Council's alternative to the NSW State Government's Transport Oriented Development (TOD) and Low &amp; Mid-Rise Housing (LMR) reforms. The State Government set housing targets for the Inner West. Council's response was not to push back on those targets but to exceed them — substantially. The plan proposes approximately 31,000 new dwellings in Phase 1 alone, more than double the State's target of roughly 15,000. An additional 8,500 dwellings are earmarked for the Bays Precinct, and a further 8,000 along the Parramatta Road Corridor were announced separately through a partnership with the State Government. Combined across all phases, the total proposed for the Inner West stands at approximately 47,500 new dwellings.</p>
 
 <p>Context matters here. The Inner West already has the fourth-highest population density of all 125 councils in NSW. This is not a sprawling greenfield area being opened up for the first time. It is a densely built-out urban zone where every additional dwelling places pressure on roads, trains, schools, parks, and stormwater systems that are, in many cases, already operating at or beyond capacity.</p>
 
@@ -386,9 +386,9 @@ VALUES (
 <!-- ══ SECTION 7: LEICHHARDT BURDEN ══ -->
 <h2>The Leichhardt Burden: How Marrickville's Density Got Dumped Next Door</h2>
 
-<p>At the September 2025 vote, Labor Councillor Mat Howard moved an amendment to remove approximately 20 per cent of the uplift locations from Marrickville. Council framed this as "listening to community feedback." But the density was not removed — it was shifted. Approximately 2,000 dwellings were reallocated from Marrickville to the Parramatta Road Corridor, which runs primarily through Leichhardt.</p>
+<p>At the September 2025 vote, Labor Councillor Mat Howard moved an amendment to remove approximately 20 per cent of the uplift locations from Marrickville. Council framed this as "listening to community feedback." But the density was not removed — it was shifted. Approximately 2,000 dwellings were reallocated from Marrickville to the Parramatta Road Corridor — a State-led rezoning stretching from Foster Street in Leichhardt through Annandale, Petersham, Stanmore, and Camperdown to Booth Street. Of the ~8,000 corridor dwellings, Leichhardt's estimated share is approximately 5,000.</p>
 
-<p>Labor Ward Councillor Philippa Scott, who represents Leichhardt, supported this motion — effectively voting to redirect Marrickville's rejected density onto her own constituents. The community group Leichhardt Matters claims Leichhardt is now targeted for the largest increase in housing of any suburb in NSW, with Council and State Government together setting targets of close to 10,000 new dwellings for the suburb.</p>
+<p>Labor Ward Councillor Philippa Scott, who represents Leichhardt, supported this motion — effectively voting to redirect Marrickville's rejected density onto her own constituents. The community group Leichhardt Matters claims Leichhardt is now targeted for the largest increase in housing of any suburb in NSW, with Council and State Government together setting targets of close to 10,000 new dwellings for the suburb — 4,887 under Fairer Future Stage 1, plus approximately 5,000 from the Parramatta Road Corridor.</p>
 
 <p>Leichhardt currently has a population of around 15,000 people. An additional 10,000 dwellings could mean 20,000 or more additional residents — more than doubling the suburb's population. Leichhardt has no heavy rail and no Metro station. Its only mass transit is the Light Rail, which the community argues is simply not built for mass transport at that scale. The suburb already has the second-lowest amount of open space per person in NSW, and there is no available land to increase that. Leichhardt Matters estimates that 70 per cent of existing housing in the suburb could face demolition to achieve these targets. The plan even cancels the one small park mandated at Hay Street, Leichhardt, as part of the earlier Parramatta Road Corridor strategy.</p>
 
@@ -403,7 +403,7 @@ VALUES (
     </div>
     <div style="background:#9e3a5e;color:#fff;padding:16px 18px;font-size:13px;line-height:1.5;border-bottom:2px solid rgba(255,255,255,0.25);">
       <strong style="display:block;font-size:11px;text-transform:uppercase;letter-spacing:0.08em;opacity:0.7;margin-bottom:4px;">Layer 2 — State Government</strong>
-      Parramatta Road Corridor — up to 8,000 dwellings (State-led)
+      Parramatta Road Corridor — 8,000 dwellings corridor-wide (Leichhardt's share: ~5,000)
     </div>
     <div style="background:#c0735a;color:#fff;border-radius:0 0 8px 8px;padding:16px 18px;font-size:13px;line-height:1.5;">
       <strong style="display:block;font-size:11px;text-transform:uppercase;letter-spacing:0.08em;opacity:0.7;margin-bottom:4px;">Layer 3 — Density Transfer</strong>
